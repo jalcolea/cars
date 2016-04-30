@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0.00390625 0 1 1" align="Stretch" layer="Wallpaper" name="start">
+        <Property key="ImageTexture" value="records_btn.png"/>
+    </Widget>
+    <Widget type="Button" skin="ButtonImage" position="20 640 100 130" align="Default" layer="Main" name="btn_back"/>
+    <Widget type="TextBox" skin="TextBox" position="110 205 355 420" layer="Main" name="score_names">
+        <Property key="Visible" value="true"/>
+        <Property key="FontName" value="Circus"/>
+        <Property key="FontHeight" value="60"/>
+        <Property key="Colour" value="0 0 0"/>
+        <Property key="TextColour" value="1 0 0"/>
+        <Property key="TextShadow" value="true"/>
+        <Property key="Caption" value="AAA\nBBB\nCCC"/>
+    </Widget>
+    <Widget type="TextBox" skin="TextBox" position="735 205 290 420" layer="Main" name="score_points">
+        <Property key="Visible" value="true"/>
+        <Property key="FontName" value="Circus"/>
+        <Property key="FontHeight" value="60"/>
+        <Property key="Colour" value="0 0 0"/>
+        <Property key="TextColour" value="1 0 0"/>
+        <Property key="Caption" value="111\n222\n333"/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

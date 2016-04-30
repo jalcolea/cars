@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sounds_library>
+
+    <base_path>./audio</base_path>
+    <effects>
+      <sound>
+        <id>begin</id>
+        <file>everything_is_awesome_cut.mp3</file>
+      </sound>
+      <sound>
+        <id>push</id>
+        <file>push.wav</file>
+      </sound>
+      <sound>
+	<id>puerta</id>
+        <file>robot2.wav</file>
+      </sound>
+      <sound>
+	<id>alerta</id>
+        <file>ALERT_Error.wav</file>
+      </sound>
+      <sound>
+	<id>robotsmusic</id>
+	<file>IsAnybodyHome.wav</file>
+      </sound>	
+      <sound>
+        <id>escudo</id>
+        <file>SciFiDrone.wav</file>
+      </sound>
+       <sound>
+        <id>can</id>
+        <file>can.wav</file>
+      </sound>
+      <sound>
+        <id>laser</id>
+        <file>laser.wav</file>
+      </sound>	
+      <sound>
+        <id>robotHit</id>
+        <file>laser2.wav</file>
+      </sound>	
+ 
+
+    </effects>
+
+</sounds_library>
+

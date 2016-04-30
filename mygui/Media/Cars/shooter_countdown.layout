@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_start">
+        <Property key="ImageTexture" value="cuentaatras.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_tres">
+        <Property key="ImageTexture" value="cuentaatras_tres.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_dos">
+        <Property key="ImageTexture" value="cuentaatras_dos.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_uno">
+        <Property key="ImageTexture" value="cuentaatras_uno.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_go">
+        <Property key="ImageTexture" value="cuentaatras_go.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

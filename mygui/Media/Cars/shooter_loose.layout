@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0 0 1 1" align="Stretch" layer="Wallpaper" name="start">
+        <Property key="ImageTexture" value="loose_btn.png"/>
+    </Widget>
+    <Widget type="Button" skin="ButtonImage" position="915 635 90 85" layer="Main" name="btn_resume"/>
+    <Widget type="EditBox" skin="WordWrapEmpty" position="400 500 345 110" layer="Main" name="user_name">
+        <Property key="FontName" value="Circus"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="Colour" value="1 0 0"/>
+        <Property key="FontHeight" value="90"/>
+        <Property key="TextColour" value="1 1 1"/>
+        <Property key="Caption" value=""/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

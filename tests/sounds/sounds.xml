@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<sounds_library>
+
+    <base_path>./wav</base_path>
+    <effects>
+      <sound>
+        <id>TEST_MUSIC</id>
+        <file>pacman_beginning.ogg</file>
+      </sound>
+
+      <sound>
+        <id>TEST_EFFECT</id>
+        <file>pacman_monster_escapes.ogg</file>
+      </sound>
+
+    </effects>
+
+</sounds_library>
+
