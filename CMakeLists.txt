@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.3)
-project(shooter)
+project(cars)
 
 ######################## AÑADIDO POR MI: varias variables de entorno para pasarle al compilador/linkador
 set(MYGUI_SOURCE_DIR "/home/twsh/desarrollo/mygui")
@@ -102,8 +102,8 @@ include_directories(OGREBULLET_COL_INC)
 
 
 
-add_executable(shooter ${SOURCE_FILES})
+add_executable(cars ${SOURCE_FILES})
 
-TARGET_LINK_LIBRARIES(shooter -lOgreOverlay -lOgreMain -lpthread -lboost_system -lMyGUIEngine -lmxml -lSDL -lpthread -lSDL_mixer
+TARGET_LINK_LIBRARIES(cars -lOgreOverlay -lOgreMain -lpthread -lboost_system -lMyGUIEngine -lmxml -lSDL -lpthread -lSDL_mixer
                       -lboost_system -lboost_graph -lOIS -lGL -lMyGUI.OgrePlatform  -lBulletSoftBody -lBulletDynamics -lBulletCollision
                       -lLinearMath -lOgreBulletCollisions -lOgreBulletDynamics)

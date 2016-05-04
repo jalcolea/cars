@@ -2,7 +2,7 @@
 # Makefile Genérico :: Módulo 2. Curso Experto Desarrollo Videojuegos
 # Carlos González Morcillo     Escuela Superior de Informática (UCLM)
 # --------------------------------------------------------------------
-EXEC := shooter
+EXEC := cars
 
 DIRSRC := src/
 DIROBJ := obj/
