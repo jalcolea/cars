@@ -88,11 +88,11 @@ bool PlayState::keyPressed(const OIS::KeyEvent &e) {
 void PlayState::moveCamera() {
 }
 
-bool PlayState::keyReleased(const OIS::KeyEvent &e) {
+bool PlayState::keyReleased(const OIS::KeyEvent &e) { return true;
 }
 
 
-bool PlayState::mouseMoved(const OIS::MouseEvent &e) {
+bool PlayState::mouseMoved(const OIS::MouseEvent &e) { return true;
 }
 
 bool PlayState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) {
