@@ -43,31 +43,37 @@ bool SceneNodeConfig::load_xml(string fichero)
 
 void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
 {
-    mxml_node_t* nombreSceneNode;
-    mxml_node_t* nombreEntidad;
+    mxml_node_t* tmp;
 
-    nombreSceneNode = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(nombreSceneNode,NULL)) << endl;
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
 
-    nombreEntidad = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_ENTIDAD)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(nombreEntidad,NULL)) << endl;
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_ENTIDAD)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
 
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICTION)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MASA)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MATERIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_INICIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
-    node = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RESTITUTION)]).c_str(),NULL,NULL,MXML_DESCEND);
-    cout << string(mxmlGetText(node,NULL)) << endl;
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICTION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MASA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MATERIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_INICIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
+
+    tmp = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RESTITUTION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    cout << string(mxmlGetText(tmp,NULL)) << endl;
 
 
 }
