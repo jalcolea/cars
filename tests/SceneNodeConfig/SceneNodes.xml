@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data>
-	<scenenode>
-		<nombreNodo>hola</nombreNodo>
-		<nombreEntidad>entidad</nombreEntidad>
-		<nombreMalla>prueba.mesh</nombreMalla>
-	        <nombreMaterial>material</nombreMaterial>
-		<posInicial>0,0,0</posInicial>
-		<orientacionShapeBullet>0,0,0,1</orientacionShapeBullet>
-		<posShapeBullet>0,0,0</posShapeBullet>
-		<masaBullet>1.0</masaBullet>
-		<frictionBullet>1.0</frictionBullet>
-		<bodyRestitutionBullet>0.0</bodyRestitutionBullet>
-	</scenenode>
+    <scenenode>
+        <nombreNodo>hola</nombreNodo>
+        <nombreEntidad>entidad</nombreEntidad>
+        <nombreMalla>pruebaMesh</nombreMalla>
+        <nombreMaterial>material</nombreMaterial>
+        <posInicial>0 0 0</posInicial>
+        <orientacionShapeBullet>0,0,0,1</orientacionShapeBullet>
+        <posShapeBullet>0,0,0</posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>pepon</nombreNodo>
+        <nombreEntidad>entidadpepona</nombreEntidad>
+        <nombreMalla>pruebaMeshpepona</nombreMalla>
+        <nombreMaterial>materialpepona</nombreMaterial>
+        <posInicial>0 0 0</posInicial>
+        <orientacionShapeBullet>0,0,0,1</orientacionShapeBullet>
+        <posShapeBullet>0,0,0</posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+
 </data>

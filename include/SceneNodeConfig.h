@@ -24,6 +24,8 @@ typedef struct                                  // struct con los campos que se 
     Ogre::Real masaBullet;                      // propiedad masa del rigidbody
     Ogre::Real frictionBullet;                  // propiedad índice de fricción del rigidbody
     Ogre::Real bodyRestitutionBullet;           // propiedad índice de restitución (elasticidad) del rigidbody
+    
+    
 
 } nodoOgre_t;                                   // definición del tipo nodoOgre_t
 

@@ -18,10 +18,9 @@ int main(int ac, char* av[])
         nodos = snc->getMapNodos();
 
         for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it);
-            //(*it).
+                
 
     }
 
-    cout << "hello world" << endl;
     return 0;
 }
