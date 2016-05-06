@@ -72,42 +72,12 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     nodo.nombreMaterial = string(mxmlGetText(nombreMaterial,NULL));
     nodo.frictionBullet = Ogre::Real(mxmlGetReal(friction));
     nodo.masaBullet = Ogre::Real(mxmlGetReal(masa));
-//    nodo.orientacionShapeBullet = Ogre::Quaternion(std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::W)]).c_str()))),
-//                                                   std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
-//                                                   std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
-//                                                   std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
     nodo.orientacionShapeBullet = extraeQuaternio(orientacionShape);
-    
-//    nodo.posInicial = Ogre::Vector3(std::stof((mxmlElementGetAttr(posInicial,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
-//                                    std::stof((mxmlElementGetAttr(posInicial,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
-//                                    std::stof((mxmlElementGetAttr(posInicial,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
     nodo.posInicial = extraeVector3(posInicial);
-
-//    nodo.posShapeBullet = Ogre::Vector3(std::stof((mxmlElementGetAttr(posShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
-//                                        std::stof((mxmlElementGetAttr(posShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
-//                                        std::stof((mxmlElementGetAttr(posShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
-
     nodo.posShapeBullet = extraeVector3(posShape);
-    
     nodo.bodyRestitutionBullet = Ogre::Real(mxmlGetReal(restitution));
     
     map_nodos[nodo.nombreNodo] = nodo;
-
-    
-/*
-    cout << string(mxmlGetText(nombreSceneNode,NULL)) << endl;
-    cout << string(mxmlGetText(nombreEntidad,NULL)) << endl;
-    cout << string(mxmlGetText(nombreMalla,NULL)) << endl;
-    cout << string(mxmlGetText(nombreMaterial,NULL)) << endl;
-    cout << string(mxmlGetText(friction,NULL)) << endl;
-    cout << string(mxmlGetText(masa,NULL)) << endl;
-    cout << string(mxmlGetText(orientacionShape,NULL)) << endl;
-    cout << string(mxmlGetText(posInicial,NULL)) << endl;
-    cout << string(mxmlGetText(posShape,NULL)) << endl;
-    cout << string(mxmlGetText(restitution,NULL)) << endl;
-    
-    cout << map_nodos.size() << " nodos en el mapa de nodos." << endl;
-*/
 
 }
 
