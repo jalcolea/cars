@@ -72,13 +72,29 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     nodo.nombreMaterial = string(mxmlGetText(nombreMaterial,NULL));
     nodo.frictionBullet = Ogre::Real(mxmlGetReal(friction));
     nodo.masaBullet = Ogre::Real(mxmlGetReal(masa));
-    nodo.orientacionShapeBullet = Ogre::Quaternion(0,0,0,1); // Hacer funcion auxiliar que convierta el texto a un quaternio
-    nodo.posInicial = Ogre::Vector3(0,0,0); // Hacer función auxiliar que convierta el texto a Vector3
-    nodo.posShapeBullet = Ogre::Vector3(0,0,0);// Hacer función auxiliar que convierta el texto a Vector3
-    nodo.bodyRestitutionBullet = Ogre::Real(mxmlGetReal(restitution));
-    map_nodos[nodo.nombreNodo] = nodo;
+//    nodo.orientacionShapeBullet = Ogre::Quaternion(std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::W)]).c_str()))),
+//                                                   std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
+//                                                   std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
+//                                                   std::stof((mxmlElementGetAttr(orientacionShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
+    nodo.orientacionShapeBullet = extraeQuaternio(orientacionShape);
     
+//    nodo.posInicial = Ogre::Vector3(std::stof((mxmlElementGetAttr(posInicial,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
+//                                    std::stof((mxmlElementGetAttr(posInicial,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
+//                                    std::stof((mxmlElementGetAttr(posInicial,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
+    nodo.posInicial = extraeVector3(posInicial);
 
+//    nodo.posShapeBullet = Ogre::Vector3(std::stof((mxmlElementGetAttr(posShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
+//                                        std::stof((mxmlElementGetAttr(posShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
+//                                        std::stof((mxmlElementGetAttr(posShape,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
+
+    nodo.posShapeBullet = extraeVector3(posShape);
+    
+    nodo.bodyRestitutionBullet = Ogre::Real(mxmlGetReal(restitution));
+    
+    map_nodos[nodo.nombreNodo] = nodo;
+
+    
+/*
     cout << string(mxmlGetText(nombreSceneNode,NULL)) << endl;
     cout << string(mxmlGetText(nombreEntidad,NULL)) << endl;
     cout << string(mxmlGetText(nombreMalla,NULL)) << endl;
@@ -91,8 +107,23 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     cout << string(mxmlGetText(restitution,NULL)) << endl;
     
     cout << map_nodos.size() << " nodos en el mapa de nodos." << endl;
+*/
 
+}
 
+Ogre::Vector3 SceneNodeConfig::extraeVector3(mxml_node_t* node)
+{
+    return Ogre::Vector3(std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
+                         std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
+                         std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
+}
+
+Ogre::Quaternion SceneNodeConfig::extraeQuaternio(mxml_node_t* node)
+{
+    return Ogre::Quaternion(std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::W)]).c_str()))),
+                            std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::X)]).c_str()))),
+                            std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Y)]).c_str()))),
+                            std::stof((mxmlElementGetAttr(node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::Z)]).c_str()))));
 }
 
 void SceneNodeConfig::setFicheroConfiguracion(string fichero, bool Cargar)

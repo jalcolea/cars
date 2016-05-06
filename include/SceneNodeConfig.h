@@ -12,7 +12,7 @@
 using namespace Ogre;
 using namespace std;
 
-typedef struct                                  // struct con los campos que se leerán del fichero de configuración.
+struct nodoOgre                                 // struct con los campos que se leerán del fichero de configuración.
 {
     string nombreNodo;                          // nombre interno del SceneNode para el SceneManager de Ogre
     string nombreEntidad;                       // nombre interno del Entity de Ogre
@@ -25,9 +25,24 @@ typedef struct                                  // struct con los campos que se 
     Ogre::Real frictionBullet;                  // propiedad índice de fricción del rigidbody
     Ogre::Real bodyRestitutionBullet;           // propiedad índice de restitución (elasticidad) del rigidbody
     
-    
+    friend ostream& operator<<(ostream& o, nodoOgre &n)
+    {
+       o << "Nombre del SceneNode: "            << n.nombreNodo << endl <<
+            "\t Nombre del Entity adjunto: "    << n.nombreEntidad << endl <<
+            "\t Malla que se está usando: "     << n.nombreMalla << endl <<
+            "\t Material que se está usando: "  << n.nombreMaterial << endl <<
+            "\t Posicion inicial: "             << n.posInicial << endl <<
+            "\t Orientacion shape de Bullet: "  << n.orientacionShapeBullet << endl <<
+            "\t Posicion del shape de Bullet "  << n.posShapeBullet << endl <<
+            "\t Masa del objeto de Bullet: "    << n.masaBullet << endl <<
+            "\t Indice de Friccion Bullet: "    << n.frictionBullet << endl <<
+            "\t Indice de Restitucion Bullet: " << n.bodyRestitutionBullet << endl;
+       return o;
+    };
 
-} nodoOgre_t;                                   // definición del tipo nodoOgre_t
+};                                   
+
+typedef nodoOgre nodoOgre_t;                    // declaración del tipo nodoOgre_t a partir del struct declarado "above" :D
 
 
 typedef std::map <string,nodoOgre_t> map_nodos_t;
@@ -36,10 +51,12 @@ typedef map_nodos_t::iterator it_map_nodos;
 class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
 {
     private:
-        void nuevoSceneNode(mxml_node_t* node);
-        string _fichero;
-        map_nodos_t map_nodos;
-        mxml_node_t* _tree;
+        void nuevoSceneNode(mxml_node_t* node);              // Añade un nuevo par(clave,valor) al mapa map_nodos
+        Ogre::Vector3 extraeVector3(mxml_node_t* node);      // Crea un Vector3 a partir de los valores en texto
+        Ogre::Quaternion extraeQuaternio(mxml_node_t* node); // Crea un Quaternio a partir de los valores en texto
+        string _fichero;                                     // nombre del fichero que contiene la info (ruta absoluta please!)
+        map_nodos_t map_nodos;                               // mapa que alberga la info de un SceneNode (clave: nombre del SceneNode, valor: objeto de tipo nodoOgre_t)
+        mxml_node_t* _tree;                                  // puntero a la raíz del arbol de nodos xml.
         enum class xmlElementsIndex { NOMBRE_NODO,
                                       NOMBRE_ENTIDAD,
                                       NOMBRE_MALLA,
@@ -50,6 +67,10 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
                                       MASA,
                                       FRICTION,
                                       RESTITUTION,
+                                      X,
+                                      Y,
+                                      Z,
+                                      W,
                                       TOTAL_COUNT }; // Este último es un truquillo para saber el número de elementos de esta enum class.
         string _xmlElements[static_cast<size_t>(xmlElementsIndex::TOTAL_COUNT)] = {"nombreNodo",
                                                                                  "nombreEntidad",
@@ -60,7 +81,11 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
                                                                                  "posShapeBullet",
                                                                                  "masaBullet",
                                                                                  "frictionBullet",
-                                                                                 "bodyRestitutionBullet"};
+                                                                                 "bodyRestitutionBullet",
+                                                                                 "x",
+                                                                                 "y",
+                                                                                 "z",
+                                                                                 "w"}; // Lista de cadenas para los atributos de un nodo xml
 
     public:
         // Heredados de Ogre::Singleton.
@@ -79,11 +104,8 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
         void setFicheroConfiguracion(string fichero, bool Cargar = false);         // establece que fichero de configuracón manejar. Llamar a load_xml para actualizar (parámetro Cargar).
         inline string getFicheroConfiguracion(){ return _fichero; };               // un getter de _fichero.
         inline nodoOgre_t getInfoNodoOgre(string clave) { return map_nodos[clave]; };// devuelve un paquete de info nodoOgre_t
-        inline map_nodos_t& getMapNodos(){ return map_nodos;};
-        inline void cleanOptions() { map_nodos.clear(); };                       // se cepilla las opciones cargadas actualmente.
-
-
-
+        inline map_nodos_t& getMapNodos(){ return map_nodos;};                     // getter para el mapa de SceneNodes. 
+        inline void cleanOptions() { map_nodos.clear(); };                         // se cepilla las opciones cargadas actualmente.
 };
 
 #endif // SCENENODECONFIG_H

@@ -17,8 +17,11 @@ int main(int ac, char* av[])
 
         nodos = snc->getMapNodos();
 
-        for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it);
-                
+        
+        for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it)
+            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
+            // first sería la clave y second el valor. 
+            cout << (*it).second << endl;
 
     }
 
