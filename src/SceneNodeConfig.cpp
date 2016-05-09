@@ -29,7 +29,7 @@ bool SceneNodeConfig::load_xml(string fichero)
 
     _tree = mxmlLoadFile(NULL, fp, MXML_TEXT_CALLBACK);
 
-    data = mxmlFindElement(_tree, _tree, "data", NULL,NULL,MXML_DESCEND);
+    data = mxmlFindElement(_tree, _tree, "dataSceneNode", NULL,NULL,MXML_DESCEND);
     for (node = mxmlFindElement(data, data, "scenenode", NULL, NULL, MXML_DESCEND);
          node != NULL;
          node = mxmlFindElement(node,data, "scenenode", NULL, NULL, MXML_DESCEND))
