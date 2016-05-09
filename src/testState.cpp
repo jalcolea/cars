@@ -1,17 +1,16 @@
 #include <iostream>
-#include "IntroState.h"
+#include "testState.h"
 #include "PlayState.h"
 #include "MenuState.h"
-#include "testState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 
 using namespace std;
 using namespace Ogre;
 
-template<> IntroState *Ogre::Singleton<IntroState>::msSingleton = 0;
+template<> testState *Ogre::Singleton<testState>::msSingleton = 0;
 
-void IntroState::enter()
+void testState::enter()
 {
     _root = Ogre::Root::getSingletonPtr();
     try
@@ -30,7 +29,7 @@ void IntroState::enter()
     }
     catch (...)
     {
-        cout << "IntroCamera no existe, creándola \n";
+        cout << "testCamera no existe, creándola \n";
         _camera = _sceneMgr->createCamera("IntroCamera");
     }
 
@@ -45,14 +44,13 @@ void IntroState::enter()
 
 
     //El fondo del pacman siempre es negro
-    _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 0.0));
+    _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
 
     //Configuramos la camara
     double width = _viewport->getActualWidth();
     double height = _viewport->getActualHeight();
     _camera->setAspectRatio(width / height);
-    //_camera->setPosition(Vector3(0, 12, 18));
-    _camera->setPosition(Vector3(0, 0, 18));
+    _camera->setPosition(Vector3(0, 12, 32));
     _camera->lookAt(_sceneMgr->getRootSceneNode()->getPosition());
     _camera->lookAt(0,0,0);
     _camera->setNearClipDistance(0.1);
@@ -65,7 +63,7 @@ void IntroState::enter()
 
 }
 
-void IntroState::exit()
+void testState::exit()
 {
 //    sounds::getInstance()->halt_music();
 //    destroyMyGui();
@@ -73,27 +71,27 @@ void IntroState::exit()
     _root->getAutoCreatedWindow()->removeAllViewports();
 }
 
-void IntroState::pause()
+void testState::pause()
 {
 }
 
-void IntroState::resume()
+void testState::resume()
 {
 
 }
 
-bool IntroState::frameStarted(const Ogre::FrameEvent &evt)
+bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
   _deltaT = evt.timeSinceLastFrame;
-  return true;
+  return !_exitGame;
 }
 
-bool IntroState::frameEnded(const Ogre::FrameEvent &evt)
+bool testState::frameEnded(const Ogre::FrameEvent &evt)
 {
-    return true;
+    return !_exitGame;
 }
 
-bool IntroState::keyPressed(const OIS::KeyEvent &e)
+bool testState::keyPressed(const OIS::KeyEvent &e)
 {
 
     // Transición al siguiente estado.
@@ -103,84 +101,105 @@ bool IntroState::keyPressed(const OIS::KeyEvent &e)
         changeState(MenuState::getSingletonPtr());
         sounds::getInstance()->play_effect("push");
     }
-    else if (e.key == OIS::KC_T)
-    {
-        changeState(testState::getSingletonPtr());
-        
-    }
+//    else if (e.key == OIS::KC_T)
+//    {
+//        changeState(testwiimoteState::getSingletonPtr());
+//        
+//    }
     
     return true;
 
 }
 
-bool IntroState::keyReleased(const OIS::KeyEvent &e)
+bool testState::keyReleased(const OIS::KeyEvent &e)
 {
     if (e.key == OIS::KC_ESCAPE)
     {
-
         _exitGame = true;
     }
     return true;
 }
 
-bool IntroState::mouseMoved(const OIS::MouseEvent &e)
+bool testState::mouseMoved(const OIS::MouseEvent &e)
 {
     return true;
 }
 
-bool IntroState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
-{
-    changeState(MenuState::getSingletonPtr());
-    sounds::getInstance()->play_effect("push");
-    return true;
-}
-
-bool IntroState::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
+bool testState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 {
     return true;
 }
 
-IntroState *IntroState::getSingletonPtr()
+bool testState::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
+{
+    return true;
+}
+
+testState *testState::getSingletonPtr()
 {
     return msSingleton;
 }
 
-IntroState &IntroState::getSingleton()
+testState &testState::getSingleton()
 {
     assert(msSingleton);
     return *msSingleton;
 }
 
-IntroState::~IntroState()
+testState::~testState()
 {
 }
 
-
-void IntroState::createScene()
+void testState::createLight()
 {
+  _sceneMgr->setShadowTextureCount(2);
+  _sceneMgr->setShadowTextureSize(512);
+  Light *light = _sceneMgr->createLight("Light1");
+  light->setPosition(30, 30, 0);
+  light->setType(Light::LT_SPOTLIGHT);
+  light->setDirection(Vector3(-1, -1, 0));
+  light->setSpotlightInnerAngle(Degree(60.0f));
+  light->setSpotlightOuterAngle(Degree(80.0f));
+  light->setSpotlightFalloff(0.0f);
+  light->setCastShadows(true);
+}
+
+
+void testState::createScene()
+{
+  createLight();
   //createMyGui();
+  
+  _scn.load_xml("SceneNodes.xml");
+  nodoOgre_t nodo = _scn.getInfoNodoOgre("track1");
+  
+  SceneNode* nodoTrack1 = _sceneMgr->createSceneNode(nodo.nombreNodo);
+  Entity* entTrack1 = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
+  nodoTrack1->attachObject(entTrack1);
+  _sceneMgr->getRootSceneNode()->addChild(nodoTrack1);
+  
 }
 
-void IntroState::destroyMyGui()
+void testState::destroyMyGui()
 {
  MyGUI::LayoutManager::getInstance().unloadLayout(layout);
 }
 
-void IntroState::createMyGui()
+void testState::createMyGui()
 {
     MyGUI::OgrePlatform *mp = new MyGUI::OgrePlatform();
     mp->initialise(_root->getAutoCreatedWindow(), Ogre::Root::getSingleton().getSceneManager("SceneManager"));
     MyGUI::Gui *mGUI = new MyGUI::Gui();
     mGUI->initialise();
-    layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_intro.layout");
-    //MyGUI::PointerManager::getInstancePtr()->setVisible(true);
+    layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_test.layout");
+//    MyGUI::PointerManager::getInstancePtr()->setVisible(true);
 }
 
-bool IntroState::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)
+bool testState::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)
 {return true;}
-bool IntroState::WiimoteButtonUp(const wiimWrapper::WiimoteEvent &e)
+bool testState::WiimoteButtonUp(const wiimWrapper::WiimoteEvent &e)
 {return true;}
-bool IntroState::WiimoteIRMove(const wiimWrapper::WiimoteEvent &e)
+bool testState::WiimoteIRMove(const wiimWrapper::WiimoteEvent &e)
 {return true;}
 
 

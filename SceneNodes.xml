@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<dataSceneNode>
+    <scenenode>
+        <nombreNodo>track1</nombreNodo>
+        <nombreEntidad>track1ent</nombreEntidad>
+        <nombreMalla>Track1.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>pepon</nombreNodo>
+        <nombreEntidad>entidadpepona</nombreEntidad>
+        <nombreMalla>pruebaMeshpepona</nombreMalla>
+        <nombreMaterial>materialpepona</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+
+</dataSceneNode>
+
+<dataLights>
+</dataLights>
+<dataCamera>
+</dataCamera>
