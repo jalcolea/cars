@@ -18,7 +18,7 @@
         <nombreMalla>car-kart-white.mesh</nombreMalla>
         <nombreMaterial>unknown</nombreMaterial>
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
-        <posInicial x="-2" y="6" z="5"></posInicial>
+        <posInicial x="-1" y="1" z="-12"></posInicial>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>1.0</masaBullet>

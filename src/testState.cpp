@@ -4,6 +4,7 @@
 #include "MenuState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
+#include <bitset>
 
 using namespace std;
 using namespace Ogre;
@@ -100,26 +101,48 @@ void testState::resume()
 bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
-    int fps = 1.0 / _deltaT;
+    _fps = 1.0 / _deltaT;
+    
+    _r = 0;
+    _vt = Ogre::Vector3::ZERO;
 
 
+    if (_keys & static_cast<size_t>(keyPressed_flags::LEFT))  _vt.x += -1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _vt.x += 1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::UP))    _vt.y += 1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::DOWN))  _vt.y += -1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
+    
     _camera->moveRelative(_vt * _deltaT * 20.0 /*tSpeed*/);
     if (_camera->getPosition().length() < 10.0) 
         _camera->moveRelative(-_vt * _deltaT * 20.0 /*tSpeed*/);
+        
+    if (_keys & static_cast<size_t>(keyPressed_flags::PGUP)) _r += 180;
+    if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
+        
+    _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
 
+    pintaOverlayInfo();
+
+    return !_exitGame;
+
+}
+
+void testState::pintaOverlayInfo()
+{   
     Ogre::OverlayElement *oe;
     oe = _overlayManager->getOverlayElement("fpsInfo");
-    oe->setCaption(Ogre::StringConverter::toString(fps));
+    oe->setCaption(Ogre::StringConverter::toString(_fps));
     oe = _overlayManager->getOverlayElement("camPosInfo");
     oe->setCaption(Ogre::StringConverter::toString(_camera->getPosition()));
     oe = _overlayManager->getOverlayElement("camRotInfo");
     oe->setCaption(Ogre::StringConverter::toString(_camera->getDirection()));
     oe = _overlayManager->getOverlayElement("modRotInfo");
     Ogre::Quaternion q = _sceneMgr->getSceneNode("carKartWhite")->getOrientation();
-    oe->setCaption(Ogre::String("RotZ: ") + Ogre::StringConverter::toString(q.getYaw()));
-
-    return !_exitGame;
-
+    oe->setCaption(Ogre::String("RotZ: ") + 
+                   Ogre::StringConverter::toString(q.getYaw()) + 
+                   Ogre::String(" ") + Ogre::StringConverter::toString(_vt));
 }
 
 bool testState::frameEnded(const Ogre::FrameEvent &evt)
@@ -129,39 +152,75 @@ bool testState::frameEnded(const Ogre::FrameEvent &evt)
 
 bool testState::keyPressed(const OIS::KeyEvent &e)
 {
-    _vt = Ogre::Vector3(0,0,0);
-
     if (e.key == OIS::KC_SPACE)
     {
         changeState(MenuState::getSingletonPtr());
         sounds::getInstance()->play_effect("push");
     }
 
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP)) _vt+= Ogre::Vector3(0,0,-1);
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DOWN)) _vt+= Ogre::Vector3(0,0,1);
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT)) _vt+= Ogre::Vector3(-1,0,0);
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT)) _vt+= Ogre::Vector3(1,0,0);
-
-/*
-    if (e.key == OIS::KC_UP) _vt += Ogre::Vector3(0,0,-1);
-    if (e.key == OIS::KC_DOWN) _vt += Ogre::Vector3(0,0,1);
-    if (e.key == OIS::KC_LEFT) _vt += Ogre::Vector3(-1,0,0);
-    if (e.key == OIS::KC_RIGHT) _vt += Ogre::Vector3(1,0,0);
-*/    
-    
+    flagKeys(true);
     
     return true;
+}
 
+void testState::flagKeys(bool flag)
+{
+    if (flag)
+    {
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP))
+            _keys |= static_cast<size_t>(keyPressed_flags::UP);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DOWN))
+            _keys |= static_cast<size_t>(keyPressed_flags::DOWN);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT))
+            _keys |= static_cast<size_t>(keyPressed_flags::LEFT);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT))
+            _keys |= static_cast<size_t>(keyPressed_flags::RIGHT);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_INSERT))
+            _keys |= static_cast<size_t>(keyPressed_flags::INS);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DELETE))
+            _keys |= static_cast<size_t>(keyPressed_flags::DEL);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP))
+            _keys |= static_cast<size_t>(keyPressed_flags::PGUP);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
+            _keys |= static_cast<size_t>(keyPressed_flags::PGDOWN);
+            
+//        cout << "KEYPRESSED: " << std::bitset<16>(_keys) << endl;
+//        cout << "\t" << _vt << endl;
+//        cout << "\t" << "BITS TECLA 256: " << std::bitset<16>(256) << endl;
+
+    }
+    else
+    {
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP))
+            _keys = ~(~_keys | static_cast<size_t>(keyPressed_flags::UP));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DOWN))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::DOWN));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::LEFT));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::RIGHT));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_INSERT))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::INS));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DELETE))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::DEL));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::PGUP));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::PGDOWN));
+            
+//        cout << "KEYRELEASED: " << std::bitset<8>(_keys) << endl;
+//        cout << "\t" << _vt << endl;
+    }
 }
 
 bool testState::keyReleased(const OIS::KeyEvent &e)
 {
-    _vt = Ogre::Vector3(0,0,0);
+
+    flagKeys(false);
 
     if (e.key == OIS::KC_ESCAPE)
-    {
         _exitGame = true;
-    }
+
     return true;
 }
 
@@ -197,7 +256,7 @@ testState::~testState()
 
 void testState::createLight()
 {
-    _sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
+    //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
     _sceneMgr->setShadowTextureCount(2);
     _sceneMgr->setShadowTextureSize(512);
     Light *light = _sceneMgr->createLight("Light1");
@@ -238,11 +297,18 @@ void testState::createFloor()
 
 void testState::createScene()
 {
+  
+  _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+  _sceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_MODULATIVE);
+  _sceneMgr->setShadowColour(ColourValue(0.5, 0.5, 0.5));
+  _sceneMgr->setShadowFarDistance(100);
+  _sceneMgr->setSkyBox(true, "skybox");
+  
   createOverlay();
   createLight();
   //createMyGui();
-  
 
+  
   nodoOgre_t nodo = _scn.getInfoNodoOgre("track1");
   
   SceneNode* nodoTrack1 = _sceneMgr->createSceneNode(nodo.nombreNodo);
