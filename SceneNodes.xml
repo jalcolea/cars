@@ -13,11 +13,25 @@
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
-        <nombreNodo>pepon</nombreNodo>
-        <nombreEntidad>entidadpepona</nombreEntidad>
-        <nombreMalla>pruebaMeshpepona</nombreMalla>
-        <nombreMaterial>materialpepona</nombreMaterial>
-        <posInicial x="0" y="0" z="0"></posInicial>
+        <nombreNodo>carKartWhite</nombreNodo>
+        <nombreEntidad>entCarKartWhite</nombreEntidad>
+        <nombreMalla>car-kart-white.mesh</nombreMalla>
+        <nombreMaterial>unknown</nombreMaterial>
+        <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
+        <posInicial x="-2" y="6" z="5"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+        <scenenode>
+        <nombreNodo>planoSalida</nombreNodo>
+        <nombreEntidad>unknown</nombreEntidad>
+        <nombreMalla>unknown</nombreMalla>
+        <nombreMaterial>unknown</nombreMaterial>
+        <orientacion w="1" x="0" y="0" z="0"></orientacion>
+        <posInicial x="0" y="10" z="24"></posInicial>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>1.0</masaBullet>
@@ -25,9 +39,21 @@
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
     </scenenode>
 
+    
+
 </dataSceneNode>
 
 <dataLights>
 </dataLights>
+
 <dataCamera>
+    <camera>
+        <nombreCamera>IntroCamera</nombreCamera>
+        <posInicial x="0" y="16" z="28"></posInicial>
+        <orientacion w="-0.819" x="-0.574" y="0" z="0"></orientacion>
+        <direccion x="0" y="0" z="0"></direccion>
+        <posLookAt x="0" y="0" z="0"></posLookAt>
+        <nearClipDistance>0.1</nearClipDistance>
+        <farClipDistance>100</farClipDistance>
+    </camera>
 </dataCamera>

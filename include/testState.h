@@ -22,6 +22,9 @@
 #define testState_H
 
 #include <Ogre.h>
+#include <OgreOverlaySystem.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayManager.h>
 #include <OIS/OIS.h>
 #include "GameState.h"
 #include "sounds.h"
@@ -86,15 +89,17 @@ protected:
     MyGUI::VectorWidgetPtr layout;
 
 private:
-    bool _deIda;
 
     void createLight();
     void createMyGui();
     void destroyMyGui();
     void createScene();
+    void createFloor();
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
-
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);
+    void createOverlay();
+    Ogre::OverlayManager* _overlayManager;
+    Ogre::Vector3 _vt;
 
 };
 
