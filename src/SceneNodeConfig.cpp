@@ -36,6 +36,15 @@ bool SceneNodeConfig::load_xml(string fichero)
     {
         nuevoSceneNode(node);
     }
+    
+    data = mxmlFindElement(_tree,_tree,"dataCamera", NULL, NULL, MXML_DESCEND);
+    for (node = mxmlFindElement(data, data, "camera", NULL, NULL, MXML_DESCEND);
+         node != NULL;
+         node = mxmlFindElement(node,data, "camera", NULL, NULL, MXML_DESCEND))
+    {
+        nuevoCamera(node);
+    }
+    
 
 
     return true;
@@ -53,6 +62,7 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     mxml_node_t* posInicial = nullptr;
     mxml_node_t* posShape = nullptr;
     mxml_node_t* restitution = nullptr;
+    mxml_node_t* orientacion = nullptr;
 
     nombreSceneNode = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreEntidad = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_ENTIDAD)]).c_str(),NULL,NULL,MXML_DESCEND);
@@ -64,21 +74,54 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     posInicial = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_INICIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
     posShape = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
     restitution = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RESTITUTION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    orientacion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION)]).c_str(),NULL,NULL,MXML_DESCEND);
     
     nodoOgre_t nodo;
     nodo.nombreNodo = string(mxmlGetText(nombreSceneNode,NULL));
     nodo.nombreEntidad = string(mxmlGetText(nombreEntidad,NULL));
     nodo.nombreMalla = string(mxmlGetText(nombreMalla,NULL));
     nodo.nombreMaterial = string(mxmlGetText(nombreMaterial,NULL));
-    nodo.frictionBullet = Ogre::Real(mxmlGetReal(friction));
-    nodo.masaBullet = Ogre::Real(mxmlGetReal(masa));
+    nodo.frictionBullet = Ogre::Real(std::stof(mxmlGetText(friction,NULL)));
+    nodo.masaBullet = Ogre::Real(std::stof(mxmlGetText(masa,NULL)));
     nodo.orientacionShapeBullet = extraeQuaternio(orientacionShape);
     nodo.posInicial = extraeVector3(posInicial);
     nodo.posShapeBullet = extraeVector3(posShape);
-    nodo.bodyRestitutionBullet = Ogre::Real(mxmlGetReal(restitution));
+    nodo.bodyRestitutionBullet = Ogre::Real(std::stof(mxmlGetText(restitution,NULL)));
+    if (orientacion) nodo.orientacion = extraeQuaternio(orientacion); else nodo.orientacion = Ogre::Quaternion(1,0,0,0);
     
     map_nodos[nodo.nombreNodo] = nodo;
 
+}
+
+void SceneNodeConfig::nuevoCamera(mxml_node_t* node)
+{
+    mxml_node_t* nombreCamera = nullptr;
+    mxml_node_t* orientacion = nullptr;
+    mxml_node_t* posInicial = nullptr;
+    mxml_node_t* direccion = nullptr;
+    mxml_node_t* lookAt = nullptr;
+    mxml_node_t* farclipdistance = nullptr;
+    mxml_node_t* nearclipdistance = nullptr;
+    
+
+    nombreCamera = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_CAMARA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    orientacion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posInicial = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_INICIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
+    direccion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::DIRECCION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    lookAt = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::LOOKAT)]).c_str(),NULL,NULL,MXML_DESCEND);
+    farclipdistance = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FAR_CLIPDISTANCE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    nearclipdistance = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NEAR_CLIPDISTANCE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    
+    nodoCamera_t cam;
+    cam.nombreCamera = string(mxmlGetText(nombreCamera,NULL));
+    cam.orientacion = extraeQuaternio(orientacion);
+    cam.posInicial = extraeVector3(posInicial);
+    cam.direccion = extraeVector3(direccion);
+    cam.lookAt = extraeVector3(lookAt);
+    cam.nearClipDistance = Ogre::Real(std::stof(mxmlGetText(nearclipdistance,NULL)));
+    cam.farClipDistance = Ogre::Real(std::stof(mxmlGetText(farclipdistance,NULL)));
+    
+    map_cameras[cam.nombreCamera] = cam;
 }
 
 Ogre::Vector3 SceneNodeConfig::extraeVector3(mxml_node_t* node)

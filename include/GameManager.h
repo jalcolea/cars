@@ -25,7 +25,7 @@
 #include <Ogre.h>
 #include <OgreSingleton.h>
 #include <OIS/OIS.h>
-
+#include <OgreOverlaySystem.h>
 #include "InputManager_.h"
 
 #include "Wiimote.h"

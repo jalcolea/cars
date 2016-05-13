@@ -22,6 +22,9 @@
 #define testState_H
 
 #include <Ogre.h>
+#include <OgreOverlaySystem.h>
+#include <OgreOverlayElement.h>
+#include <OgreOverlayManager.h>
 #include <OIS/OIS.h>
 #include "GameState.h"
 #include "sounds.h"
@@ -31,6 +34,19 @@
 
 using namespace std;
 using namespace Ogre;
+
+enum class keyPressed_flags
+{
+    NONE = 0,
+    LEFT = 2,
+    RIGHT = 4,
+    UP = 8,
+    DOWN = 16,
+    INS = 32,
+    DEL = 64,
+    PGUP = 128,
+    PGDOWN = 256
+};
 
 class testState : public Ogre::Singleton<testState>, public GameState
 {
@@ -86,15 +102,22 @@ protected:
     MyGUI::VectorWidgetPtr layout;
 
 private:
-    bool _deIda;
 
     void createLight();
     void createMyGui();
     void destroyMyGui();
     void createScene();
+    void createFloor();
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
-
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);
+    void createOverlay();
+    void pintaOverlayInfo();
+    void flagKeys(bool flag);
+    Ogre::OverlayManager* _overlayManager;
+    Ogre::Vector3 _vt;
+    Ogre::Real _r;
+    size_t _fps;
+    size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
 
 };
 
