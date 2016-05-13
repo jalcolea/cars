@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position="262 134 500 500" align="Stretch" layer="Wallpaper" name="start">
+        <Property key="ImageTexture" value="pause.png"/>
+    </Widget>
+    <Widget type="Button" skin="ButtonImage" position="915 635 90 85" layer="Main" name="btn_resume"/>
+    <CodeGeneratorSettings/>
+</MyGUI>
