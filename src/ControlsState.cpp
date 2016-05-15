@@ -127,7 +127,7 @@ string ControlsState::get_high_score()
 
 void ControlsState::createMyGui()
 {
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_controls.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_CONTROLS);
   btn_back = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_back");
   btn_mouse = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_mouse");
   btn_wiimote = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_wiimote");

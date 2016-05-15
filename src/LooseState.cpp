@@ -127,7 +127,7 @@ void LooseState::destroyMyGui()
 
 void LooseState::createMyGui()
 {
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_loose.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_LOOSE);
   btn_resume = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_resume");
   user_name_txt = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("user_name");
 

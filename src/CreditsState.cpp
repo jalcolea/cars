@@ -117,7 +117,7 @@ string CreditsState::get_high_score()
 
 void CreditsState::createMyGui()
 {
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_credits.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_CREDITS);
   btn_back = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_back");
   btn_back->eventMouseButtonClick = MyGUI::newDelegate(this, &CreditsState::notifyButtonPress);
   edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_high");

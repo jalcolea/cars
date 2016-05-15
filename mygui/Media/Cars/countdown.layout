@@ -1,23 +1,23 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <MyGUI type="Layout" version="3.2.0">
     <Widget type="ImageBox" skin="ImageBox" position="362 309 300 150" align="Stretch" layer="Wallpaper" name="img_start">
-        <Property key="ImageTexture" value="start.png"/>
+        <Property key="ImageTexture" value="start3.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
     <Widget type="ImageBox" skin="ImageBox" position="362 309 300 150" align="Stretch" layer="Wallpaper" name="img_tres">
-        <Property key="ImageTexture" value="3.png"/>
+        <Property key="ImageTexture" value="33.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
     <Widget type="ImageBox" skin="ImageBox" position="362 309 300 150" align="Stretch" layer="Wallpaper" name="img_dos">
-        <Property key="ImageTexture" value="2.png"/>
+        <Property key="ImageTexture" value="23.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
     <Widget type="ImageBox" skin="ImageBox" position="362 309 300 150" align="Stretch" layer="Wallpaper" name="img_uno">
-        <Property key="ImageTexture" value="1.png"/>
+        <Property key="ImageTexture" value="13.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
     <Widget type="ImageBox" skin="ImageBox" position="362 309 300 150" align="Stretch" layer="Wallpaper" name="img_go">
-        <Property key="ImageTexture" value="go.png"/>
+        <Property key="ImageTexture" value="go3.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
     <CodeGeneratorSettings/>
