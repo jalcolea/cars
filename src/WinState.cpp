@@ -131,7 +131,7 @@ void WinState::destroyMyGui()
 
 void WinState::createMyGui()
 {
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_win.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_WIN);
   btn_resume = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_resume");
   user_name_txt = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("user_name");
 

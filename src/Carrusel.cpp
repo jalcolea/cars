@@ -18,7 +18,7 @@ using namespace std;
 Carrusel::Carrusel()
 {
 cout << __FUNCTION__ << endl;
-count_layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_countdown.layout");
+count_layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_CARRUSEL);
 }
 
 Carrusel::~Carrusel()

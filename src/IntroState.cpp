@@ -67,8 +67,8 @@ void IntroState::enter()
 
 void IntroState::exit()
 {
-//    sounds::getInstance()->halt_music();
-//    destroyMyGui();
+    //sounds::getInstance()->halt_music();
+    destroyMyGui();
     _sceneMgr->clearScene();
     _root->getAutoCreatedWindow()->removeAllViewports();
 }
@@ -158,7 +158,7 @@ IntroState::~IntroState()
 
 void IntroState::createScene()
 {
-  //createMyGui();
+  createMyGui();
 }
 
 void IntroState::destroyMyGui()
@@ -172,8 +172,8 @@ void IntroState::createMyGui()
     mp->initialise(_root->getAutoCreatedWindow(), Ogre::Root::getSingleton().getSceneManager("SceneManager"));
     MyGUI::Gui *mGUI = new MyGUI::Gui();
     mGUI->initialise();
-    layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_intro.layout");
-    //MyGUI::PointerManager::getInstancePtr()->setVisible(true);
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_INTRO);
+  //MyGUI::PointerManager::getInstancePtr()->setVisible(true);
 }
 
 bool IntroState::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)

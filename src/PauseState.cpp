@@ -100,7 +100,7 @@ void PauseState::destroyMyGui()
 
 void PauseState::createMyGui()
 {
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_pause.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_PAUSE);
   btn_resume = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_resume");
 
 }

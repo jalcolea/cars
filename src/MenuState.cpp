@@ -84,7 +84,7 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
     _exitGame = true;
   }
   else if (e.key == OIS::KC_W) {
-    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+    //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     WinState::getSingletonPtr()->setPoints(123123);
     pushState(WinState::getSingletonPtr());
   }
@@ -189,7 +189,7 @@ string MenuState::get_high_score()
 
 void MenuState::createMyGui()
 {
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_main.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_MAIN);
   btn_records = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_records");
   btn_credits = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_credits");
   btn_play = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_play");

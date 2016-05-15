@@ -145,7 +145,7 @@ void RecordsState::createMyGui()
 //  string name="";
 //  char points_str [32];
 //  int points=0;
-  layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_records.layout");
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_RECORDS);
   btn_back = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_back");
 //  btn_back->eventMouseButtonClick = MyGUI::newDelegate(this, &RecordsState::notifyButtonPress);
 //  high_score_txt = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("high_score");
