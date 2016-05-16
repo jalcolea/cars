@@ -3,7 +3,7 @@
 
 #define CONSTANTS_MAX_USERNAME_SIZE 5 //tamano del nombre de usuario para records
 #define LAYOUT_CARRUSEL "countdown.layout"
-#define LAYOUT_CONTROLS "shooter_controls.layout"
+#define LAYOUT_CONTROLS "controls.layout"
 #define LAYOUT_CREDITS "credits.layout"
 #define LAYOUT_INTRO "intro.layout"
 #define LAYOUT_LOOSE "loose.layout"
