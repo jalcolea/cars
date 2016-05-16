@@ -17,7 +17,6 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="src">
-    <File Name="src/Bala.cpp"/>
     <File Name="src/Bluez_Util.cpp"/>
     <File Name="src/Carrusel.cpp"/>
     <File Name="src/ControlsState.cpp"/>
@@ -41,9 +40,10 @@
     <File Name="include/CreditsState.h"/>
     <File Name="src/SceneNodeConfig.cpp"/>
     <File Name="src/testState.cpp"/>
+    <File Name="src/car.cpp"/>
+    <File Name="src/track.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
-    <File Name="include/Bala.h"/>
     <File Name="include/Bluez_Util.h"/>
     <File Name="include/Carrusel.h"/>
     <File Name="include/constants.h"/>
@@ -67,6 +67,8 @@
     <File Name="include/WinState.h"/>
     <File Name="include/SceneNodeConfig.h"/>
     <File Name="include/testState.h"/>
+    <File Name="include/car.h"/>
+    <File Name="include/track.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
@@ -100,7 +102,7 @@
         <RebuildCommand/>
         <CleanCommand>make clean
 </CleanCommand>
-        <BuildCommand>make -j4</BuildCommand>
+        <BuildCommand>make -j4 mode=debug</BuildCommand>
         <PreprocessFileCommand/>
         <SingleFileCommand/>
         <MakefileGenerationCommand/>
@@ -131,14 +133,7 @@
 /usr/local/include/MYGUI
 /usr/local/include/OgreBullet/Collisions
 /usr/local/include/OgreBullet/Dynamics
-/usr/local/include/libcwiimote
-
-
-
-
-
-
-</SearchPaths>
+/usr/local/include/libcwiimote</SearchPaths>
       </Completion>
     </Configuration>
     <Configuration Name="Release" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Executable" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">

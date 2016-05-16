@@ -8,16 +8,10 @@ using namespace Ogre;
 enum collisiontypes {
     COL_NOTHING = 0, //<Collide with nothing
     COL_FLOOR = 2, 
-    COL_ACTIVATOR =4, 
-    COL_STAND = 8, 
+    COL_CAR =4, 
+    COL_TRACK = 8, 
     COL_CAMERA = 16,
-    COL_ROBOT = 32,
-    COL_CAN = 64,
-    COL_BALL = 128,
-    COL_BALA = 256,
-    COL_HIT_ZONE = 512, //<Para el plano del jugador, si colisiona con él, le quita vida
-    COL_ESCUDO = 1024,
-    COL_PUERTA = 2048
+    COL_TRACK_COLISION = 32
 };
 
 
