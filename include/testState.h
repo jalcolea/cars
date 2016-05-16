@@ -30,10 +30,21 @@
 #include "sounds.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
+//#include "OgreBulletCollisionsShape.h"
+#include "Shapes/OgreBulletCollisionsTrimeshShape.h"
+#include "Shapes/OgreBulletCollisionsStaticPlaneShape.h"
+#include "Shapes/OgreBulletCollisionsSphereShape.h"
+#include "Shapes/OgreBulletCollisionsBoxShape.h"
+#include "OgreBulletDynamicsWorld.h"
 #include "SceneNodeConfig.h"
+#include "car.h"
+#include "track.h"
 
 using namespace std;
 using namespace Ogre;
+using namespace OgreBulletDynamics;
+using namespace OgreBulletCollisions;
+
 
 enum class keyPressed_flags
 {
@@ -95,6 +106,12 @@ protected:
     Ogre::Viewport *_viewport;
     Ogre::Camera *_camera;
     SceneNodeConfig _scn;
+    unique_ptr<car> _car;
+    unique_ptr<track> _track;
+    shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
+    CollisionShape* _floorShape;
+    RigidBody* _floorBody;
+    
 
 
     bool _exitGame;
@@ -118,6 +135,7 @@ private:
     Ogre::Real _r;
     size_t _fps;
     size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
+    DebugDrawer* _debugDrawer;
 
 };
 

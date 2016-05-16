@@ -166,13 +166,14 @@ void IntroState::destroyMyGui()
  MyGUI::LayoutManager::getInstance().unloadLayout(layout);
 }
 
+
 void IntroState::createMyGui()
 {
     MyGUI::OgrePlatform *mp = new MyGUI::OgrePlatform();
     mp->initialise(_root->getAutoCreatedWindow(), Ogre::Root::getSingleton().getSceneManager("SceneManager"));
     MyGUI::Gui *mGUI = new MyGUI::Gui();
     mGUI->initialise();
-  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_INTRO);
+   layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_INTRO);
   //MyGUI::PointerManager::getInstancePtr()->setVisible(true);
 }
 

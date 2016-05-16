@@ -72,6 +72,19 @@ void testState::enter()
     _camera->lookAt(cam.lookAt);
     _camera->setNearClipDistance(cam.nearClipDistance);
     _camera->setFarClipDistance(cam.farClipDistance);
+    
+    
+    // Activar Bullet
+    AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-10000, -10000, -10000),
+                                             Ogre::Vector3(10000, 10000, 10000));
+    _world = shared_ptr<OgreBulletDynamics::DynamicsWorld>(new DynamicsWorld(_sceneMgr, boundBox, Vector3(0, -9.81, 0), true, true, 15000));
+    _debugDrawer = new OgreBulletCollisions::DebugDrawer();
+    _debugDrawer->setDrawWireframe(true);
+    SceneNode *node = _sceneMgr->getRootSceneNode()->createChildSceneNode("debugNode", Vector3::ZERO);
+    node->attachObject(static_cast<SimpleRenderable *>(_debugDrawer));
+    _world.get()->setDebugDrawer(_debugDrawer);
+    _world.get()->setShowDebugShapes(true);
+
 
     createScene();
     
@@ -101,6 +114,7 @@ void testState::resume()
 bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
+    _world.get()->stepSimulation(_deltaT);
     _fps = 1.0 / _deltaT;
     
     _r = 0;
@@ -183,11 +197,6 @@ void testState::flagKeys(bool flag)
             _keys |= static_cast<size_t>(keyPressed_flags::PGUP);
         if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
             _keys |= static_cast<size_t>(keyPressed_flags::PGDOWN);
-            
-//        cout << "KEYPRESSED: " << std::bitset<16>(_keys) << endl;
-//        cout << "\t" << _vt << endl;
-//        cout << "\t" << "BITS TECLA 256: " << std::bitset<16>(256) << endl;
-
     }
     else
     {
@@ -207,9 +216,6 @@ void testState::flagKeys(bool flag)
             _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::PGUP));
         if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
             _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::PGDOWN));
-            
-//        cout << "KEYRELEASED: " << std::bitset<8>(_keys) << endl;
-//        cout << "\t" << _vt << endl;
     }
 }
 
@@ -283,14 +289,12 @@ void testState::createFloor()
     entFloor->setMaterialName("floor");
     floorNode->attachObject(entFloor);
     _sceneMgr->getRootSceneNode()->addChild(floorNode);
+    _floorShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
+    _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR, COL_CAMERA | COL_CAR);
 
-//  _floorShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
-//
-//  _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR,
-//                             COL_CAMERA | COL_ACTIVATOR);
-//  _floorBody->setStaticShape(_floorShape, 0.5, 0.8);
+    _floorBody->setStaticShape(_floorShape, 0.5, 0.8);
     floorNode->setPosition(Vector3(0, 2, 0));
-//  btCollisionShape *floorShape = _floorShape->getBulletShape();
+    btCollisionShape *floorShape = _floorShape->getBulletShape();
 
 }
 
@@ -309,22 +313,26 @@ void testState::createScene()
   //createMyGui();
 
   
-  nodoOgre_t nodo = _scn.getInfoNodoOgre("track1");
+//  nodoOgre_t nodo = _scn.getInfoNodoOgre("track1");
+//  
+//  SceneNode* nodoTrack1 = _sceneMgr->createSceneNode(nodo.nombreNodo);
+//  Entity* entTrack1 = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
+//  nodoTrack1->attachObject(entTrack1);
+//  _sceneMgr->getRootSceneNode()->addChild(nodoTrack1);
+//  
+//  nodo = _scn.getInfoNodoOgre("carKartWhite");
+//  SceneNode* nodoKartWhite = _sceneMgr->createSceneNode(nodo.nombreNodo);
+//  Entity* entKartWhite = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
+//  nodoKartWhite->attachObject(entKartWhite);
+//  nodoTrack1->addChild(nodoKartWhite);
+//  nodoKartWhite->setPosition(nodo.posInicial);
+//  nodoKartWhite->setOrientation(nodo.orientacion);
   
-  SceneNode* nodoTrack1 = _sceneMgr->createSceneNode(nodo.nombreNodo);
-  Entity* entTrack1 = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
-  nodoTrack1->attachObject(entTrack1);
-  _sceneMgr->getRootSceneNode()->addChild(nodoTrack1);
-  
-  nodo = _scn.getInfoNodoOgre("carKartWhite");
-  SceneNode* nodoKartWhite = _sceneMgr->createSceneNode(nodo.nombreNodo);
-  Entity* entKartWhite = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
-  nodoKartWhite->attachObject(entKartWhite);
-  nodoTrack1->addChild(nodoKartWhite);
-  nodoKartWhite->setPosition(nodo.posInicial);
-  nodoKartWhite->setOrientation(nodo.orientacion);
-  
-  //_camera->setAutoTracking(true,nodoKartWhite);
+//  _camera->setAutoTracking(true,nodoKartWhite);
+    
+    _track = unique_ptr<track>(new track("track1",_world.get(),Vector3(0,0,0),_sceneMgr));
+    _car = unique_ptr<car>(new car("carKartWhite",_world.get(),Vector3(0,0,0),_sceneMgr));
+    
   
   
 }
