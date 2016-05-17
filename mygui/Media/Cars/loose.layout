@@ -5,7 +5,7 @@
     </Widget>
     <Widget type="Button" skin="ButtonImage" position="915 635 90 85" layer="Main" name="btn_resume"/>
     <Widget type="EditBox" skin="WordWrapEmpty" position="400 500 345 110" layer="Main" name="user_name">
-        <Property key="FontName" value="Circus"/>
+        <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
         <Property key="Colour" value="1 0 0"/>
         <Property key="FontHeight" value="90"/>

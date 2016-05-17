@@ -9,7 +9,7 @@
     <Widget type="Button" skin="ButtonImage" position="870 390 95 90" layer="Main" name="btn_controls"/>
     <Widget type="Button" skin="ButtonImage" position="485 610 95 90" layer="Main" name="btn_exit"/>
     <Widget type="EditBox" skin="WordWrapEmpty" position="420 665 580 120" layer="Main" name="edt_high">
-        <Property key="FontName" value="Circus"/>
+        <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Left"/>
         <Property key="FontHeight" value="60"/>
         <Property key="TextColour" value="1 0 0"/>

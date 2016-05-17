@@ -4,7 +4,7 @@
         <Property key="ImageTexture" value="win.png"/>
     </Widget>
     <Widget type="EditBox" skin="WordWrapEmpty" position="400 500 345 110" name="user_name" layer="Main">
-        <Property key="FontName" value="Circus"/>
+        <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
         <Property key="Colour" value="1 0 0"/>
         <Property key="FontHeight" value="90"/>

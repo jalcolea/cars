@@ -7,14 +7,14 @@
     <Widget type="Button" skin="ButtonImage" position="115 295 265 160" layer="Main" name="btn_wiimote"/>
     <Widget type="Button" skin="ButtonImage" position="630 330 185 115" layer="Main" name="btn_mouse"/>
     <Widget type="EditBox" skin="WordWrapEmpty" position="60 480 820 180" layer="Main" name="text">
-        <Property key="FontName" value="Circus"/>
+        <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
         <Property key="FontHeight" value="45"/>
         <Property key="TextColour" value="1 1 1"/>
         <Property key="Caption" value=""/>
     </Widget>
     <Widget type="EditBox" skin="WordWrapEmpty" position="355 665 580 120" layer="Main" name="edt_high">
-        <Property key="FontName" value="Circus"/>
+        <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
         <Property key="FontHeight" value="60"/>
         <Property key="TextColour" value="1 0 0"/>

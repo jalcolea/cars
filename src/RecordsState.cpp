@@ -33,7 +33,7 @@ void RecordsState::loadRecords()
           string tmp_users="";
           string tmp_points="";
           char tmp_char [64];
-          int max_records = 10;
+          int max_records = MAX_RECORDS;
           result = records::getInstance()->getNext(name,points,true);
           cont++;
           while (result == 0)

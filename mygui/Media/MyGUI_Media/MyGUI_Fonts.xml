@@ -15,11 +15,8 @@
 			<Code range="8470 8470"/>
 		</Codes>
 	</Resource>
-	<Resource type="ResourceTrueTypeFont" name="Circus">
-		<!--<Property key="Source" value="Circus.ttf"/>-->
-		<!--<Property key="Source" value="CircusOrnate.ttf"/>--->
-		<!--<Property key="Source" value="Carnevalee Freakshow.ttf"/>-->
-		<Property key="Source" value="QuentinCaps.ttf"/>
+	<Resource type="ResourceTrueTypeFont" name="race">
+		<Property key="Source" value="BREECBO_.TTF"/>
 		<Property key="Size" value="120"/>
 		<Property key="Hinting" value="use_native"/>
 		<Property key="Resolution" value="96"/>
