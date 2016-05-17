@@ -60,45 +60,55 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
 {
 
   if (e.key == OIS::KC_S) {
+    sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(PlayState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_U) {
+    sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(ControlsState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_C) {
+    sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(CreditsState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_R) {
+    sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(RecordsState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_P) {
+    sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(PauseState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_ESCAPE) 
   {
+    sounds::getInstance()->play_effect("push");
     _exitGame = true;
   }
   else if (e.key == OIS::KC_W) {
+    sounds::getInstance()->play_effect("push");
     //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     WinState::getSingletonPtr()->setPoints(123123);
     pushState(WinState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_L) {
+    sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     LooseState::getSingletonPtr()->setPoints(111222);
     pushState(LooseState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_G) {
+    sounds::getInstance()->play_effect("push");
     //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     Carrusel c;
     c.go();
   }
   else if (e.key == OIS::KC_A) {
+    sounds::getInstance()->play_effect("push");
     //PlayWidget play(NULL);
     PlayWidget * play = new PlayWidget("shooter_play_up_left.layout");
     play->setPoints(123011);

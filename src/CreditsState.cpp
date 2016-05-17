@@ -47,6 +47,7 @@ bool CreditsState::frameEnded(const Ogre::FrameEvent& evt)
 
 bool CreditsState::keyPressed(const OIS::KeyEvent &e)
 {
+  sounds::getInstance()->play_effect("push");
   popState();
   
   return true;

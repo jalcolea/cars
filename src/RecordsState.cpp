@@ -82,6 +82,7 @@ bool RecordsState::frameEnded(const Ogre::FrameEvent& evt)
 
 bool RecordsState::keyPressed(const OIS::KeyEvent &e)
 {
+  sounds::getInstance()->play_effect("push");
   popState();
   
   return true;
