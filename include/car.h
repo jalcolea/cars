@@ -5,6 +5,7 @@
 #include "OgreBulletDynamicsRigidBody.h"
 #include "OgreBulletDynamicsWorld.h"
 #include "Shapes/OgreBulletCollisionsBoxShape.h"
+#include "Shapes/OgreBulletCollisionsCompoundShape.h"
 #include "SceneNodeConfig.h"
 
 using namespace Ogre;

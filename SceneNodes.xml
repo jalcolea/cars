@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <dataSceneNode>
     <scenenode>
         <nombreNodo>track1</nombreNodo>
@@ -8,7 +8,7 @@
         <posInicial x="0" y="0" z="0"></posInicial>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
-        <masaBullet>1.0</masaBullet>
+        <masaBullet>0.0</masaBullet>
         <frictionBullet>1.0</frictionBullet>
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
     </scenenode>
@@ -18,14 +18,40 @@
         <nombreMalla>car-kart-white.mesh</nombreMalla>
         <nombreMaterial>unknown</nombreMaterial>
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
-        <posInicial x="-1" y="1.001" z="-12"></posInicial>
+        <posInicial x="-1" y="0.01" z="-12"></posInicial>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>1.0</masaBullet>
         <frictionBullet>1.0</frictionBullet>
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
     </scenenode>
-        <scenenode>
+    <scenenode>
+        <nombreNodo>carKartYellow</nombreNodo>
+        <nombreEntidad>entCarKartYellow</nombreEntidad>
+        <nombreMalla>car-kart-yellow.mesh</nombreMalla>
+        <nombreMaterial>unknown</nombreMaterial>
+        <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
+        <posInicial x="-1" y="1.01" z="-12"></posInicial>
+        <orientacionShapeBullet  w="0.707" x="0" y="-0.707" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>carGroupC1red</nombreNodo>
+        <nombreEntidad>carGroupC1red</nombreEntidad>
+        <nombreMalla>car-groupc-1-red.mesh</nombreMalla>
+        <nombreMaterial>unknown</nombreMaterial>
+        <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
+        <posInicial x="-1" y="1.01" z="-12"></posInicial>
+        <orientacionShapeBullet  w="0.707" x="0" y="-0.707" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>1.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
         <nombreNodo>planoSalida</nombreNodo>
         <nombreEntidad>unknown</nombreEntidad>
         <nombreMalla>unknown</nombreMalla>
@@ -38,9 +64,6 @@
         <frictionBullet>1.0</frictionBullet>
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
     </scenenode>
-
-    
-
 </dataSceneNode>
 
 <dataLights>

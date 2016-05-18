@@ -7,7 +7,7 @@ car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::Scen
 {
     nodoOgre_t nodoConfig;
     _scn = SceneNodeConfig::getSingletonPtr();
-    nodoConfig = _scn->getInfoNodoOgre("carKartWhite"); // Sustituir por un parámetro que indique el coche que queremos 
+    nodoConfig = _scn->getInfoNodoOgre(nombre); // Sustituir por un parámetro que indique el coche que queremos 
     _nodo = _scnMgr->createSceneNode(nodoConfig.nombreNodo);
     _ent = _scnMgr->createEntity(nodoConfig.nombreEntidad,nodoConfig.nombreMalla);
     _ent->setCastShadows(true);
@@ -16,15 +16,25 @@ car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::Scen
     if (_nodoPadre) _nodoPadre->addChild(_nodo); else _scnMgr->getRootSceneNode()->addChild(_nodo);
     _nodo->setPosition(nodoConfig.posInicial);
     _nodo->setOrientation(nodoConfig.orientacion);
+    
+    Ogre::Vector3 caja = _ent->getBoundingBox().getHalfSize();
+//    caja *= 0.96;
+//    caja.y*=0.2;
+//    caja.x*=0.9;
+//    caja.z*=0.9;
 
-    _body = new  RigidBody(_nombre, world,COL_CAR,COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION);
-    _shape = new BoxCollisionShape(_ent->getBoundingBox().getHalfSize());
+    _body = new  RigidBody(_nombre, world, COL_CAR, COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION);
+    _shape = new BoxCollisionShape(caja); 
+    //OgreBulletCollisions::CompoundCollisionShape* comShape = new OgreBulletCollisions::CompoundCollisionShape();
+    OgreBulletCollisions::CompoundCollisionShape* comShape = new OgreBulletCollisions::CompoundCollisionShape(dynamic_cast<btCompoundShape *>(_shape));
+    comShape->addChildShape(_shape, _ent->getBoundingBox().getCenter());
     _body->setShape(_nodo,
                     _shape,
-                    0.0,
-                    0.0,
-                    0.1,
-                    nodoConfig.posInicial, // Las propiedades de bullet Posicion y Dirección sobreescriben las de Ogre, OJO
+//                    comShape,
+                    0.6,
+                    0.6,
+                    100,
+                    nodoConfig.posShapeBullet, // Las propiedades de bullet Posicion y Dirección sobreescriben las de Ogre, OJO
                     _nodo->getOrientation());//Quaternion::IDENTITY);
     _body->enableActiveState();
     
@@ -34,7 +44,7 @@ car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::Scen
     transform.setRotation(convert(_nodo->getOrientation()));
     _body->getBulletRigidBody()->setWorldTransform(transform);
     
-    //_body->getBulletRigidBody()->setLinearVelocity(convert(direccion * fuerza));
+    //_body->getBulletRigidBody()->setLinearVelocity(convert(Ogre::Vector3(0,0,10)));
 }
 
 car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::SceneManager* scnMgr) : 

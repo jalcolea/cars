@@ -13,6 +13,7 @@ template<> testState *Ogre::Singleton<testState>::msSingleton = 0;
 
 void testState::enter()
 {
+    // Recuperar recursos básicos
     _root = Ogre::Root::getSingletonPtr();
     try
     {
@@ -47,45 +48,16 @@ void testState::enter()
     //El fondo del pacman siempre es negro
     _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
 
-    //Cargamos la info para generar elementos de la escena (scenenodes, cameras, lights)
-    _scn.load_xml("SceneNodes.xml");
+    // Cargar los parámetros para construir elementos del juego (coches, circuitos, camaras, etc)
+    cargarParametros("SceneNodes.xml",true);
     
-    map_nodos_t nodos = _scn.getMapNodos();
-    map_cameras_t camaras = _scn.getMapCameras();
-    for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it)
-            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
-            // first sería la clave y second el valor.
-            cout << (*it).second << endl;
-            
-    for (it_map_cameras it = camaras.begin(); it != camaras.end(); ++it)
-            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
-            // first sería la clave y second el valor.
-            cout << (*it).second << endl;
+    // Configurar camara
+    configurarCamaraPrincipal();
 
-
-    //Configuramos la camara
-    double width = _viewport->getActualWidth();
-    double height = _viewport->getActualHeight();
-    nodoCamera_t cam = _scn.getInfoCamera("IntroCamera");
-    _camera->setAspectRatio(width / height);
-    _camera->setPosition(cam.posInicial);
-    _camera->lookAt(cam.lookAt);
-    _camera->setNearClipDistance(cam.nearClipDistance);
-    _camera->setFarClipDistance(cam.farClipDistance);
-    
-    
     // Activar Bullet
-    AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-10000, -10000, -10000),
-                                             Ogre::Vector3(10000, 10000, 10000));
-    _world = shared_ptr<OgreBulletDynamics::DynamicsWorld>(new DynamicsWorld(_sceneMgr, boundBox, Vector3(0, -9.81, 0), true, true, 15000));
-    _debugDrawer = new OgreBulletCollisions::DebugDrawer();
-    _debugDrawer->setDrawWireframe(true);
-    SceneNode *node = _sceneMgr->getRootSceneNode()->createChildSceneNode("debugNode", Vector3::ZERO);
-    node->attachObject(static_cast<SimpleRenderable *>(_debugDrawer));
-    _world.get()->setDebugDrawer(_debugDrawer);
-    _world.get()->setShowDebugShapes(true);
+    initBulletWorld();
 
-
+    //Preparar escena
     createScene();
     
     _exitGame = false;
@@ -115,6 +87,7 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
     _world.get()->stepSimulation(_deltaT);
+    static Ogre::Real speed = 10.0;
     _fps = 1.0 / _deltaT;
     
     _r = 0;
@@ -128,9 +101,12 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
     if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
     
-    _camera->moveRelative(_vt * _deltaT * 20.0 /*tSpeed*/);
-    if (_camera->getPosition().length() < 10.0) 
-        _camera->moveRelative(-_vt * _deltaT * 20.0 /*tSpeed*/);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
+    
+    _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);
+    if (_camera->getPosition().length() < 2.0) 
+        _camera->moveRelative(-_vt * _deltaT * speed);//10.0 /*tSpeed*/);
         
     if (_keys & static_cast<size_t>(keyPressed_flags::PGUP)) _r += 180;
     if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
@@ -153,7 +129,7 @@ void testState::pintaOverlayInfo()
     oe = _overlayManager->getOverlayElement("camRotInfo");
     oe->setCaption(Ogre::StringConverter::toString(_camera->getDirection()));
     oe = _overlayManager->getOverlayElement("modRotInfo");
-    Ogre::Quaternion q = _sceneMgr->getSceneNode("carKartWhite")->getOrientation();
+    Ogre::Quaternion q = _sceneMgr->getSceneNode("carGroupC1red")->getOrientation();
     oe->setCaption(Ogre::String("RotZ: ") + 
                    Ogre::StringConverter::toString(q.getYaw()) + 
                    Ogre::String(" ") + Ogre::StringConverter::toString(_vt));
@@ -290,11 +266,11 @@ void testState::createFloor()
     floorNode->attachObject(entFloor);
     _sceneMgr->getRootSceneNode()->addChild(floorNode);
     _floorShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
-    _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR, COL_CAMERA | COL_CAR);
+    _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR, COL_CAMERA | COL_CAR | COL_TRACK | COL_TRACK_COLISION);
 
     _floorBody->setStaticShape(_floorShape, 0.5, 0.8);
     floorNode->setPosition(Vector3(0, 2, 0));
-    btCollisionShape *floorShape = _floorShape->getBulletShape();
+    //btCollisionShape *floorShape = _floorShape->getBulletShape();
 
 }
 
@@ -302,36 +278,19 @@ void testState::createFloor()
 void testState::createScene()
 {
   
-  _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
-  _sceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_MODULATIVE);
-  _sceneMgr->setShadowColour(ColourValue(0.5, 0.5, 0.5));
-  _sceneMgr->setShadowFarDistance(100);
-  _sceneMgr->setSkyBox(true, "skybox");
-  
-  createOverlay();
-  createLight();
-  //createMyGui();
+    _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+    _sceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_MODULATIVE);
+    _sceneMgr->setShadowColour(ColourValue(0.5, 0.5, 0.5));
+    _sceneMgr->setShadowFarDistance(100);
+    _sceneMgr->setSkyBox(true, "skybox");
 
-  
-//  nodoOgre_t nodo = _scn.getInfoNodoOgre("track1");
-//  
-//  SceneNode* nodoTrack1 = _sceneMgr->createSceneNode(nodo.nombreNodo);
-//  Entity* entTrack1 = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
-//  nodoTrack1->attachObject(entTrack1);
-//  _sceneMgr->getRootSceneNode()->addChild(nodoTrack1);
-//  
-//  nodo = _scn.getInfoNodoOgre("carKartWhite");
-//  SceneNode* nodoKartWhite = _sceneMgr->createSceneNode(nodo.nombreNodo);
-//  Entity* entKartWhite = _sceneMgr->createEntity(nodo.nombreEntidad,nodo.nombreMalla);
-//  nodoKartWhite->attachObject(entKartWhite);
-//  nodoTrack1->addChild(nodoKartWhite);
-//  nodoKartWhite->setPosition(nodo.posInicial);
-//  nodoKartWhite->setOrientation(nodo.orientacion);
-  
-//  _camera->setAutoTracking(true,nodoKartWhite);
+    createOverlay();
+    createLight();
+    createFloor();
+    //createMyGui();
     
     _track = unique_ptr<track>(new track("track1",_world.get(),Vector3(0,0,0),_sceneMgr));
-    _car = unique_ptr<car>(new car("carKartWhite",_world.get(),Vector3(0,0,0),_sceneMgr));
+    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
     
   
   
@@ -345,6 +304,51 @@ void testState::createOverlay()
     _overlayManager = Ogre::OverlayManager::getSingletonPtr();
     Ogre::Overlay *overlay = _overlayManager->getByName("Info");
     overlay->show();
+}
+
+void testState::cargarParametros(string archivo, bool consoleOut)
+{
+    //Cargamos la info para generar elementos de la escena (scenenodes, cameras, lights)
+    _scn.load_xml("SceneNodes.xml");
+    
+    map_nodos_t nodos = _scn.getMapNodos();
+    map_cameras_t camaras = _scn.getMapCameras();
+    for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it)
+            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
+            // first sería la clave y second el valor.
+            cout << (*it).second << endl;
+            
+    for (it_map_cameras it = camaras.begin(); it != camaras.end(); ++it)
+            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
+            // first sería la clave y second el valor.
+            cout << (*it).second << endl;
+}
+
+void testState::configurarCamaraPrincipal()
+{
+    //Configuramos la camara
+    double width = _viewport->getActualWidth();
+    double height = _viewport->getActualHeight();
+    nodoCamera_t cam = _scn.getInfoCamera("IntroCamera");
+    _camera->setAspectRatio(width / height);
+    _camera->setPosition(cam.posInicial);
+    _camera->lookAt(cam.lookAt);
+    _camera->setNearClipDistance(cam.nearClipDistance);
+    _camera->setFarClipDistance(cam.farClipDistance);
+}
+
+void testState::initBulletWorld()
+{
+    _debugDrawer = new OgreBulletCollisions::DebugDrawer();
+    _debugDrawer->setDrawWireframe(true);
+    SceneNode *node = _sceneMgr->getRootSceneNode()->createChildSceneNode("debugNode", Vector3::ZERO);
+    node->attachObject(static_cast<SimpleRenderable *>(_debugDrawer));
+    
+//    AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-10000, -10000, -10000),Ogre::Vector3(10000, 10000, 10000));
+    AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-100, -100, -100),Ogre::Vector3(100, 100, 100));
+    _world = shared_ptr<OgreBulletDynamics::DynamicsWorld>(new DynamicsWorld(_sceneMgr, boundBox, Vector3(0, -9.8, 0))); //, true, true, 15000));
+    _world.get()->setDebugDrawer(_debugDrawer);
+    _world.get()->setShowDebugShapes(true);
 }
 
 void testState::destroyMyGui()

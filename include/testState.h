@@ -30,7 +30,7 @@
 #include "sounds.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
-//#include "OgreBulletCollisionsShape.h"
+#include "OgreBulletCollisionsShape.h"
 #include "Shapes/OgreBulletCollisionsTrimeshShape.h"
 #include "Shapes/OgreBulletCollisionsStaticPlaneShape.h"
 #include "Shapes/OgreBulletCollisionsSphereShape.h"
@@ -125,6 +125,9 @@ private:
     void destroyMyGui();
     void createScene();
     void createFloor();
+    void cargarParametros(string archivo, bool consoleOut);
+    void configurarCamaraPrincipal();
+    void initBulletWorld();    
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);
     void createOverlay();
