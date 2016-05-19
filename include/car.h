@@ -6,6 +6,10 @@
 #include "OgreBulletDynamicsWorld.h"
 #include "Shapes/OgreBulletCollisionsBoxShape.h"
 #include "Shapes/OgreBulletCollisionsCompoundShape.h"
+#include "Shapes/OgreBulletCollisionsTrimeshShape.h"
+#include "Shapes/OgreBulletCollisionsCylinderShape.h"
+#include "Utils/OgreBulletCollisionsMeshToShapeConverter.h"
+#include "Shapes/OgreBulletCollisionsConvexHullShape.h"
 #include "SceneNodeConfig.h"
 #include <btBulletDynamicsCommon.h>
 
@@ -32,6 +36,8 @@ class car
         void updateAnim(Ogre::Real deltaT);
         void setMaterial(const std::string & material);
         void reset();
+        void setVelocity(Real f);
+        void steer(Real r);
 
 private:
         string _nombre;
@@ -44,6 +50,7 @@ private:
         string _material;
         Ogre::SceneNode* _nodoPadre;
         CollisionShape* _shape;
+        ConvexHullCollisionShape* _convexShape;
         float _speed;
         int oldDir;
 };

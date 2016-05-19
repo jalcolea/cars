@@ -37,10 +37,15 @@ class track
             OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
             OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
             _body = new OgreBulletDynamics::RigidBody(_nombre, world, COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
-            _body->setShape(_nodo,tri,0.8,0.95,0,posicionInicio);
-            delete trimeshConverter;
-            
-            
+            _body->setShape(_nodo,tri,0.8,0.95,1000,posicionInicio);
+//            delete trimeshConverter;
+
+            //Asociar forma y cuerpo rígido (CON UN CONVEXHULLCOLLISIONSHAPE y Geometría movible (attachada a un sceneNode))
+//            OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
+//            _convexShape = trimeshConverter->createConvex();
+//            _body = new OgreBulletDynamics::RigidBody(_nombre, world, COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
+//            _body->setShape(_nodo,_convexShape,0.8,0.95,1000,posicionInicio);
+
 
             //Asociar forma y cuerpo rígido (CON UN SHAPE ORDINARIO)
 //            OgreBulletCollisions::StaticMeshToShapeConverter trimeshConverter = OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
@@ -61,8 +66,8 @@ class track
 //            _body = new OgreBulletDynamics::RigidBody(_nombre, world, COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
 //            _body->setStaticShape(_convexShape, 1, 1, nodoConfig.posShapeBullet, Quaternion::IDENTITY);
 
-            _body->setDebugDisplayEnabled(true);        
-            _body->showDebugShape(true);
+            _body->setDebugDisplayEnabled(true);   
+//            _body->showDebugShape(true);
             _body->enableActiveState();
 
 //            stage->addEntity(_ent, Vector3(_posicion));

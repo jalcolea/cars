@@ -127,7 +127,7 @@ private:
     void createFloor();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
-    void initBulletWorld();    
+    void initBulletWorld(bool showDebug);    
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);
     void createOverlay();

@@ -55,7 +55,7 @@ void testState::enter()
     configurarCamaraPrincipal();
 
     // Activar Bullet
-    initBulletWorld();
+    initBulletWorld(false);
 
     //Preparar escena
     createScene();
@@ -91,6 +91,7 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     _fps = 1.0 / _deltaT;
     
     _r = 0;
+    Real rSteer = 0;
     _vt = Ogre::Vector3::ZERO;
 
 
@@ -103,7 +104,19 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
+
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_W))
+        _car->setVelocity(10);
+        
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
+        _car->steer((rSteer+=180) * _deltaT * 0.08);
     
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_D))
+        _car->steer((rSteer-=180) * _deltaT * 0.08);
+        
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
+//        _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
+
     _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);
     if (_camera->getPosition().length() < 2.0) 
         _camera->moveRelative(-_vt * _deltaT * speed);//10.0 /*tSpeed*/);
@@ -112,6 +125,9 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
         
     _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
+
+    float rotx = InputManager_::getSingletonPtr()->getMouse()->getMouseState().X.rel * _deltaT * -1;
+    _camera->yaw(Ogre::Radian(rotx));
 
     pintaOverlayInfo();
 
@@ -142,11 +158,11 @@ bool testState::frameEnded(const Ogre::FrameEvent &evt)
 
 bool testState::keyPressed(const OIS::KeyEvent &e)
 {
-    if (e.key == OIS::KC_SPACE)
-    {
-        changeState(MenuState::getSingletonPtr());
-        sounds::getInstance()->play_effect("push");
-    }
+//    if (e.key == OIS::KC_SPACE)
+//    {
+//        changeState(MenuState::getSingletonPtr());
+//        sounds::getInstance()->play_effect("push");
+//    }
 
     flagKeys(true);
     
@@ -232,9 +248,7 @@ testState &testState::getSingleton()
     return *msSingleton;
 }
 
-testState::~testState()
-{
-}
+testState::~testState(){}
 
 void testState::createLight()
 {
@@ -290,7 +304,7 @@ void testState::createScene()
     //createMyGui();
     
     _track = unique_ptr<track>(new track("track1",_world.get(),Vector3(0,0,0),_sceneMgr));
-    //_car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
+    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
     
   
   
@@ -337,7 +351,7 @@ void testState::configurarCamaraPrincipal()
     _camera->setFarClipDistance(cam.farClipDistance);
 }
 
-void testState::initBulletWorld()
+void testState::initBulletWorld(bool showDebug)
 {
     _debugDrawer = new OgreBulletCollisions::DebugDrawer();
     _debugDrawer->setDrawWireframe(true);
@@ -348,7 +362,7 @@ void testState::initBulletWorld()
     AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-100, -100, -100),Ogre::Vector3(100, 100, 100));
     _world = shared_ptr<OgreBulletDynamics::DynamicsWorld>(new DynamicsWorld(_sceneMgr, boundBox, Vector3(0, -9.8, 0))); //, true, true, 15000));
     _world.get()->setDebugDrawer(_debugDrawer);
-    _world.get()->setShowDebugShapes(true);
+    _world.get()->setShowDebugShapes(showDebug);
 }
 
 void testState::destroyMyGui()
