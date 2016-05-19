@@ -129,9 +129,9 @@ void testState::pintaOverlayInfo()
     oe = _overlayManager->getOverlayElement("camRotInfo");
     oe->setCaption(Ogre::StringConverter::toString(_camera->getDirection()));
     oe = _overlayManager->getOverlayElement("modRotInfo");
-    Ogre::Quaternion q = _sceneMgr->getSceneNode("carGroupC1red")->getOrientation();
+    //Ogre::Quaternion q = _sceneMgr->getSceneNode("carGroupC1red")->getOrientation();
     oe->setCaption(Ogre::String("RotZ: ") + 
-                   Ogre::StringConverter::toString(q.getYaw()) + 
+                   //Ogre::StringConverter::toString(q.getYaw()) + 
                    Ogre::String(" ") + Ogre::StringConverter::toString(_vt));
 }
 
@@ -290,7 +290,7 @@ void testState::createScene()
     //createMyGui();
     
     _track = unique_ptr<track>(new track("track1",_world.get(),Vector3(0,0,0),_sceneMgr));
-    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
+    //_car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
     
   
   

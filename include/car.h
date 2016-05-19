@@ -7,6 +7,7 @@
 #include "Shapes/OgreBulletCollisionsBoxShape.h"
 #include "Shapes/OgreBulletCollisionsCompoundShape.h"
 #include "SceneNodeConfig.h"
+#include <btBulletDynamicsCommon.h>
 
 using namespace Ogre;
 using namespace OgreBulletDynamics;
