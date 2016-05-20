@@ -23,6 +23,7 @@
 #include "GameManager.h"
 #include "IntroState.h"
 #include "PlayState.h"
+#include "OptionsState.h"
 #include "PauseState.h"
 #include "WinState.h"
 #include "LooseState.h"
@@ -45,6 +46,7 @@ int main () {
   GameManager* game = new GameManager();
   IntroState* introState = new IntroState();
   PlayState* playState = new PlayState();
+  OptionsState* optionsState = new OptionsState();
   MenuState* menuState = new MenuState();
   ControlsState* controlsState = new ControlsState();
   PauseState* pauseState = new PauseState();

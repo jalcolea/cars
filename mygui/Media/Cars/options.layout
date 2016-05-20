@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0.00390625 0 1 1" align="Stretch" layer="Wallpaper" name="start">
+        <Property key="ImageTexture" value="options.png"/>
+    </Widget>
+    <Widget type="Button" skin="ButtonImage" position="20 640 100 130" align="Default" layer="Main" name="btn_back"/>
+    <Widget type="EditBox" skin="WordWrapEmpty" position="60 480 820 180" layer="Main" name="text">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="FontHeight" value="45"/>
+        <Property key="TextColour" value="1 1 1"/>
+        <Property key="Caption" value=""/>
+    </Widget>
+    <Widget type="EditBox" skin="WordWrapEmpty" position="355 665 580 120" layer="Main" name="edt_high">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="FontHeight" value="60"/>
+        <Property key="TextColour" value="1 0 0"/>
+        <Property key="Caption" value=""/>
+    </Widget>
+    <CodeGeneratorSettings/>
+</MyGUI>

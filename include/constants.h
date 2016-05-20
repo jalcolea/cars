@@ -11,6 +11,7 @@
 #define LAYOUT_MAIN "main.layout"
 #define LAYOUT_PAUSE "pause.layout"
 #define LAYOUT_RECORDS "records.layout"
+#define LAYOUT_OPTIONS "options.layout"
 
 #define MAX_RECORDS 6
 

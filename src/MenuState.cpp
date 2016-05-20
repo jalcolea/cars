@@ -1,7 +1,7 @@
 #include "MenuState.h"
 #include "PauseState.h"
 #include "IntroState.h"
-#include "PlayState.h"
+#include "OptionsState.h"
 #include "ControlsState.h"
 #include "RecordsState.h"
 #include "CreditsState.h"
@@ -11,6 +11,7 @@
 #include "records.h"
 #include "Carrusel.h"
 #include "PlayWidget.h"
+#include "constants.h"
 //http://www.cplusplus.com/doc/tutorial/templates/          <--------Visita esta página para entender la linea justo debajo de esta
 template<> MenuState* Ogre::Singleton<MenuState>::msSingleton = 0;
 
@@ -62,7 +63,7 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
   if (e.key == OIS::KC_S) {
     sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
-    pushState(PlayState::getSingletonPtr());
+    pushState(OptionsState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_U) {
     sounds::getInstance()->play_effect("push");
@@ -146,7 +147,7 @@ bool MenuState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
   else if (btn_play->_checkPoint(x,y))
   {
     sounds::getInstance()->play_effect("push");
-    pushState(PlayState::getSingletonPtr());
+    pushState(OptionsState::getSingletonPtr());
   }
   else if (btn_controls->_checkPoint(x,y))
   {
