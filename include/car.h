@@ -27,8 +27,6 @@ class car
 
         virtual ~car();
 
-        inline const Ogre::Vector3& getPosicion(){ return _posicion; };
-        
         void move(int direction  , double deltaTime);
         void stop();
         btRigidBody* getBtRigidBody(){ return _body->getBulletRigidBody(); };
@@ -36,8 +34,9 @@ class car
         void updateAnim(Ogre::Real deltaT);
         void setMaterial(const std::string & material);
         void reset();
-        void setVelocity(Real f);
+        void setVelocity(const Real & f);
         void steer(Real r);
+        inline Ogre::Vector3 getPosicion() { return _nodo->getPosition(); } // NO SANITY CHECK :D LOL Si _nodo apunta pa Utrera, casque que te crió.
 
 private:
         string _nombre;

@@ -1,4 +1,4 @@
-/*********************************************************************n
+    /*********************************************************************n
  * Módulo 1. Curso de Experto en Desarrollo de Videojuegos
  * Autor: David Vallejo Fernández    David.Vallejo@uclm.es
  *
@@ -111,6 +111,7 @@ protected:
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
+    bool _freeCamera = false;
     
 
 
