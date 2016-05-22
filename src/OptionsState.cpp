@@ -13,6 +13,10 @@ using namespace Ogre;
 void OptionsState::enter ()
 {
   _root = Ogre::Root::getSingletonPtr();
+  _sceneMgr = _root->getSceneManager("SceneManager");
+  _camera = _sceneMgr->getCamera("IntroCamera");
+  _viewport = _root->getAutoCreatedWindow()->getViewport(0);
+  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
   createScene();
   _exitGame = false;
 }
@@ -118,6 +122,13 @@ OptionsState::~OptionsState()
 void OptionsState::createScene()
 {
   createMyGui();
+  //_sceneMgr->createStaticGeometry("CAR");
+  ent_car =  _sceneMgr->createEntity("ent_car","car-groupc-1.mesh");
+  node_car = _sceneMgr->createSceneNode("node_car");
+  node_car->attachObject(ent_car);
+  _sceneMgr->getRootSceneNode()->addChild(node_car);
+  node_car->setPosition(Ogre::Vector3(3.25,-5.0,18));
+
 }
 
 void OptionsState::destroyMyGui()

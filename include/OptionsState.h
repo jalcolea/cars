@@ -68,6 +68,10 @@ class OptionsState : public Ogre::Singleton<OptionsState>, public GameState
   Ogre::SceneManager* _sceneMgr;
   Ogre::Viewport* _viewport;
   Ogre::Camera* _camera;
+  Ogre::SceneNode* _cameraNode;
+  Ogre::SceneNode* node_car;
+  Ogre::Entity*  ent_car;
+
 
   bool _exitGame;
 
