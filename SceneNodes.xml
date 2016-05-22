@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <dataSceneNode>
     <scenenode>
         <nombreNodo>track1</nombreNodo>
@@ -9,8 +9,8 @@
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>0.0</masaBullet>
-        <frictionBullet>1.0</frictionBullet>
-        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+        <frictionBullet>0.95</frictionBullet>
+        <bodyRestitutionBullet>0.8</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
         <nombreNodo>carKartWhite</nombreNodo>
@@ -31,12 +31,12 @@
         <nombreMalla>car-kart-yellow.mesh</nombreMalla>
         <nombreMaterial>unknown</nombreMaterial>
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
-        <posInicial x="-1" y="1.01" z="-12"></posInicial>
+        <posInicial x="-1" y="2.01" z="-12"></posInicial>
         <orientacionShapeBullet  w="0.707" x="0" y="-0.707" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
-        <masaBullet>1.0</masaBullet>
-        <frictionBullet>1.0</frictionBullet>
-        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+        <masaBullet>100</masaBullet>
+        <frictionBullet>0.6</frictionBullet>
+        <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
         <nombreNodo>carGroupC1red</nombreNodo>
@@ -47,9 +47,9 @@
         <posInicial x="-1" y="2.01" z="-12"></posInicial>
         <orientacionShapeBullet  w="0.707" x="0" y="-0.707" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
-        <masaBullet>1.0</masaBullet>
-        <frictionBullet>1.0</frictionBullet>
-        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+        <masaBullet>200</masaBullet>
+        <frictionBullet>0.6</frictionBullet>
+        <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
         <nombreNodo>planoSalida</nombreNodo>

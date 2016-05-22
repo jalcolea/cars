@@ -45,7 +45,7 @@ void testState::enter()
     }
 
 
-    //El fondo del pacman siempre es negro
+    //Color de fondo inicial
     _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
 
     // Cargar los parámetros para construir elementos del juego (coches, circuitos, camaras, etc)
@@ -87,13 +87,23 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
     _world.get()->stepSimulation(_deltaT);
+    static Ogre::Real old = 0;
     static Ogre::Real speed = 10.0;
     _fps = 1.0 / _deltaT;
-    
+//    static Real time = 0;
     _r = 0;
     Real rSteer = 0;
+    Real sCar = 0;
+    static Real sBrake = 10;
     _vt = Ogre::Vector3::ZERO;
 
+//    cout << "OldXYZ: " << old << endl;
+//    cout << "Velocidad actual: " << (int)((old / (_deltaT * 0.001))) << " Unidades/s" << endl;
+//
+//    old =  abs(old - _car->getPosicion().squaredLength()); // 
+
+
+    
 
     if (_keys & static_cast<size_t>(keyPressed_flags::LEFT))  _vt.x += -1;
     if (_keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _vt.x += 1;
@@ -105,15 +115,24 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
 
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_W))
+//        _car->setVelocity(10);
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
+//        _car->steer((rSteer+=180) * _deltaT * 0.08);
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_D))
+//        _car->steer((rSteer-=180) * _deltaT * 0.08);
+        
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_W))
-        _car->setVelocity(10);
-        
+       { _car->setVelocity(1500); sBrake = 1500; }
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_S))
+        _car->setVelocity(sBrake-=1500*_deltaT);
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
-        _car->steer((rSteer+=180) * _deltaT * 0.08);
-    
+        _car->steer((rSteer+=180) * _deltaT * 0.4);
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_D))
-        _car->steer((rSteer-=180) * _deltaT * 0.08);
-        
+        _car->steer((rSteer-=180) * _deltaT * 0.4);
+    
+
+    
 //    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
 //        _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
 
@@ -128,6 +147,10 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 
     float rotx = InputManager_::getSingletonPtr()->getMouse()->getMouseState().X.rel * _deltaT * -1;
     _camera->yaw(Ogre::Radian(rotx));
+    
+    if (!_freeCamera)
+        _camera->setPosition(_car->getPosicion().x,_camera->getPosition().y, _car->getPosicion().z + 40);
+    //if (abs(_camera->getPosition().z - _car->getPosicion().z) < 40) cout << "muy cerca" << endl;
 
     pintaOverlayInfo();
 
@@ -148,7 +171,7 @@ void testState::pintaOverlayInfo()
     //Ogre::Quaternion q = _sceneMgr->getSceneNode("carGroupC1red")->getOrientation();
     oe->setCaption(Ogre::String("RotZ: ") + 
                    //Ogre::StringConverter::toString(q.getYaw()) + 
-                   Ogre::String(" ") + Ogre::StringConverter::toString(_vt));
+                   Ogre::String("Vel: ") + Ogre::StringConverter::toString(_vt));
 }
 
 bool testState::frameEnded(const Ogre::FrameEvent &evt)
@@ -163,6 +186,10 @@ bool testState::keyPressed(const OIS::KeyEvent &e)
 //        changeState(MenuState::getSingletonPtr());
 //        sounds::getInstance()->play_effect("push");
 //    }
+
+    if (e.key == OIS::KC_L)
+    {    _freeCamera = !_freeCamera; cout << "Camara libre: " << _freeCamera << endl; }
+
 
     flagKeys(true);
     
@@ -304,6 +331,7 @@ void testState::createScene()
     //createMyGui();
     
     _track = unique_ptr<track>(new track("track1",_world.get(),Vector3(0,0,0),_sceneMgr));
+//    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
     _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
     
   

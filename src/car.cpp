@@ -67,50 +67,51 @@ car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::Scen
     caja *= 0.96;
 
     _body = new RigidBody(_nombre, world, COL_CAR, COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION);
-//    _shape = new BoxCollisionShape(caja);
 
-    //Asociar forma y cuerpo rígido (TrimeshShape y Geometría movible(attachada a un sceneNode))
+
+    //Asociar forma y cuerpo rígido (TrimeshShape y Geometría movible(attachada a un sceneNode)) NO FUNCIONAN LAS COLISIONES CON ESTE MODO
 //    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
 //    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
 
 
-    //Asociar forma y cuerpo rígido (CON UN CONVEXHULLCOLLISIONSHAPE)
-    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
-    _convexShape = trimeshConverter->createConvex();
-    _body->setStaticShape(_convexShape, 1, 1, nodoConfig.posShapeBullet, Quaternion::IDENTITY);
+    //Asociar forma y cuerpo rígido (CON UN CONVEXHULLCOLLISIONSHAPE) NO SE AJUSTA BIEN AL MODELO, NI ESCALANDO EL SHAPE
+    //Al intentar escalarlo se descuajaringa y crea un shape con una geometría super rara. 
+//    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
+//    _convexShape = trimeshConverter->createConvex();
+//    _convexShape->getBulletShape()->setMargin(-0.05);
+//    _body->setStaticShape(_convexShape, 1, 1, nodoConfig.posShapeBullet, Quaternion::IDENTITY);
     
-//    OgreBulletCollisions::CompoundCollisionShape* comShape = new OgreBulletCollisions::CompoundCollisionShape();
-//    comShape->addChildShape(static_cast<OgreBulletCollisions::BoxCollisionShape*>(_shape), _ent->getBoundingBox().getCenter());
+    //Asociar forma y cuerpo rígido (CON UN COMPOUNDSHAPE) Viene a ser lo mismo que usar solo una BoxShape, pero en este caso podemos 
+    //centrarla correctamente en el modelo. Así queda completamente a ras de suelo.
+    OgreBulletCollisions::CompoundCollisionShape* comShape = new OgreBulletCollisions::CompoundCollisionShape();
+    _shape = new BoxCollisionShape(caja);
+    comShape->addChildShape(_shape, _ent->getBoundingBox().getCenter());
     _body->setShape(_nodo,
 //                    _shape,
-//                    comShape,
+                    comShape,
 //                    tri,
-                    _convexShape,
-                    0.6,
-                    0.6,
-                    500,
+//                    _convexShape,
+                    nodoConfig.bodyRestitutionBullet, //0.6,
+                    nodoConfig.frictionBullet, //0.6,
+                    nodoConfig.masaBullet,
                     nodoConfig.posInicial, // Las propiedades de bullet Posicion y Dirección sobreescriben las de Ogre, OJO
                     _nodo->getOrientation());//Quaternion::IDENTITY);
-    _body->enableActiveState();
+    _body->enableActiveState(); 
+    _body->disableDeactivation(); // En teoría con esto no habrá que despertarlo de nuevo :D
 
 
 
-//    btTransform transform;
-//    transform.setIdentity();
-//    transform = _body->getBulletRigidBody()->getWorldTransform();
-//    transform.setRotation(convert(_nodo->getOrientation()));
-//    _body->getBulletRigidBody()->setWorldTransform(transform);
+    btTransform transform;
+    transform.setIdentity();
+    transform = _body->getBulletRigidBody()->getWorldTransform();
+    transform.setRotation(convert(_nodo->getOrientation()));
+    _body->getBulletRigidBody()->setWorldTransform(transform);
     
 }
 
 
-
 car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::SceneManager* scnMgr) : 
          car(nombre,world, posicionInicio, scnMgr, "", nullptr) {}
-
-
-
-
 
 car::~car()
 {
@@ -122,19 +123,26 @@ void car::setMaterial(const std::string & material)
         _ent->setMaterialName(_material);
 }
 
-void car::setVelocity(Real f)
+void car::setVelocity(const Real& f)
 { 
+//    If you want to limit the motion of objects in the X-Z plane, and only rotation along the Y axis, use:
+//    body->setLinearFactor(btVector3(1,0,1));
+//    body->setAngularFactor(btVector3(0,1,0));
+    
     if (_body)
     {
-        _body->getBulletRigidBody()->setAngularVelocity(btVector3(0,0,0));
-        btTransform transform;
-        transform.setIdentity();
-        transform = _body->getBulletRigidBody()->getWorldTransform();
-        transform.setRotation(convert(_nodo->getOrientation()));
-        _body->getBulletRigidBody()->setWorldTransform(transform);
-        _body->enableActiveState();
-        _body->getBulletRigidBody()->setAngularVelocity(btVector3(0,0,0));
-        _body->getBulletRigidBody()->setLinearVelocity(convert(_nodo->getOrientation().zAxis() * f));
+//        btTransform transform;
+//        transform.setIdentity();
+//        transform = _body->getBulletRigidBody()->getWorldTransform();
+//        transform.setRotation(convert(_nodo->getOrientation()));
+//        _body->getBulletRigidBody()->setWorldTransform(transform);
+
+        //_body->getBulletRigidBody()->setAngularVelocity(btVector3(0,1,0));
+        //_body->getBulletRigidBody()->setLinearVelocity(convert(_nodo->getOrientation().zAxis() * f));
+        //_body->getBulletRigidBody()->applyImpulse(convert(_nodo->getOrientation().zAxis()) * f, btVector3(0,0,1));
+        //_body->applyForce(_nodo->getOrientation().zAxis() * f, _body->getCenterOfMassPosition());
+        _body->applyForce(_nodo->getOrientation().zAxis() * f, Vector3(0,0,0));
+        
     }
 }
 
@@ -150,8 +158,24 @@ void car::steer(Real r)
         transform.setRotation(convert(_nodo->getOrientation()));
         _body->getBulletRigidBody()->setWorldTransform(transform);
         _body->getBulletRigidBody()->setAngularVelocity(btVector3(0,0,0));        
-        _body->enableActiveState();
+        //_body->enableActiveState();
     }    
 }
 
 
+
+//I want to cap the speed of my spaceship
+//
+//What's important here is two things: Firstly, doing it in a manner that doesn't go against general physics coding karma. Secondly, doing it in a way that is framerate-independant.
+//To avoid messing with general physics coding karma, you should make sure you don't accidentally do this while the physics is actually stepping, and while you'd ideally like to avoid setting properties directly on the body, in this particular case you don't have a choice.
+//To make sure that this is done in a manner that leads to framerate-indepedance, you need to do it *every* time that bullet ticks internally. Just waiting for stepSimulation to return is insufficient since your spaceship might be above the max velocity for multiple internal ticks.
+//In short, the best way to do this is by setting the velocity of your spaceship in the physics tick callback.
+//void myTickCallback(btDynamicsWorld *world, btScalar timeStep) {
+//    // mShipBody is the spaceship's btRigidBody
+//    btVector3 velocity = mShipBody->getLinearVelocity();
+//    btScalar speed = velocity.length();
+//    if(speed > mMaxSpeed) {
+//        velocity *= mMaxSpeed/speed;
+//        mShipBody->setLinearVelocity(velocity);
+//    }
+//}
