@@ -42,6 +42,7 @@
     <File Name="src/testState.cpp"/>
     <File Name="src/car.cpp"/>
     <File Name="src/track.cpp"/>
+    <File Name="src/OptionsState.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="include/Bluez_Util.h"/>
@@ -69,6 +70,7 @@
     <File Name="include/testState.h"/>
     <File Name="include/car.h"/>
     <File Name="include/track.h"/>
+    <File Name="include/OptionsState.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>
