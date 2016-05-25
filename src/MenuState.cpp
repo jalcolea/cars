@@ -99,7 +99,7 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
   }
   else if (e.key == OIS::KC_L) {
     sounds::getInstance()->play_effect("push");
-    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+    //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     LooseState::getSingletonPtr()->setPoints(111222);
     pushState(LooseState::getSingletonPtr());
   }
