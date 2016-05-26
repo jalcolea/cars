@@ -51,6 +51,7 @@ car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::Scen
 car::car(string nombre, DynamicsWorld* world, Vector3 posicionInicio, Ogre::SceneManager* scnMgr, string material, Ogre::SceneNode* nodoPadre) : 
          _nombre(nombre), _posicion(posicionInicio), _scnMgr(scnMgr), _material(material), _nodoPadre(nodoPadre)
 {
+    _velocidadCalculada = 0;
     nodoOgre_t nodoConfig;
     _scn = SceneNodeConfig::getSingletonPtr();
     nodoConfig = _scn->getInfoNodoOgre(nombre); // Sustituir por un parámetro que indique el coche que queremos 
@@ -160,6 +161,14 @@ void car::steer(Real r)
         _body->getBulletRigidBody()->setAngularVelocity(btVector3(0,0,0));        
         //_body->enableActiveState();
     }    
+}
+
+size_t & car::getVelocidadActualCalculada(Vector3 xInicial, Vector3 xFinal, Real deltaT)
+{
+    
+    _velocidadCalculada = (deltaT)?(int)( (xFinal - xInicial).length() / deltaT ):_velocidadCalculada;
+    cout << "Velocidad actual: " << _velocidadCalculada << " Unidades/s" << endl;
+    return _velocidadCalculada;
 }
 
 

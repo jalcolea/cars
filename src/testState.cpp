@@ -87,21 +87,19 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
     _world.get()->stepSimulation(_deltaT);
-    static Ogre::Real old = 0;
+    static Vector3 oldPos = _car->getPosicion();
     static Ogre::Real speed = 10.0;
     _fps = 1.0 / _deltaT;
-//    static Real time = 0;
     _r = 0;
     Real rSteer = 0;
     Real sCar = 0;
     static Real sBrake = 10;
     _vt = Ogre::Vector3::ZERO;
 
-//    cout << "OldXYZ: " << old << endl;
-//    cout << "Velocidad actual: " << (int)((old / (_deltaT * 0.001))) << " Unidades/s" << endl;
-//
-//    old =  abs(old - _car->getPosicion().squaredLength()); // 
+    _velocidad = _car->getVelocidadActualCalculada(oldPos,_car->getPosicion(),_deltaT);
 
+    if (oldPos != _car->getPosicion())
+        oldPos = _car->getPosicion();
 
     
 
@@ -127,9 +125,9 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_S))
         _car->setVelocity(sBrake-=1500*_deltaT);
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
-        _car->steer((rSteer+=180) * _deltaT * 0.4);
+        _car->steer((rSteer+=180) * _deltaT * 0.2);
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_D))
-        _car->steer((rSteer-=180) * _deltaT * 0.4);
+        _car->steer((rSteer-=180) * _deltaT * 0.2);
     
 
     
@@ -169,9 +167,9 @@ void testState::pintaOverlayInfo()
     oe->setCaption(Ogre::StringConverter::toString(_camera->getDirection()));
     oe = _overlayManager->getOverlayElement("modRotInfo");
     //Ogre::Quaternion q = _sceneMgr->getSceneNode("carGroupC1red")->getOrientation();
-    oe->setCaption(Ogre::String("RotZ: ") + 
-                   //Ogre::StringConverter::toString(q.getYaw()) + 
-                   Ogre::String("Vel: ") + Ogre::StringConverter::toString(_vt));
+    oe->setCaption(//Ogre::String("RotZ: ") + 
+                   //Ogre::StringConverter::toString(_car->getSceneNode()->getOrientation()) + 
+                   Ogre::String("Vel: ") + Ogre::StringConverter::toString(_velocidad));
 }
 
 bool testState::frameEnded(const Ogre::FrameEvent &evt)
@@ -330,11 +328,23 @@ void testState::createScene()
     createFloor();
     //createMyGui();
     
-    _track = unique_ptr<track>(new track("track1",_world.get(),Vector3(0,0,0),_sceneMgr));
+    _track = unique_ptr<track>(new track("track1bis",_world.get(),Vector3(0,0,0),_sceneMgr));
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
-    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr));
+    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
+    _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get()));
     
-  
+    
+    // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
+    nodoOgre_t nodoConfigCol = _scn.getInfoNodoOgre("track1colLateral");
+    Entity* entColLateral = _sceneMgr->createEntity(nodoConfigCol.nombreEntidad, nodoConfigCol.nombreMalla);
+    SceneNode* nodoColLateral = _sceneMgr->createSceneNode(nodoConfigCol.nombreNodo);
+    nodoColLateral->attachObject(entColLateral);
+    _track->getSceneNode()->addChild(nodoColLateral);
+    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(entColLateral);
+    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
+    OgreBulletDynamics::RigidBody* body = new OgreBulletDynamics::RigidBody(nodoConfigCol.nombreNodo, _world.get(), COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
+    body->setShape(nodoColLateral,tri,nodoConfigCol.bodyRestitutionBullet,nodoConfigCol.frictionBullet,nodoConfigCol.masaBullet,nodoConfigCol.posShapeBullet);
+    nodoColLateral->setVisible(false);
   
 }
 
@@ -355,6 +365,8 @@ void testState::cargarParametros(string archivo, bool consoleOut)
     
     map_nodos_t nodos = _scn.getMapNodos();
     map_cameras_t camaras = _scn.getMapCameras();
+    map_vehiculos_ray_cast_t vehicRayCast = _scn.getMapVehiculosRaycast();
+    
     for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it)
             // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
             // first sería la clave y second el valor.
@@ -364,6 +376,9 @@ void testState::cargarParametros(string archivo, bool consoleOut)
             // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
             // first sería la clave y second el valor.
             cout << (*it).second << endl;
+            
+    for (it_map_vehiculos_ray_cast it = vehicRayCast.begin(); it != vehicRayCast.end(); ++it)
+        cout << (*it).second << endl;
 }
 
 void testState::configurarCamaraPrincipal()
