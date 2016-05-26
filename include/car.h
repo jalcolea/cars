@@ -37,6 +37,7 @@ class car
         void setVelocity(const Real & f);
         void steer(Real r);
         inline Ogre::Vector3 getPosicion() { return _nodo->getPosition(); } // NO SANITY CHECK :D LOL Si _nodo apunta pa Utrera, casque que te crió.
+        size_t & getVelocidadActualCalculada(Vector3 xInicial, Vector3 xFinal, Real deltaT);
 
 private:
         string _nombre;
@@ -52,6 +53,7 @@ private:
         ConvexHullCollisionShape* _convexShape;
         float _speed;
         int oldDir;
+        size_t _velocidadCalculada;
 };
 
 #endif // CAR_H

@@ -80,6 +80,8 @@ class track
         virtual ~track();
 
         btRigidBody* getBtRigidBody();
+        
+        inline SceneNode* getSceneNode() { return _nodo; };
 
     private:
         string _nombre;

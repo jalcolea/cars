@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <dataSceneNode>
     <scenenode>
         <nombreNodo>track1</nombreNodo>
@@ -9,8 +9,20 @@
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>0.0</masaBullet>
-        <frictionBullet>0.95</frictionBullet>
-        <bodyRestitutionBullet>0.8</bodyRestitutionBullet>
+        <frictionBullet>0.5</frictionBullet>
+        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>track1bis</nombreNodo>
+        <nombreEntidad>track1ent</nombreEntidad>
+        <nombreMalla>Track1bis.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.7</frictionBullet>
+        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
         <nombreNodo>carKartWhite</nombreNodo>
@@ -48,8 +60,20 @@
         <orientacionShapeBullet  w="0.707" x="0" y="-0.707" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>200</masaBullet>
-        <frictionBullet>0.6</frictionBullet>
+        <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>track1colLateral</nombreNodo>
+        <nombreEntidad>track1ColLateral</nombreEntidad>
+        <nombreMalla>Track1Col.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>1.0</frictionBullet>
+        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
         <nombreNodo>planoSalida</nombreNodo>
@@ -66,6 +90,28 @@
     </scenenode>
 </dataSceneNode>
 
+<dataVehiculoRayCast>
+  <nombreNodo>kart</nombreNodo>
+  <nombreMallaRueda>wheel-kart.mesh</nombreMallaRueda>
+  <nombreMallaChasis>car-kart-chasis.mesh</nombreMallaChasis>
+  <radioRuedas>1.0</radioRuedas>
+  <anchoRuedas>0.5</anchoRuedas>
+  <friccionRueda>1e30f</friccionRueda>
+  <influenciaRodado>0.1</influenciaRodado>
+  <indiceRestitucionSuspension>0.6</indiceRestitucionSuspension>
+  <posicion x="2" y="2.01" z="-12"></posicion>
+  <velocidadGiro>0.1</velocidadGiro>
+  <aceleracion>6000</aceleracion>
+  <frenada>600</frenada>
+  <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
+  <suspensionStiffness>100</suspensionStiffness>
+  <suspensionCompresion>0.3</suspensionCompresion>
+  <suspensionDamping>0.5</suspensionDamping>
+  <maxSuspensionTravelCM>30</maxSuspensionTravelCM>
+  <maxSuspensionForce>150</maxSuspensionForce>
+  <frictionSlip>10000</frictionSlip>
+</dataVehiculoRayCast>
+  
 <dataLights>
 </dataLights>
 
