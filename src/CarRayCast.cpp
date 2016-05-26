@@ -25,7 +25,7 @@ void CarRayCast::buildVehiculo()
     _nodoChasis = _scnMgr->createSceneNode(param.nombre + "_nodo");
     _nodoChasis->attachObject(_entChasis);
     if(this->_nodoPadre) _nodoPadre->addChild(_nodoChasis);
-    else _scnMgr->getRootSceneNode()->addChild(_nodoPadre);
+    else _scnMgr->getRootSceneNode()->addChild(_nodoChasis);
     
     _nodoChasis->setPosition(param.posicion);
     
