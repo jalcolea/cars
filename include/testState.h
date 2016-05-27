@@ -39,6 +39,7 @@
 #include "SceneNodeConfig.h"
 #include "car.h"
 #include "track.h"
+#include "CarRayCast.h"
 
 using namespace std;
 using namespace Ogre;
@@ -62,31 +63,18 @@ enum class keyPressed_flags
 class testState : public Ogre::Singleton<testState>, public GameState
 {
 public:
-    testState()
-    { }
-
+    testState(){}
     ~testState();
-
     void enter();
-
     void exit();
-
     void pause();
-
     void resume();
-
     bool keyPressed(const OIS::KeyEvent &e);
-
     bool keyReleased(const OIS::KeyEvent &e);
-
     bool mouseMoved(const OIS::MouseEvent &e);
-
     bool mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-
     bool mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id);
-
     bool frameStarted(const Ogre::FrameEvent &evt);
-
     bool frameEnded(const Ogre::FrameEvent &evt);
     
 /* WIIMOTE *********************************************************************/  
@@ -97,7 +85,6 @@ public:
 
     // Heredados de Ogre::Singleton.
     static testState &getSingleton();
-
     static testState *getSingletonPtr();
 
 protected:
@@ -108,12 +95,11 @@ protected:
     SceneNodeConfig _scn;
     unique_ptr<car> _car;
     unique_ptr<track> _track;
+    unique_ptr<CarRayCast> _carRayCast;
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
     bool _freeCamera = false;
-    
-
 
     bool _exitGame;
     Ogre::Real _deltaT;
@@ -137,6 +123,7 @@ private:
     Ogre::OverlayManager* _overlayManager;
     Ogre::Vector3 _vt;
     Ogre::Real _r;
+    size_t _velocidad;
     size_t _fps;
     size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
     DebugDrawer* _debugDrawer;

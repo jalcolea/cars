@@ -45,6 +45,15 @@ bool SceneNodeConfig::load_xml(string fichero)
         nuevoCamera(node);
     }
     
+    data = mxmlFindElement(_tree,_tree,"dataVehiculoRayCast", NULL, NULL, MXML_DESCEND);
+    for (node = mxmlFindElement(data, data, "camera", NULL, NULL, MXML_DESCEND);
+         node != NULL;
+         node = mxmlFindElement(node,data, "camera", NULL, NULL, MXML_DESCEND))
+    {
+        nuevoVehiculoRayCast(node);
+    }
+
+    
 
 
     return true;
@@ -123,6 +132,75 @@ void SceneNodeConfig::nuevoCamera(mxml_node_t* node)
     
     map_cameras[cam.nombreCamera] = cam;
 }
+
+void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
+{
+    mxml_node_t* nombre;
+    mxml_node_t* nombreMallaRueda;
+    mxml_node_t* nombreMallaChasis;
+    mxml_node_t* radioRuedas;
+    mxml_node_t* anchoRuedas;
+    mxml_node_t* friccionRueda;
+    mxml_node_t* influenciaRodado;
+    mxml_node_t* indiceRestitucionSuspension;
+    mxml_node_t* posicion;
+    mxml_node_t* velocidadGiro;
+    mxml_node_t* aceleracion; 
+    mxml_node_t* frenada;
+    mxml_node_t* aceleracionMarchaAtras;
+    mxml_node_t* suspensionStiffness;   //  dureza de la suspensión
+    mxml_node_t* suspensionCompression; // indice de compresión de la suspensión
+    mxml_node_t* suspensionDamping;     // indice de restitución de la suspensión
+    mxml_node_t* maxSuspensionTravelCm; // limite del recorrido de la suspensión (entiendo que al comprimirse el muelle)
+    mxml_node_t* maxSuspensionForce;    // límite máximo de la fuerza de la suspensión
+    mxml_node_t* frictionSlip;              
+    
+    nombre = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
+    nombreMallaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    nombreMallaChasis = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_CHASIS)]).c_str(),NULL,NULL,MXML_DESCEND);
+    radioRuedas = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RADIO_RUEDAS)]).c_str(),NULL,NULL,MXML_DESCEND);
+    anchoRuedas = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ANCHO_RUEDAS)]).c_str(),NULL,NULL,MXML_DESCEND);
+    friccionRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICCION_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    influenciaRodado = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::INFLUENCIA_RODADO)]).c_str(),NULL,NULL,MXML_DESCEND);
+    indiceRestitucionSuspension = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::INDICE_REST_SUSP)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posicion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSICION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    velocidadGiro = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::VELOCIDAD_GIRO)]).c_str(),NULL,NULL,MXML_DESCEND);
+    aceleracion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ACELERACION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    frenada = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRENADA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    aceleracionMarchaAtras = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ACELERACION_MARCHA_ATRAS)]).c_str(),NULL,NULL,MXML_DESCEND);
+    suspensionStiffness = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::SUSPENSION_STIFFNESS)]).c_str(),NULL,NULL,MXML_DESCEND);
+    suspensionCompression = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::SUSPENSION_COMPRESION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    suspensionDamping = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::SUSPENSION_DAMPING)]).c_str(),NULL,NULL,MXML_DESCEND);
+    maxSuspensionTravelCm = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MAX_SUSPENSION_TRAVEL_CM)]).c_str(),NULL,NULL,MXML_DESCEND);
+    maxSuspensionForce = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MAX_SUSPENSION_FORCE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    frictionSlip = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICTION_SLIP)]).c_str(),NULL,NULL,MXML_DESCEND);
+    
+    nodoVehiculoRayCast_t nodo;
+    
+    nodo.nombre = string(mxmlGetText(nombre,NULL));
+    nodo.nombreMallaRueda = string(mxmlGetText(nombreMallaRueda,NULL));
+    nodo.nombreMallaChasis = string(mxmlGetText(nombreMallaChasis,NULL));
+    nodo.radioRuedas = Ogre::Real(std::stof(mxmlGetText(radioRuedas,NULL)));
+    nodo.anchoRuedas = Ogre::Real(std::stof(mxmlGetText(anchoRuedas,NULL)));
+    nodo.friccionRueda = Ogre::Real(std::stof(mxmlGetText(friccionRueda,NULL)));
+    nodo.influenciaRodado = Ogre::Real(std::stof(mxmlGetText(influenciaRodado,NULL)));
+    nodo.indiceRestitucionSuspension = Ogre::Real(std::stof(mxmlGetText(indiceRestitucionSuspension,NULL)));
+    nodo.posicion = extraeVector3(posicion);
+    nodo.velocidadGiro = Ogre::Real(std::stof(mxmlGetText(velocidadGiro,NULL)));
+    nodo.aceleracion = Ogre::Real(std::stof(mxmlGetText(aceleracion,NULL)));
+    nodo.frenada = Ogre::Real(std::stof(mxmlGetText(frenada,NULL)));
+    nodo.aceleracionMarchaAtras = Ogre::Real(std::stof(mxmlGetText(aceleracionMarchaAtras,NULL)));
+    nodo.suspensionStiffness = Ogre::Real(std::stof(mxmlGetText(suspensionStiffness,NULL)));
+    nodo.suspensionCompression = Ogre::Real(std::stof(mxmlGetText(suspensionCompression,NULL)));
+    nodo.suspensionDamping = Ogre::Real(std::stof(mxmlGetText(suspensionDamping,NULL)));
+    nodo.maxSuspensionTravelCm = Ogre::Real(std::stof(mxmlGetText(maxSuspensionTravelCm,NULL)));
+    nodo.maxSuspensionForce = Ogre::Real(std::stof(mxmlGetText(maxSuspensionForce,NULL)));
+    nodo.frictionSlip = Ogre::Real(std::stof(mxmlGetText(frictionSlip,NULL)));
+    
+    map_vehiculos_raycast[nodo.nombre] = nodo;
+    
+}
+
 
 Ogre::Vector3 SceneNodeConfig::extraeVector3(mxml_node_t* node)
 {
