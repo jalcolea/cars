@@ -1,17 +1,19 @@
 #include <iostream>
-#include "testState.h"
+#include "testStateVehicRayCast.h"
 #include "PlayState.h"
 #include "MenuState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 #include <bitset>
 
+#include "CarRayCast.h"
+
 using namespace std;
 using namespace Ogre;
 
-template<> testState *Ogre::Singleton<testState>::msSingleton = 0;
+template<> testStateVehicRayCast *Ogre::Singleton<testStateVehicRayCast>::msSingleton = 0;
 
-void testState::enter()
+void testStateVehicRayCast::enter()
 {
     // Recuperar recursos básicos
     _root = Ogre::Root::getSingletonPtr();
@@ -66,7 +68,7 @@ void testState::enter()
 
 }
 
-void testState::exit()
+void testStateVehicRayCast::exit()
 {
 //    sounds::getInstance()->halt_music();
 //    destroyMyGui();
@@ -74,19 +76,19 @@ void testState::exit()
     _root->getAutoCreatedWindow()->removeAllViewports();
 }
 
-void testState::pause()
+void testStateVehicRayCast::pause()
 {
 }
 
-void testState::resume()
+void testStateVehicRayCast::resume()
 {
 
 }
 
-bool testState::frameStarted(const Ogre::FrameEvent &evt)
+bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
-    if (_pauseSimulation) _world.get()->stepSimulation(_deltaT);
+    if (_playSimulation) _world.get()->stepSimulation(_deltaT);
     static Vector3 oldPos = _car->getPosicion();
     static Ogre::Real speed = 10.0;
     _fps = 1.0 / _deltaT;
@@ -97,7 +99,7 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     static Real sBrake = 10;
     _vt = Ogre::Vector3::ZERO;
 
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_P)) _pauseSimulation = !_pauseSimulation;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_P)) _playSimulation = !_playSimulation;
 
     _velocidad = _car->getVelocidadActualCalculada(oldPos,_car->getPosicion(),_deltaT);
 
@@ -111,6 +113,25 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
     if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
     
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD5))
+    {
+        if ((_keys & static_cast<size_t>(keyPressed_flags::NUMPAD1)) || (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD3)))
+            _carRayCast->acelerar(_carRayCast->getFuerzaMotor(),false);
+        else 
+            _carRayCast->acelerar(_carRayCast->getFuerzaMotor(),true);
+    }
+    else _carRayCast->acelerar(0); // Si no aceleramos que actúe la inercia. También sirve para cuando soltamos el freno :D
+
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD2)) _carRayCast->frenar();
+    
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD1)) 
+        _carRayCast->girar(1);
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD3)) 
+        _carRayCast->girar(-1);
+    
+
+    
+    
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
 
@@ -122,7 +143,7 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 //        _car->steer((rSteer-=180) * _deltaT * 0.08);
         
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_W))
-       { _car->setVelocity(1500); sBrake = 1500; }
+        _car->setVelocity(1500); sBrake = 1500; 
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_S))
         _car->setVelocity(sBrake-=1500*_deltaT);
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
@@ -132,8 +153,8 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     
 
     
-//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
-//        _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
+        _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
 
     _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);
     if (_camera->getPosition().length() < 2.0) 
@@ -152,7 +173,9 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 //    _camera->yaw(Ogre::Radian(rotx));
     
     if (!_freeCamera)
-        _camera->setPosition(_car->getPosicion().x,_camera->getPosition().y, _car->getPosicion().z + 40);
+        _camera->setPosition(_carRayCast->getPosicion().x,_camera->getPosition().y, _carRayCast->getPosicion().z + 40);
+        cout << _carRayCast->getPosicion();
+        //_camera->setPosition(_car->getPosicion().x,_camera->getPosition().y, _car->getPosicion().z + 40);
     //if (abs(_camera->getPosition().z - _car->getPosicion().z) < 40) cout << "muy cerca" << endl;
 
     pintaOverlayInfo();
@@ -161,7 +184,7 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
 
 }
 
-void testState::pintaOverlayInfo()
+void testStateVehicRayCast::pintaOverlayInfo()
 {   
     Ogre::OverlayElement *oe;
     oe = _overlayManager->getOverlayElement("fpsInfo");
@@ -177,12 +200,12 @@ void testState::pintaOverlayInfo()
                    Ogre::String("Vel: ") + Ogre::StringConverter::toString(_velocidad));
 }
 
-bool testState::frameEnded(const Ogre::FrameEvent &evt)
+bool testStateVehicRayCast::frameEnded(const Ogre::FrameEvent &evt)
 {
     return !_exitGame;
 }
 
-bool testState::keyPressed(const OIS::KeyEvent &e)
+bool testStateVehicRayCast::keyPressed(const OIS::KeyEvent &e)
 {
 //    if (e.key == OIS::KC_SPACE)
 //    {
@@ -192,6 +215,9 @@ bool testState::keyPressed(const OIS::KeyEvent &e)
 
     if (e.key == OIS::KC_L)
     {    _freeCamera = !_freeCamera; cout << "Camara libre: " << _freeCamera << endl; }
+    
+    if (e.key == OIS::KC_1)
+        cout << "punto conexion chasis rueda 0: " <<  this->_carRayCast->getRuedas()[0].getPuntoConexionChasis() << endl;
 
 
     flagKeys(true);
@@ -199,7 +225,7 @@ bool testState::keyPressed(const OIS::KeyEvent &e)
     return true;
 }
 
-void testState::flagKeys(bool flag)
+void testStateVehicRayCast::flagKeys(bool flag)
 {
     if (flag)
     {
@@ -219,6 +245,14 @@ void testState::flagKeys(bool flag)
             _keys |= static_cast<size_t>(keyPressed_flags::PGUP);
         if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
             _keys |= static_cast<size_t>(keyPressed_flags::PGDOWN);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD1))
+            _keys |= static_cast<size_t>(keyPressed_flags::NUMPAD1);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD2))
+            _keys |= static_cast<size_t>(keyPressed_flags::NUMPAD2);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD3))
+            _keys |= static_cast<size_t>(keyPressed_flags::NUMPAD3);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD5))
+            _keys |= static_cast<size_t>(keyPressed_flags::NUMPAD5);
     }
     else
     {
@@ -238,10 +272,19 @@ void testState::flagKeys(bool flag)
             _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::PGUP));
         if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
             _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::PGDOWN));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD1))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::NUMPAD1));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD2))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::NUMPAD2));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD3))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::NUMPAD3));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD5))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::NUMPAD5));
+            
     }
 }
 
-bool testState::keyReleased(const OIS::KeyEvent &e)
+bool testStateVehicRayCast::keyReleased(const OIS::KeyEvent &e)
 {
 
     flagKeys(false);
@@ -252,35 +295,35 @@ bool testState::keyReleased(const OIS::KeyEvent &e)
     return true;
 }
 
-bool testState::mouseMoved(const OIS::MouseEvent &e)
+bool testStateVehicRayCast::mouseMoved(const OIS::MouseEvent &e)
 {
     return true;
 }
 
-bool testState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
+bool testStateVehicRayCast::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 {
     return true;
 }
 
-bool testState::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
+bool testStateVehicRayCast::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 {
     return true;
 }
 
-testState *testState::getSingletonPtr()
+testStateVehicRayCast *testStateVehicRayCast::getSingletonPtr()
 {
     return msSingleton;
 }
 
-testState &testState::getSingleton()
+testStateVehicRayCast &testStateVehicRayCast::getSingleton()
 {
     assert(msSingleton);
     return *msSingleton;
 }
 
-testState::~testState(){}
+testStateVehicRayCast::~testStateVehicRayCast(){}
 
-void testState::createLight()
+void testStateVehicRayCast::createLight()
 {
     //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
     _sceneMgr->setShadowTextureCount(2);
@@ -295,7 +338,7 @@ void testState::createLight()
     light->setCastShadows(true);
 }
 
-void testState::createFloor() 
+void testStateVehicRayCast::createFloor() 
 {
     SceneNode *floorNode = _sceneMgr->createSceneNode("floor");
     Plane planeFloor;
@@ -310,7 +353,8 @@ void testState::createFloor()
     floorNode->attachObject(entFloor);
     _sceneMgr->getRootSceneNode()->addChild(floorNode);
     _floorShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
-    _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR, COL_CAMERA | COL_CAR | COL_TRACK | COL_TRACK_COLISION);
+//    _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR, COL_CAMERA | COL_CAR | COL_TRACK | COL_TRACK_COLISION);
+    _floorBody = new RigidBody("rigidBodyPlane", _world.get());
 
     _floorBody->setStaticShape(_floorShape, 0.5, 0.8);
     floorNode->setPosition(Vector3(0, 2, 0));
@@ -319,7 +363,7 @@ void testState::createFloor()
 }
 
 
-void testState::createScene()
+void testStateVehicRayCast::createScene()
 {
   
     _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
@@ -335,26 +379,27 @@ void testState::createScene()
     
     _track = unique_ptr<track>(new track("track1bis",_world.get(),Vector3(0,0,0),_sceneMgr));
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
-    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
+//    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
+    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",nullptr));
     _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get()));
     _carRayCast->buildVehiculo();
     
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
-    nodoOgre_t nodoConfigCol = _scn.getInfoNodoOgre("track1colLateral");
-    Entity* entColLateral = _sceneMgr->createEntity(nodoConfigCol.nombreEntidad, nodoConfigCol.nombreMalla);
-    SceneNode* nodoColLateral = _sceneMgr->createSceneNode(nodoConfigCol.nombreNodo);
-    nodoColLateral->attachObject(entColLateral);
-    _track->getSceneNode()->addChild(nodoColLateral);
-    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(entColLateral);
-    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
-    OgreBulletDynamics::RigidBody* body = new OgreBulletDynamics::RigidBody(nodoConfigCol.nombreNodo, _world.get(), COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
-    body->setShape(nodoColLateral,tri,nodoConfigCol.bodyRestitutionBullet,nodoConfigCol.frictionBullet,nodoConfigCol.masaBullet,nodoConfigCol.posShapeBullet);
-    nodoColLateral->setVisible(false);
+//    nodoOgre_t nodoConfigCol = _scn.getInfoNodoOgre("track1colLateral");
+//    Entity* entColLateral = _sceneMgr->createEntity(nodoConfigCol.nombreEntidad, nodoConfigCol.nombreMalla);
+//    SceneNode* nodoColLateral = _sceneMgr->createSceneNode(nodoConfigCol.nombreNodo);
+//    nodoColLateral->attachObject(entColLateral);
+//    _track->getSceneNode()->addChild(nodoColLateral);
+//    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(entColLateral);
+//    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
+//    OgreBulletDynamics::RigidBody* body = new OgreBulletDynamics::RigidBody(nodoConfigCol.nombreNodo, _world.get(), COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
+//    body->setShape(nodoColLateral,tri,nodoConfigCol.bodyRestitutionBullet,nodoConfigCol.frictionBullet,nodoConfigCol.masaBullet,nodoConfigCol.posShapeBullet);
+//    nodoColLateral->setVisible(false);
   
 }
 
-void testState::createOverlay() 
+void testStateVehicRayCast::createOverlay() 
 {
 //    _sceneMgr->addRenderQueueListener(new Ogre::OverlaySystem());  
 //    Ogre::ResourceGroupManager::getSingleton().initialiseAllResourceGroups();    
@@ -364,7 +409,7 @@ void testState::createOverlay()
     overlay->show();
 }
 
-void testState::cargarParametros(string archivo, bool consoleOut)
+void testStateVehicRayCast::cargarParametros(string archivo, bool consoleOut)
 {
     //Cargamos la info para generar elementos de la escena (scenenodes, cameras, lights)
     _scn.load_xml("SceneNodes.xml");
@@ -387,7 +432,7 @@ void testState::cargarParametros(string archivo, bool consoleOut)
         cout << (*it).second << endl;
 }
 
-void testState::configurarCamaraPrincipal()
+void testStateVehicRayCast::configurarCamaraPrincipal()
 {
     //Configuramos la camara
     double width = _viewport->getActualWidth();
@@ -402,7 +447,7 @@ void testState::configurarCamaraPrincipal()
     _camera->setFarClipDistance(cam.farClipDistance);
 }
 
-void testState::initBulletWorld(bool showDebug)
+void testStateVehicRayCast::initBulletWorld(bool showDebug)
 {
     _debugDrawer = new OgreBulletCollisions::DebugDrawer();
     _debugDrawer->setDrawWireframe(true);
@@ -416,12 +461,12 @@ void testState::initBulletWorld(bool showDebug)
     _world.get()->setShowDebugShapes(showDebug);
 }
 
-void testState::destroyMyGui()
+void testStateVehicRayCast::destroyMyGui()
 {
  MyGUI::LayoutManager::getInstance().unloadLayout(layout);
 }
 
-void testState::createMyGui()
+void testStateVehicRayCast::createMyGui()
 {
     MyGUI::OgrePlatform *mp = new MyGUI::OgrePlatform();
     mp->initialise(_root->getAutoCreatedWindow(), Ogre::Root::getSingleton().getSceneManager("SceneManager"));
@@ -431,11 +476,11 @@ void testState::createMyGui()
 //    MyGUI::PointerManager::getInstancePtr()->setVisible(true);
 }
 
-bool testState::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)
+bool testStateVehicRayCast::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)
 {return true;}
-bool testState::WiimoteButtonUp(const wiimWrapper::WiimoteEvent &e)
+bool testStateVehicRayCast::WiimoteButtonUp(const wiimWrapper::WiimoteEvent &e)
 {return true;}
-bool testState::WiimoteIRMove(const wiimWrapper::WiimoteEvent &e)
+bool testStateVehicRayCast::WiimoteIRMove(const wiimWrapper::WiimoteEvent &e)
 {return true;}
 
 

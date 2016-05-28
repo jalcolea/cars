@@ -72,6 +72,13 @@ struct nodoVehiculoRayCast
     string nombre;
     string nombreMallaRueda;
     string nombreMallaChasis;
+    string nombreMaterial;                      // nombre del material que usará el Entity, en caso de poder cambiarse.
+    Ogre::Quaternion orientacion;               // orientacion del scenenode
+    Ogre::Quaternion orientacionShapeBullet;    // orientación del shape de bullet que envolverá al modelo
+    Ogre::Vector3 posShapeBullet;               // posición inicial del shape de bullet
+    Ogre::Real masaBullet;                      // propiedad masa del rigidbody
+    Ogre::Real frictionBullet;                  // propiedad índice de fricción del rigidbody
+    Ogre::Real bodyRestitutionBullet;           // propiedad índice de restitución (elasticidad) del rigidbody
     Ogre::Real radioRuedas;
     Ogre::Real anchoRuedas;
     Ogre::Real friccionRueda;
@@ -94,6 +101,13 @@ struct nodoVehiculoRayCast
        o << "Nombre del Vehiculo Ray Cast: "    << n.nombre << endl <<
             "\t mesh Ruedas: "                  << n.nombreMallaRueda << endl <<
             "\t mesh Chasis: "                  << n.nombreMallaChasis << endl <<
+            "\t Material que se está usando: "  << n.nombreMaterial << endl <<
+            "\t Orientacion: "                  << n.orientacion << endl <<
+            "\t Orientacion shape de Bullet: "  << n.orientacionShapeBullet << endl <<
+            "\t Posicion del shape de Bullet "  << n.posShapeBullet << endl <<
+            "\t Masa del objeto de Bullet: "    << n.masaBullet << endl <<
+            "\t Indice de Friccion Bullet: "    << n.frictionBullet << endl <<
+            "\t Indice de Restitucion Bullet: " << n.bodyRestitutionBullet << endl <<
             "\t radio rueda: "                  << n.radioRuedas << endl <<
             "\t ancho rueda: "                  << n.anchoRuedas << endl <<
             "\t coeficiente friccion rueda: "   << n.friccionRueda << endl <<

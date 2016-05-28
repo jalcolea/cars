@@ -44,6 +44,7 @@
     <File Name="src/track.cpp"/>
     <File Name="src/OptionsState.cpp"/>
     <File Name="src/CarRayCast.cpp"/>
+    <File Name="src/testStateVehicRaycast.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="include/Bluez_Util.h"/>
@@ -73,6 +74,7 @@
     <File Name="include/track.h"/>
     <File Name="include/OptionsState.h"/>
     <File Name="include/CarRayCast.h"/>
+    <File Name="include/testStateVehicRayCast.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

@@ -20,12 +20,23 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
 {
     public:
     Rueda(){};
-    Rueda(Real radio, Real ancho, Real friccion, Real influenciaRodado, Real indiceRestitucionSuspension, 
-          SceneNode* nodoPadre, string malla, bool delantera, Vector3 conexionChasis)
-          : _radioRueda(radio), _anchoRueda(ancho), _friccionRueda(friccion), _influenciaRodado(influenciaRodado), 
-            _indiceRestitucionSuspension(indiceRestitucionSuspension), _puntoConexionChasis(conexionChasis)
+    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index)
+          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis)
     {
-        //TODO: CREAR TODO LO DE OGRE
+        _entRueda = _scnMgr->createEntity(param.nombre + "_ent" + std::to_string(index), param.nombreMallaRueda);
+        _entRueda->setCastShadows(true);
+        _nodo = _scnMgr->createSceneNode(param.nombre + "_nodo" + std::to_string(index));
+        _nodo->attachObject(_entRueda);
+        if (_nodoPadre) _nodoPadre->addChild(_nodo);
+        else _scnMgr->getRootSceneNode()->addChild(_nodo);
+        
+        this->_nombre = param.nombre + to_string(index);
+        this->_anchoRueda = _entRueda->getBoundingBox().getSize().x;// * 0.3;
+        this->_radioRueda = _entRueda->getBoundingBox().getSize().y;// * 1.5; // La z en este caso también valdría.
+        this->_friccionRueda = param.friccionRueda;
+        this->_indiceRestitucionSuspension = param.indiceRestitucionSuspension;
+        this->_influenciaRodado = param.influenciaRodado;
+        
     };
 
     virtual ~Rueda(){};
@@ -39,13 +50,39 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
     inline void setAnchoRueda(float anchoRueda ) { _anchoRueda = anchoRueda; };
     inline void setFriccionRueda(float friccionRueda ) { _friccionRueda = friccionRueda; };
     inline void setInfluenciaRodado(float influenciaRodado ) { _influenciaRodado = influenciaRodado; }; //influencia al rodar de las ruedas
+    inline bool getDelantera(){ return _delantera; };
     inline void setDelantera(bool valor){ _delantera = valor; }; // si la rueda es delantera (entonces puede girar, o eso entiendo yo)
                                                                  // aunque no le veo mucho sentido (por ahora). Si quisiéramos hacer un 
                                                                  // toro (cargador de palés) que tiene ruedas traseras que giran pues 
                                                                  // sería igual solo que invirtiendo el sentido de rotación de las mismas no???
     inline void setPuntoConexionChasis(Vector3 puntoEnSistemaLocalChasis){ _puntoConexionChasis = puntoEnSistemaLocalChasis; };
+    inline Vector3 & getPuntoConexionChasis(){ return _puntoConexionChasis; };
+    inline Vector3 & getDireccionCS(){ return _direccionCS; };
+    inline Vector3 & getEjeCS(){ return _ejeCS; };
+    inline SceneNode* getSceneNode(){ return _nodo; }; 
+    
+    friend ostream& operator<<(ostream& o, Rueda &n)
+    {
+        o << "DATOS RUEDA"                  << endl
+          << "\t Nombre: "                  << n._nombre << endl
+          << "\t Radio rueda: "             << n._radioRueda << endl
+          << "\t Ancho rueda: "             << n._anchoRueda << endl
+          << "\t Friccion: "                << n._friccionRueda << endl
+          << "\t Influencia rodado: "       << n._influenciaRodado << endl
+          << "\t Restitucion Suspension: "  << n._indiceRestitucionSuspension << endl
+          << "\t @Entity: "                 << n._entRueda << endl
+          << "\t @SceneNode: "              << n._nodo << endl
+          << "\t @SceneNode Padre: "        << n._nodoPadre << endl
+          << "\t @SceneManager: "           << n._scnMgr << endl
+          << "\t Delantera?: "              << n._delantera << endl
+          << "\t Punto conexion chasis: "   << n._puntoConexionChasis << endl
+          << "\t DireccionCS: "             << n._direccionCS << endl
+          << "\t EjeCS: "                   << n._ejeCS  << endl;
+        return o;
+    }
     
 private:
+    string _nombre;
     Ogre::Real _radioRueda;
     Ogre::Real _anchoRueda;
     Ogre::Real _friccionRueda;
@@ -54,6 +91,7 @@ private:
     Entity* _entRueda;
     SceneNode* _nodo;
     SceneNode* _nodoPadre;
+    SceneManager* _scnMgr;
     bool _delantera;
 
     // DOCUMENTACION SACADA DE http://blender3d.org.ua/forum/game/iwe/upload/Vehicle_Simulation_With_Bullet.pdf por Kester Maddock
@@ -64,10 +102,16 @@ private:
     
     // The direction of ray cast (chassis space) (see also: m_raycastInfo.m_wheelDirectionWS)
     // btVector3m_wheelDirectionCS;
-    Vector3 _direccionCS = Vector3(0,-1,0); 
+    // Esto indica la dirección del rayo que sale desde el chasis.
+    // (0,-1,0) indica que se lanza el rayo sobre el eje Y y hacia abajo (signo negativo). Si pones (0,1,0) verás
+    // de forma graciosa como las ruedas quedan suspendidas encima del chasis.
+    // No se parametriza pues pienso que lo normal es tenerlo así siempre.
+    Vector3 _direccionCS = Vector3(0,-1,0); // En la demo de OgreBullet lo pone así
     
     // The axis the wheel rotates around (chassis space) (see also:m_raycastInfo.m_wheelAxleWS)
-    Vector3 _ejeCS = Vector3(-1,0,0);
+    // Esto indica sobre que eje giran las ruedas (pitch en este caso pues el modelo está modelado teniendo a la rueda de frente,
+    // es decir, la banda de rodadura mira hacia el observador).
+    Vector3 _ejeCS = Vector3(-1,0,0); // En la demo de OgreBullet lo pone así
     
 };
 
@@ -80,6 +124,7 @@ public:
 
     inline string getNombre() const { return _nombre; };
     inline Vector3 getPosicion() const { return _posicion; };
+    inline Vector3 getPosicionActual() const { return _nodoChasis->getPosition(); };
     inline Real getFuerzaMotor() const { return _fuerzaMotor; };
     inline OgreBulletDynamics::WheeledRigidBody* getRigidBody() const { return _bodyWheeled; };
     inline OgreBulletDynamics::VehicleTuning* getTuneo() const { return _tuneo; };
@@ -95,10 +140,12 @@ public:
     void setVehicle(OgreBulletDynamics::RaycastVehicle* rv);
     void setChassis(Ogre::Entity* entChasis); // Establece la malla del chasis.
     void buildVehiculo();
-    void acelerar(bool endereza = false ); // obvio no?
+    void acelerar(Real fuerza, bool endereza = false ); // obvio no?
+    void frenar();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
-    void girar(Ogre::Radian n); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
+    void girar(short n); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
     void recolocar(Ogre::Vector3 donde); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
+    inline std::vector<Rueda> & getRuedas() { return _ruedas; };
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };
@@ -126,6 +173,7 @@ public:
     Entity* _entChasis;
     SceneNode* _nodoPadre;
     SceneNodeConfig* _snc;
+    Real _valorGiro = 0;
         
     // Parámetros de tuneo del coche
     Ogre::Real _suspensionStiffness;   // dureza de la suspensión

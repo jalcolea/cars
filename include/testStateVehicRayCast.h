@@ -18,8 +18,8 @@
  * General Public License for more details.  
  *********************************************************************/
 
-#ifndef testState_H
-#define testState_H
+#ifndef testStateVehicRayCast_H
+#define testStateVehicRayCast_H
 
 #include <Ogre.h>
 #include <OgreOverlaySystem.h>
@@ -49,22 +49,26 @@ using namespace OgreBulletCollisions;
 
 enum class keyPressed_flags
 {
-    NONE = 0,
-    LEFT = 2,
-    RIGHT = 4,
-    UP = 8,
-    DOWN = 16,
-    INS = 32,
-    DEL = 64,
-    PGUP = 128,
-    PGDOWN = 256
+    NONE =           0,
+    LEFT =      1 << 0,
+    RIGHT =     1 << 1,
+    UP =        1 << 2,
+    DOWN =      1 << 3,
+    INS =       1 << 4,
+    DEL =       1 << 5,
+    PGUP =      1 << 6,
+    PGDOWN =    1 << 7,
+    NUMPAD1 =   1 << 8,
+    NUMPAD2 =   1 << 9,
+    NUMPAD3 =   1 << 10,
+    NUMPAD5 =   1 << 11
 };
 
-class testState : public Ogre::Singleton<testState>, public GameState
+class testStateVehicRayCast : public Ogre::Singleton<testStateVehicRayCast>, public GameState
 {
 public:
-    testState(){}
-    ~testState();
+    testStateVehicRayCast(){}
+    ~testStateVehicRayCast();
     void enter();
     void exit();
     void pause();
@@ -84,8 +88,8 @@ public:
 /*******************************************************************************/  
 
     // Heredados de Ogre::Singleton.
-    static testState &getSingleton();
-    static testState *getSingletonPtr();
+    static testStateVehicRayCast &getSingleton();
+    static testStateVehicRayCast *getSingletonPtr();
 
 protected:
     Ogre::Root *_root;
@@ -100,7 +104,7 @@ protected:
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
     bool _freeCamera = true;
-    bool _pauseSimulation = false;
+    bool _playSimulation = true;
 
     bool _exitGame;
     Ogre::Real _deltaT;

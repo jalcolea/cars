@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <dataSceneNode>
     <scenenode>
         <nombreNodo>track1</nombreNodo>
@@ -21,7 +21,7 @@
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>0.0</masaBullet>
-        <frictionBullet>0.7</frictionBullet>
+        <frictionBullet>0.8</frictionBullet>
         <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
@@ -35,7 +35,7 @@
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>1.0</masaBullet>
         <frictionBullet>1.0</frictionBullet>
-        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+        <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
         <nombreNodo>carKartYellow</nombreNodo>
@@ -89,28 +89,6 @@
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
     </scenenode>
 </dataSceneNode>
-
-<dataVehiculoRayCast>
-  <nombreNodo>kart</nombreNodo>
-  <nombreMallaRueda>wheel-kart.mesh</nombreMallaRueda>
-  <nombreMallaChasis>car-kart-chasis.mesh</nombreMallaChasis>
-  <radioRuedas>1.0</radioRuedas>
-  <anchoRuedas>0.5</anchoRuedas>
-  <friccionRueda>1e30f</friccionRueda>
-  <influenciaRodado>0.1</influenciaRodado>
-  <indiceRestitucionSuspension>0.6</indiceRestitucionSuspension>
-  <posicion x="2" y="2.01" z="-12"></posicion>
-  <velocidadGiro>0.1</velocidadGiro>
-  <aceleracion>6000</aceleracion>
-  <frenada>600</frenada>
-  <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
-  <suspensionStiffness>100</suspensionStiffness>
-  <suspensionCompresion>0.3</suspensionCompresion>
-  <suspensionDamping>0.5</suspensionDamping>
-  <maxSuspensionTravelCM>30</maxSuspensionTravelCM>
-  <maxSuspensionForce>150</maxSuspensionForce>
-  <frictionSlip>10000</frictionSlip>
-</dataVehiculoRayCast>
   
 <dataLights>
 </dataLights>
@@ -118,7 +96,8 @@
 <dataCamera>
     <camera>
         <nombreCamera>IntroCamera</nombreCamera>
-        <posInicial x="0" y="16" z="28"></posInicial>
+         <posInicial x="0" y="16" z="28"></posInicial>
+<!---        <posInicial x="7.27" y="2.15" z="-10.71"></posInicial> -->
         <orientacion w="-0.819" x="-0.574" y="0" z="0"></orientacion>
         <direccion x="0" y="0" z="0"></direccion>
         <posLookAt x="0" y="0" z="0"></posLookAt>
@@ -126,3 +105,34 @@
         <farClipDistance>100</farClipDistance>
     </camera>
 </dataCamera>
+
+<dataVehiculoRayCast>
+    <dataRayCast>  
+        <nombreNodo>kart</nombreNodo>
+        <nombreMallaRueda>wheel-kart.mesh</nombreMallaRueda>
+        <nombreMallaChasis>car-kart-chasis.mesh</nombreMallaChasis>
+        <nombreMaterial>unknown</nombreMaterial>
+        <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
+        <masaBullet>200</masaBullet>
+        <frictionBullet>0.6</frictionBullet>
+        <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
+        <radioRuedas>1.0</radioRuedas>
+        <anchoRuedas>0.5</anchoRuedas>
+        <friccionRueda>1e30f</friccionRueda>
+        <influenciaRodado>0.1</influenciaRodado>
+        <indiceRestitucionSuspension>0.02</indiceRestitucionSuspension>
+        <posicion x="2" y="1.2" z="-12"></posicion>
+        <velocidadGiro>0.01</velocidadGiro>
+        <aceleracion>1000</aceleracion>
+        <frenada>600</frenada>
+        <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
+        <suspensionStiffness>200</suspensionStiffness>
+        <suspensionCompresion>0.3</suspensionCompresion>
+        <suspensionDamping>0.5</suspensionDamping>
+        <maxSuspensionTravelCM>0.8</maxSuspensionTravelCM>
+        <maxSuspensionForce>150</maxSuspensionForce>
+        <frictionSlip>10000</frictionSlip>
+    </dataRayCast>  
+</dataVehiculoRayCast>
