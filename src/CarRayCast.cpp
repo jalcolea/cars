@@ -144,3 +144,26 @@ void CarRayCast::girar(short n) // n positivo = izquierda, n negativo = derecha
     
     cout << _valorGiro << endl;
 }
+
+void CarRayCast::recolocar(Ogre::Vector3 donde)
+{
+    // Reseteamos todo
+    _bodyWheeled->getBulletRigidBody()->getWorldTransform().setIdentity();
+    _bodyWheeled->getBulletRigidBody()->getWorldTransform().setOrigin(convert(donde));
+    
+    
+//    getCarChassisPtr()->getBulletRigidBody ()->getWorldTransform().setIdentity();
+//    getCarChassisPtr()->getBulletRigidBody ()->getWorldTransform().setOrigin(btVector3(_x, _y, _z));
+//    // Reiniciar fuerzas
+//    getCarChassisPtr()->getBulletRigidBody ()->clearForces();
+//    getCarChassisPtr()->getBulletRigidBody ()->setInterpolationLinearVelocity( btVector3( 0, 0, 0 ) );
+//    getCarChassisPtr()->getBulletRigidBody ()->setInterpolationAngularVelocity( btVector3( 0, 0, 0 ) );
+//    getCarChassisPtr()->getBulletRigidBody ()->setLinearVelocity(btVector3( 0, 0, 0 ));
+//    getCarChassisPtr()->getBulletRigidBody ()->setAngularVelocity(btVector3( 0, 0, 0 ));
+//    _mVehicle->getBulletVehicle ()->resetSuspension();
+//
+//    // Colocar ruedas
+//    _mSteering = 0.0;
+//    _mVehicle->setSteeringValue ( _mSteering, 0 );
+//    _mVehicle->setSteeringValue ( _mSteering, 1 );
+}

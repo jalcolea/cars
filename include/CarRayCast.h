@@ -27,14 +27,18 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
         _entRueda->setCastShadows(true);
         _nodo = _scnMgr->createSceneNode(param.nombre + "_nodo" + std::to_string(index));
         _nodo->attachObject(_entRueda);
-        if (_nodoPadre) _nodoPadre->addChild(_nodo);
-        else _scnMgr->getRootSceneNode()->addChild(_nodo);
+        if (_nodoPadre) _nodoPadre->addChild(_nodo);            // Si el nodopadre no es otro que el Root, parece que no funciona bien.
+        else _scnMgr->getRootSceneNode()->addChild(_nodo);      // TODO: Este código está en vías de desaparecer.
         
         this->_nombre = param.nombre + to_string(index);
         this->_anchoRueda = _entRueda->getBoundingBox().getSize().x;// * 0.3;
         this->_radioRueda = _entRueda->getBoundingBox().getSize().y;// * 1.5; // La z en este caso también valdría.
         this->_friccionRueda = param.friccionRueda;
-        this->_indiceRestitucionSuspension = param.indiceRestitucionSuspension;
+        this->_indiceRestitucionSuspension = param.indiceRestitucionSuspension; // Por las pruebas realizadas el parámetro SuspensionRestLength
+                                                                                // de OgreBullet (ó Bullet) parece un factor de escala
+                                                                                // para la longitud del vector puntoConexionChasis. Si aumenta
+                                                                                // las ruedas se separan en exceso del chasis. Si es 0, quedan
+                                                                                // colocadas en el chasis exactamente donde se supone que deben estar.
         this->_influenciaRodado = param.influenciaRodado;
         
     };
@@ -125,6 +129,7 @@ public:
     inline string getNombre() const { return _nombre; };
     inline Vector3 getPosicion() const { return _posicion; };
     inline Vector3 getPosicionActual() const { return _nodoChasis->getPosition(); };
+    inline SceneNode* getSceneNode() const { return _nodoChasis; };
     inline Real getFuerzaMotor() const { return _fuerzaMotor; };
     inline OgreBulletDynamics::WheeledRigidBody* getRigidBody() const { return _bodyWheeled; };
     inline OgreBulletDynamics::VehicleTuning* getTuneo() const { return _tuneo; };

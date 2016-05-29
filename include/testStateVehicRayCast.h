@@ -64,6 +64,15 @@ enum class keyPressed_flags
     NUMPAD5 =   1 << 11
 };
 
+enum class camara_view : int
+{
+    SEMICENITAL,
+    TRASERA_ALTA,
+    TRASERA_BAJA,
+    INTERIOR,
+    TOTAL_COUNT       // Su valor será el número total de elementos de esta enum. Útil para modular.
+};
+
 class testStateVehicRayCast : public Ogre::Singleton<testStateVehicRayCast>, public GameState
 {
 public:
@@ -91,6 +100,7 @@ public:
     static testStateVehicRayCast &getSingleton();
     static testStateVehicRayCast *getSingletonPtr();
 
+
 protected:
     Ogre::Root *_root;
     Ogre::SceneManager *_sceneMgr;
@@ -103,12 +113,15 @@ protected:
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
-    bool _freeCamera = true;
+    bool _freeCamera = false;
     bool _playSimulation = true;
+    SceneNode* _nodoVista;
+
 
     bool _exitGame;
     Ogre::Real _deltaT;
     MyGUI::VectorWidgetPtr layout;
+    camara_view _vista = camara_view::SEMICENITAL;
 
 private:
 
@@ -119,6 +132,8 @@ private:
     void createFloor();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
+    void colocaCamara(); // Para cambiar los tipos de vista de la cámara.
+    void reposicionaCamara(); // moverá la cámara en función del tipo de vista actual.
     void initBulletWorld(bool showDebug);    
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);

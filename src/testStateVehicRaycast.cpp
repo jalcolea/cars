@@ -5,11 +5,14 @@
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 #include <bitset>
+#include <Ogre.h>
 
 #include "CarRayCast.h"
 
 using namespace std;
 using namespace Ogre;
+using namespace OgreBulletDynamics;
+using namespace OgreBulletCollisions;
 
 template<> testStateVehicRayCast *Ogre::Singleton<testStateVehicRayCast>::msSingleton = 0;
 
@@ -156,7 +159,7 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
         _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
 
-    _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);
+    _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);-l
     if (_camera->getPosition().length() < 2.0) 
         _camera->moveRelative(-_vt * _deltaT * speed);//10.0 /*tSpeed*/);
         
@@ -169,19 +172,61 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_9)) rr-=180;
     _camera->yaw(Ogre::Radian(rr * _deltaT * 0.005));
 
-//    float rotx = InputManager_::getSingletonPtr()->getMouse()->getMouseState().X.rel * _deltaT * -1;
-//    _camera->yaw(Ogre::Radian(rotx));
-    
     if (!_freeCamera)
-        _camera->setPosition(_carRayCast->getPosicion().x,_camera->getPosition().y, _carRayCast->getPosicion().z + 40);
-        cout << _carRayCast->getPosicion();
-        //_camera->setPosition(_car->getPosicion().x,_camera->getPosition().y, _car->getPosicion().z + 40);
-    //if (abs(_camera->getPosition().z - _car->getPosicion().z) < 40) cout << "muy cerca" << endl;
+        reposicionaCamara();
 
     pintaOverlayInfo();
 
     return !_exitGame;
 
+}
+
+void testStateVehicRayCast::reposicionaCamara()
+{
+    switch(_vista)
+    {
+        case camara_view::SEMICENITAL:  _camera->setPosition(_carRayCast->getPosicionActual().x,
+                                                             _carRayCast->getPosicionActual().y +10 ,
+                                                             _carRayCast->getPosicionActual().y + 30);  break;
+        case camara_view::TRASERA_BAJA: break;
+        case camara_view::TRASERA_ALTA: break;
+        case camara_view::INTERIOR:     break;
+        default: assert(true);                                                            
+
+    }
+    
+}
+
+void testStateVehicRayCast::colocaCamara()
+{
+    cout << "padre de atacheo de camara: " << _camera->getParentNode() << endl;
+    switch (_vista)
+    {
+        case camara_view::SEMICENITAL:  {_nodoVista->detachObject(_camera);
+                                        _carRayCast->getSceneNode()->removeChild(_nodoVista);
+                                        nodoCamera_t cam = _scn.getInfoCamera("IntroCamera");
+                                        _camera->setPosition(cam.posInicial);
+        _camera->lookAt(_carRayCast->getPosicionActual()); }
+                                        break;
+        case camara_view::TRASERA_BAJA: _camera->setPosition(_carRayCast->getPosicionActual().x,
+                                                      _carRayCast->getPosicionActual().y + 3,
+                                                      _carRayCast->getPosicionActual().z - 5); 
+                                                      _camera->lookAt(_carRayCast->getPosicionActual()); break;
+        case camara_view::TRASERA_ALTA: _camera->setPosition(_carRayCast->getPosicionActual().x,
+                                                      _carRayCast->getPosicionActual().y + 5,
+                                                      _carRayCast->getPosicionActual().z - 5); 
+                                                      _camera->lookAt(_carRayCast->getPosicionActual()); break;
+        case camara_view::INTERIOR:     _nodoVista->attachObject(_camera);
+                                        _carRayCast->getSceneNode()->addChild(_nodoVista);
+//                                      _camera->setPosition(0,0.13,-0.15); // Camara interior
+                                        _camera->setPosition(0,1.5,-3);
+                                        //_camera->yaw(Ogre::Degree(180));
+
+        case camara_view::TOTAL_COUNT:                                                
+        default: assert(true);
+    }   
+    
+                            
 }
 
 void testStateVehicRayCast::pintaOverlayInfo()
@@ -207,18 +252,20 @@ bool testStateVehicRayCast::frameEnded(const Ogre::FrameEvent &evt)
 
 bool testStateVehicRayCast::keyPressed(const OIS::KeyEvent &e)
 {
-//    if (e.key == OIS::KC_SPACE)
-//    {
-//        changeState(MenuState::getSingletonPtr());
-//        sounds::getInstance()->play_effect("push");
-//    }
 
     if (e.key == OIS::KC_L)
     {    _freeCamera = !_freeCamera; cout << "Camara libre: " << _freeCamera << endl; }
     
-    if (e.key == OIS::KC_1)
-        cout << "punto conexion chasis rueda 0: " <<  this->_carRayCast->getRuedas()[0].getPuntoConexionChasis() << endl;
-
+    if (e.key == OIS::KC_C)
+    {
+        // Las enum class serán recomendables pero según que código queda horrible, vaya tela.
+        _vista = static_cast<camara_view>(static_cast<int>(_vista)+1);
+        _vista = static_cast<camara_view>(static_cast<int>(_vista) % static_cast<int>(camara_view::TOTAL_COUNT));
+        colocaCamara();
+    }    
+    
+    if (e.key == OIS::KC_R)
+        _carRayCast->recolocar(_carRayCast->getPosicionActual());
 
     flagKeys(true);
     
@@ -353,13 +400,12 @@ void testStateVehicRayCast::createFloor()
     floorNode->attachObject(entFloor);
     _sceneMgr->getRootSceneNode()->addChild(floorNode);
     _floorShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
+    // Con VehicleRaycast no se pueden usar máscaras de colisión, no funcionan y los coches no colisionan con nada.
 //    _floorBody = new RigidBody("rigidBodyPlane", _world.get(), COL_FLOOR, COL_CAMERA | COL_CAR | COL_TRACK | COL_TRACK_COLISION);
     _floorBody = new RigidBody("rigidBodyPlane", _world.get());
 
     _floorBody->setStaticShape(_floorShape, 0.5, 0.8);
     floorNode->setPosition(Vector3(0, 2, 0));
-    //btCollisionShape *floorShape = _floorShape->getBulletShape();
-
 }
 
 
@@ -438,13 +484,16 @@ void testStateVehicRayCast::configurarCamaraPrincipal()
     double width = _viewport->getActualWidth();
     double height = _viewport->getActualHeight();
     nodoCamera_t cam = _scn.getInfoCamera("IntroCamera");
-    nodoOgre_t aux = _scn.getInfoNodoOgre("carGroupC1red");
+    nodoVehiculoRayCast_t aux = _scn.getInfoVehiculoRayCast("kart"); // ESTO HAY QUE CAMBIARLO QUE EL LOOKAT SEA SIEMPRE AL PLAYER HUMANO.
     _camera->setAspectRatio(width / height);
     _camera->setPosition(cam.posInicial);
     //_camera->lookAt(cam.lookAt);
-    _camera->lookAt(aux.posInicial);
+    _camera->lookAt(aux.posicion);
     _camera->setNearClipDistance(cam.nearClipDistance);
     _camera->setFarClipDistance(cam.farClipDistance);
+    _nodoVista = _sceneMgr->createSceneNode("nodoVista");
+    cout << "padre nodovista: " << _nodoVista->getParent() << endl;
+    cout << "padre _camara: " << _camera->getParentNode() << endl;
 }
 
 void testStateVehicRayCast::initBulletWorld(bool showDebug)
