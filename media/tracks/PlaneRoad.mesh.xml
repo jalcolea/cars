@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mesh>
+    <sharedgeometry vertexcount="4">
+        <vertexbuffer texture_coords="1" colours_diffuse="False" positions="true" normals="true">
+            <vertex>
+                <position x="-79.499992" y="0.990000" z="47.500000"/>
+                <normal x="0.000000" y="1.000000" z="-0.000000"/>
+                <texcoord v="0.984275" u="0.351663"/>
+            </vertex>
+            <vertex>
+                <position x="79.499992" y="0.990000" z="47.500000"/>
+                <normal x="0.000000" y="1.000000" z="-0.000000"/>
+                <texcoord v="0.984275" u="0.648338"/>
+            </vertex>
+            <vertex>
+                <position x="79.499992" y="0.990000" z="-47.500000"/>
+                <normal x="0.000000" y="1.000000" z="-0.000000"/>
+                <texcoord v="0.484475" u="0.648338"/>
+            </vertex>
+            <vertex>
+                <position x="-79.499992" y="0.990000" z="-47.500000"/>
+                <normal x="0.000000" y="1.000000" z="-0.000000"/>
+                <texcoord v="0.484475" u="0.351662"/>
+            </vertex>
+        </vertexbuffer>
+    </sharedgeometry>
+    <submeshes>
+        <submesh usesharedvertices="true" operationtype="triangle_list" use32bitindexes="False" material="racecolors">
+            <faces count="2">
+                <face v3="2" v1="0" v2="1"/>
+                <face v3="3" v1="0" v2="2"/>
+            </faces>
+        </submesh>
+    </submeshes>
+    <submeshnames>
+        <submesh index="0" name="racecolors">
+        </submesh>
+    </submeshnames>
+</mesh>

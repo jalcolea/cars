@@ -187,7 +187,7 @@ void testStateVehicRayCast::reposicionaCamara()
     {
         case camara_view::SEMICENITAL:  _camera->setPosition(_carRayCast->getPosicionActual().x,
                                                              _carRayCast->getPosicionActual().y +10 ,
-                                                             _carRayCast->getPosicionActual().y + 30);  break;
+                                                             _carRayCast->getPosicionActual().z + 30);  break;
         case camara_view::TRASERA_BAJA: break;
         case camara_view::TRASERA_ALTA: break;
         case camara_view::INTERIOR:     break;
@@ -409,6 +409,24 @@ void testStateVehicRayCast::createFloor()
 }
 
 
+void testStateVehicRayCast::createPlaneRoad()
+{
+    nodoOgre_t nodoXML = _scn.getInfoNodoOgre("PlaneRoad");
+    SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
+    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
+    planeRoadEnt->setCastShadows(true);
+    planeRoadNode->attachObject(planeRoadEnt);
+    _sceneMgr->getRootSceneNode()->addChild(planeRoadNode);
+    
+   OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
+   OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
+   OgreBulletDynamics::RigidBody *planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
+   planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
+
+
+   // PlaneRoadNode->setPosition(Vector3(0, 0, 0));
+}
+
 void testStateVehicRayCast::createScene()
 {
   
@@ -423,7 +441,8 @@ void testStateVehicRayCast::createScene()
     createFloor();
     //createMyGui();
     
-    _track = unique_ptr<track>(new track("track1bis",_world.get(),Vector3(0,0,0),_sceneMgr));
+    _track = unique_ptr<track>(new track("track1bisNoRoad",_world.get(),Vector3(0,0,0),_sceneMgr));
+    createPlaneRoad();
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
 //    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
     _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",nullptr));

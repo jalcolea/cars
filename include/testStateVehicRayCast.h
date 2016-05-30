@@ -134,6 +134,7 @@ private:
     void configurarCamaraPrincipal();
     void colocaCamara(); // Para cambiar los tipos de vista de la cámara.
     void reposicionaCamara(); // moverá la cámara en función del tipo de vista actual.
+    void createPlaneRoad();
     void initBulletWorld(bool showDebug);    
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);

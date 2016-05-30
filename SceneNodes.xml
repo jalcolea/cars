@@ -25,6 +25,30 @@
         <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
     </scenenode>
     <scenenode>
+        <nombreNodo>track1bisNoRoad</nombreNodo>
+        <nombreEntidad>track1ent</nombreEntidad>
+        <nombreMalla>Track1bisNoRoad.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.8</frictionBullet>
+        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>PlaneRoad</nombreNodo>
+        <nombreEntidad>PlaneRoadent</nombreEntidad>
+        <nombreMalla>PlaneRoad.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.8</frictionBullet>
+        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+    </scenenode>
+    <scenenode>
         <nombreNodo>carKartWhite</nombreNodo>
         <nombreEntidad>entCarKartWhite</nombreEntidad>
         <nombreMalla>car-kart-white.mesh</nombreMalla>
@@ -121,18 +145,20 @@
         <radioRuedas>1.0</radioRuedas>
         <anchoRuedas>0.5</anchoRuedas>
         <friccionRueda>1e30f</friccionRueda>
-        <influenciaRodado>0.1</influenciaRodado>
-        <indiceRestitucionSuspension>0.02</indiceRestitucionSuspension>
+        <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
+        <indiceRestitucionSuspension>0.03</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <posicion x="2" y="1.2" z="-12"></posicion>
-        <velocidadGiro>0.01</velocidadGiro>
+        <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
-        <suspensionStiffness>200</suspensionStiffness>
-        <suspensionCompresion>0.3</suspensionCompresion>
-        <suspensionDamping>0.5</suspensionDamping>
-        <maxSuspensionTravelCM>0.8</maxSuspensionTravelCM>
-        <maxSuspensionForce>150</maxSuspensionForce>
-        <frictionSlip>10000</frictionSlip>
+        <suspensionStiffness>2000</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
+        <suspensionCompresion>0.1</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
+        <suspensionDamping>0.4</suspensionDamping>  <!-- 0.5 al inicio, 0.1 0.2 0.3  hace que corra mucho mas pero menos estable, 0.4 parece adecuado -->
+        <maxSuspensionTravelCM>0.1</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
+        <maxSuspensionForce>150</maxSuspensionForce> <!-- 150 al inicio, 1500 hace que levante el morro al acelerar, 200 hace que el muelle 
+                                                          de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
+                                                          150 parece un valor adecuado :D -->
+        <frictionSlip>5000</frictionSlip> <!-- empezamos con 10000 (valor bueno en principio), 10 parece igual, 100000 inestable, 5000 parece buen valor también -->
     </dataRayCast>  
 </dataVehiculoRayCast>
