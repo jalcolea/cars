@@ -95,6 +95,8 @@ struct nodoVehiculoRayCast
     Ogre::Real maxSuspensionTravelCm; // limite del recorrido de la suspensión (entiendo que al comprimirse el muelle)
     Ogre::Real maxSuspensionForce;    // límite máximo de la fuerza de la suspensión
     Ogre::Real frictionSlip;          // indice de fricción (valor muy gordo, del orden 10e20 o 10e30)
+    std::vector<Vector3> posRuedas;        // Vector que almacena la posición de las ruedas respecto a su chasis
+    Vector3 escala;                   // factor de escala para aumentar el ancho de las ruedas traseras si se quiere.
     
     friend ostream& operator<<(ostream& o, nodoVehiculoRayCast &n)
     {
@@ -123,7 +125,8 @@ struct nodoVehiculoRayCast
             "\t indice de restitución de la suspensión: " << n.suspensionDamping << endl <<
             "\t limite del recorrido de la suspensión: " << n.maxSuspensionTravelCm << endl <<
             "\t límite máximo de la fuerza de la suspensión: " << n.maxSuspensionForce << endl <<
-            "\t indice de fricción (valor muy gordo, del orden 10e20 o 10e30): " << n.frictionSlip << endl;
+            "\t indice de fricción (valor muy gordo, del orden 10e20 o 10e30): " << n.frictionSlip << endl <<
+            "\t factor de escala rueda trasera: " << n.escala << endl;
        return o;
     };
 };                          
@@ -163,7 +166,7 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
                                       INDICE_REST_SUSP,POSICION,VELOCIDAD_GIRO,ACELERACION,FRENADA,ACELERACION_MARCHA_ATRAS,
                                       // Cadenas para los parametros de la suspension
                                       SUSPENSION_STIFFNESS,SUSPENSION_COMPRESION,SUSPENSION_DAMPING,MAX_SUSPENSION_TRAVEL_CM,
-                                      MAX_SUSPENSION_FORCE,FRICTION_SLIP,
+                                      MAX_SUSPENSION_FORCE,FRICTION_SLIP,POSRUEDA0,POSRUEDA1,POSRUEDA2,POSRUEDA3,ESCALA,
                                       TOTAL_COUNT }; // Este último es un truquillo para saber el número de elementos de esta enum class.
                                       
         string _xmlElements[static_cast<size_t>(xmlElementsIndex::TOTAL_COUNT)] = {"nombreNodo","nombreEntidad","nombreMalla",
@@ -179,7 +182,8 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
                                                                                  "posicion","velocidadGiro","aceleracion",
                                                                                  "frenada","aceleracionMarchaAtras","suspensionStiffness",
                                                                                  "suspensionCompresion","suspensionDamping","maxSuspensionTravelCM",
-                                                                                 "maxSuspensionForce", "frictionSlip"
+                                                                                 "maxSuspensionForce", "frictionSlip", "posRueda0", "posRueda1",
+                                                                                 "posRueda2", "posRueda3", "escalaRuedaTrasera"
                                                                                  }; // Lista de cadenas para los atributos de un nodo xml
     public:
         // Heredados de Ogre::Singleton.

@@ -266,6 +266,9 @@ bool testStateVehicRayCast::keyPressed(const OIS::KeyEvent &e)
     
     if (e.key == OIS::KC_R)
         _carRayCast->recolocar(_carRayCast->getPosicionActual());
+        
+    if (e.key == OIS::KC_P)
+        cout << "posicion actual coche raycast:" << _carRayCast->getPosicionActual() << endl;
 
     flagKeys(true);
     
@@ -446,8 +449,17 @@ void testStateVehicRayCast::createScene()
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
 //    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
     _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",nullptr));
-    _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get()));
+    _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
     _carRayCast->buildVehiculo();
+    
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("formula",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+    
     
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS

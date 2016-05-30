@@ -20,8 +20,8 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
 {
     public:
     Rueda(){};
-    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index)
-          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis)
+    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index,Vector3 escala = Vector3(1,1,1))
+          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis), _escala(escala)
     {
         _entRueda = _scnMgr->createEntity(param.nombre + "_ent" + std::to_string(index), param.nombreMallaRueda);
         _entRueda->setCastShadows(true);
@@ -29,6 +29,9 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
         _nodo->attachObject(_entRueda);
         if (_nodoPadre) _nodoPadre->addChild(_nodo);            // Si el nodopadre no es otro que el Root, parece que no funciona bien.
         else _scnMgr->getRootSceneNode()->addChild(_nodo);      // TODO: Este código está en vías de desaparecer.
+        
+        if (!_delantera) // Si no es delantera aplicamos escala. Qué será mejor: escalar siempre aunque sea por 1? ó preguntar si es trasera para aplicar escala aunque sea escalar a 1:1???
+            _nodo->scale(_escala);
         
         this->_nombre = param.nombre + to_string(index);
         this->_anchoRueda = _entRueda->getBoundingBox().getSize().x;// * 0.3;
@@ -40,6 +43,8 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
                                                                                 // las ruedas se separan en exceso del chasis. Si es 0, quedan
                                                                                 // colocadas en el chasis exactamente donde se supone que deben estar.
         this->_influenciaRodado = param.influenciaRodado;
+        
+        
         
     };
 
@@ -116,6 +121,9 @@ private:
     // Esto indica sobre que eje giran las ruedas (pitch en este caso pues el modelo está modelado teniendo a la rueda de frente,
     // es decir, la banda de rodadura mira hacia el observador).
     Vector3 _ejeCS = Vector3(-1,0,0); // En la demo de OgreBullet lo pone así
+    
+    Vector3 _escala; // Para hacer ruedas traseras más anchas en caso de quererlo así.
+
     
 };
 

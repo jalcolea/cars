@@ -111,6 +111,7 @@ protected:
     unique_ptr<track> _track;
     unique_ptr<CarRayCast> _carRayCast;
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
+    std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
     bool _freeCamera = false;

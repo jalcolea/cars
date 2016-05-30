@@ -73,32 +73,27 @@ void CarRayCast::buildVehiculo()
     
     _vehiculo = new RaycastVehicle(_bodyWheeled, _tuneo, _vehiculoRayCaster);
     
-    /* A ver, esto está (IRONIC MODE ON) "COJONUDAMENTE EXPLICADO, SI SEÑOR" (IRONIC MODE OFF) 
-    // Me encanta lidiar con librerías cuya única documentación es... (redoble de tambores) LEERTE EL PUTO CÓDIGO!!!!!!!!!
-    // Bien, una vez desahogado, procedamos a la explicación:
-    // Esto establece el sistema de coordenadas, es decir, si en vez de xyz lo quieres, por ejemplo, xzy como en blender. 
-    // Y el signo también influye claro está, podrías hacer que el x fuera positivo a la izquierda en vez de a la derecha. Nah!, si un día
-    // estás aburrido y quieres joder al personal, pues le cambias el sistema y de paso les fríes el cerebro.
-    // Para liarlo un poquito más, pues lo "ocultas" un poco más, como es el caso que nos ocupa. Para cambiar el sistema de coordenadas
-    // lo haces indicando el índice que quieres asignarle de un, digo yo, vector que almacena el orden del sistema de coordenadas.
     // Aquí, indicamos que el eje X va primero (indice 0), eje Y segundo (indice 1) y Z el tercero (indice 2), o sea, lo más natural (pienso yo).
     // Que lo quieres como en Blender? pues: setCoordinateSystem(0,2,1)  
     // Es decir, cada parámetro se corresponde con los ejes X,Y,Z y el valor establece el orden en el que se van a interpretar. */
     _vehiculo->setCoordinateSystem(0, 1, 2);
     
-    Vector3Array vPosicionRuedas { Vector3(0.18,-0.12,0.21), Vector3(-0.18,-0.12,0.21), Vector3(-0.18,-0.12,-0.215), Vector3(0.18,-0.12,-0.215) };
-//    Vector3Array vPosicionRuedas { Vector3(0.18,0.12,0.21), Vector3(-0.18,0.12,0.21), Vector3(-0.18,0.12,-0.215), Vector3(0.18,0.12,-0.215) };
+//    Vector3Array vPosicionRuedas { Vector3(0.18,-0.12,0.21), Vector3(-0.18,-0.12,0.21), Vector3(-0.18,-0.12,-0.215), Vector3(0.18,-0.12,-0.215) }; // Para el kart
+//    Vector3Array vPosicionRuedas { Vector3(0.4,-0.10,0.69), Vector3(-0.4,-0.10,0.69), Vector3(-0.41,-0.10,-0.58), Vector3(0.41,-0.10,-0.58) }; // Para el farara
+//    Vector3Array vPosicionRuedas { Vector3(0.4,-0.10,0.65), Vector3(-0.4,-0.10,0.65), Vector3(-0.41,-0.10,-0.75), Vector3(0.41,-0.10,-0.75) }; // Para el formula
+    //HAY QUE PASAR UN FACTOR DE ESCALA, HAY COCHES QUE USAN RUEDAS TRASERAS MÁS ANCHAS
     
     // Ahora le ponemos las rueditas :D
     for (size_t i=0; i<4; ++i) // Por ahora solo vehículos de 4 ruedas, las motos, camiones de 16 ruedas y esas cosas, otra día ya si eso.
         _ruedas.push_back(Rueda(param,              // parametros de configuracion de la rueda (friccion, influencia rodado, etc)
-                                nullptr,            // nodo padre en el Grafo de Escena de Ogre, nullptr hace que el padre sea el Root.
+                                nullptr,            // nodo padre en el Grafo de Escena de Ogre, nullptr hace que el padre sea el Root. PARECE QUE HA DE SER EL ROOT SINO, NO CHUTA
                                 _scnMgr,            // Puntero al SceneManager, usado en la clase Rueda para generar las entitys y SceneNodes
                                 ((i<2)?true:false), // Si rueda menor que 2, o sea, 0 ó 1; entonces son delanteras, si no traseras.
-                                vPosicionRuedas[i], // Punto de conexión de los rayos que se lanzan desde las ruedas al chasis, simulando
+                                param.posRuedas[i], //vPosicionRuedas[i], // Punto de conexión de los rayos que se lanzan desde las ruedas al chasis, simulando
                                                     // la suspensión. Son coordenadas locales del chasis. Aún tengo que ver que valores son los
                                                     // adecuados. Probablemente varíe bastante según el modelo de coche que se cargue.
-                                i));                // Id de la rueda, me lo daría el vector, pero la clase rueda no sabe donde se aloja :D
+                                i,                  // Id de la rueda, me lo daría el vector, pero la clase rueda no sabe donde se aloja :D
+                                param.escala));
     // TODO: ENLAZAR RUEDAS CON CHASIS (QUE FÁCIL ES DECIRLO :D)
     int i = 0;
     for (auto it = _ruedas.begin(); it != _ruedas.end(); ++it)
