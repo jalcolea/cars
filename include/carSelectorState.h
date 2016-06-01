@@ -1,25 +1,5 @@
-    /*********************************************************************n
- * Módulo 1. Curso de Experto en Desarrollo de Videojuegos
- * Autor: David Vallejo Fernández    David.Vallejo@uclm.es
- *
- * Código modificado a partir de Managing Game States with OGRE
- * http://www.ogre3d.org/tikiwiki/Managing+Game+States+with+OGRE
- * Inspirado en Managing Game States in C++
- * http://gamedevgeek.com/tutorials/managing-game-states-in-c/
- *
- * You can redistribute and/or modify this file under the terms of the
- * GNU General Public License ad published by the Free Software
- * Foundation, either version 3 of the License, or (at your option)
- * and later version. See <http://www.gnu.org/licenses/>.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.  
- *********************************************************************/
-
-#ifndef testStateVehicRayCast_H
-#define testStateVehicRayCast_H
+#ifndef CARSELECTORSTATE_H
+#define CARSELECTORSTATE_H
 
 #include <Ogre.h>
 #include <OgreOverlaySystem.h>
@@ -47,37 +27,37 @@ using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
 
 
-enum class keyPressed_flags
-{
-    NONE =           0,
-    LEFT =      1 << 0,
-    RIGHT =     1 << 1,
-    UP =        1 << 2,
-    DOWN =      1 << 3,
-    INS =       1 << 4,
-    DEL =       1 << 5,
-    PGUP =      1 << 6,
-    PGDOWN =    1 << 7,
-    NUMPAD1 =   1 << 8,
-    NUMPAD2 =   1 << 9,
-    NUMPAD3 =   1 << 10,
-    NUMPAD5 =   1 << 11
-};
+//enum class keyPressed_flags
+//{
+//    NONE =           0,
+//    LEFT =      1 << 0,
+//    RIGHT =     1 << 1,
+//    UP =        1 << 2,
+//    DOWN =      1 << 3,
+//    INS =       1 << 4,
+//    DEL =       1 << 5,
+//    PGUP =      1 << 6,
+//    PGDOWN =    1 << 7,
+//    NUMPAD1 =   1 << 8,
+//    NUMPAD2 =   1 << 9,
+//    NUMPAD3 =   1 << 10,
+//    NUMPAD5 =   1 << 11
+//};
+//
+//enum class camara_view : int
+//{
+//    SEMICENITAL,
+//    TRASERA_ALTA,
+//    TRASERA_BAJA,
+//    INTERIOR,
+//    TOTAL_COUNT       // Su valor será el número total de elementos de esta enum. Útil para modular.
+//};
 
-enum class camara_view : int
-{
-    SEMICENITAL,
-    TRASERA_ALTA,
-    TRASERA_BAJA,
-    INTERIOR,
-    TOTAL_COUNT       // Su valor será el número total de elementos de esta enum. Útil para modular.
-};
-
-class testStateVehicRayCast : public Ogre::Singleton<testStateVehicRayCast>, public GameState
+class  carSelectorState : public Ogre::Singleton< carSelectorState>, public GameState
 {
 public:
-    testStateVehicRayCast(){}
-    ~testStateVehicRayCast();
+     carSelectorState(){}
+    ~ carSelectorState();
     void enter();
     void exit();
     void pause();
@@ -97,8 +77,8 @@ public:
 /*******************************************************************************/  
 
     // Heredados de Ogre::Singleton.
-    static testStateVehicRayCast &getSingleton();
-    static testStateVehicRayCast *getSingletonPtr();
+    static carSelectorState& getSingleton();
+    static carSelectorState* getSingletonPtr();
 
 
 protected:
@@ -107,22 +87,14 @@ protected:
     Ogre::Viewport *_viewport;
     Ogre::Camera *_camera;
     //SceneNodeConfig _scn;
-    unique_ptr<car> _car;
-    unique_ptr<track> _track;
-    unique_ptr<CarRayCast> _carRayCast;
-    shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
-    std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
-    CollisionShape* _floorShape;
-    RigidBody* _floorBody;
-    bool _freeCamera = false;
-    bool _playSimulation = true;
-    SceneNode* _nodoVista;
+    SceneNode* _track;
+    std::vector< SceneNode* > _vCars;
+    SceneNode* _nodoSelector;
 
 
     bool _exitGame;
     Ogre::Real _deltaT;
     MyGUI::VectorWidgetPtr layout;
-    camara_view _vista = camara_view::SEMICENITAL;
 
 private:
 
@@ -147,10 +119,12 @@ private:
     Ogre::Real _r;
     size_t _velocidad;
     size_t _fps;
-    size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
+    //size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
     DebugDrawer* _debugDrawer;
     size_t _cursorVehiculo; // para el patio de pruebas, indica que objeto coche del vector de coches se maneja.
+    bool _girandoRuleta;
+    size_t _sentidoGiro;
 
 };
 
-#endif
+#endif // CARSELECTORSTATE_H

@@ -3,6 +3,7 @@
 #include "PlayState.h"
 #include "MenuState.h"
 #include "testStateVehicRayCast.h"
+#include "carSelectorState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 
@@ -108,6 +109,11 @@ bool IntroState::keyPressed(const OIS::KeyEvent &e)
         changeState(testStateVehicRayCast::getSingletonPtr());
         
     }
+    else if (e.key == OIS::KC_S)
+    {
+        changeState(carSelectorState::getSingletonPtr());
+    }
+    
     
     return true;
 

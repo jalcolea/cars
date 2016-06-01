@@ -88,6 +88,7 @@ void testStateVehicRayCast::resume()
 
 }
 
+/*
 bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
@@ -159,6 +160,101 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
         _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
 
+    _camera->moveRelative(_vt * _deltaT * speed);
+    if (_camera->getPosition().length() < 2.0) 
+        _camera->moveRelative(-_vt * _deltaT * speed);
+        
+    if (_keys & static_cast<size_t>(keyPressed_flags::PGUP)) _r += 180;
+    if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
+        
+    _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
+    
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_8)) rr+=180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_9)) rr-=180;
+    _camera->yaw(Ogre::Radian(rr * _deltaT * 0.005));
+
+    if (!_freeCamera)
+        reposicionaCamara();
+
+    pintaOverlayInfo();
+
+    return !_exitGame;
+
+}
+*/
+
+
+bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
+{
+    _deltaT = evt.timeSinceLastFrame;
+    if (_playSimulation) _world.get()->stepSimulation(_deltaT);
+    static Vector3 oldPos = _car->getPosicion();
+    static Ogre::Real speed = 10.0;
+    _fps = 1.0 / _deltaT;
+    _r = 0;
+    Real rr = 0;
+    Real rSteer = 0;
+    Real sCar = 0;
+    static Real sBrake = 10;
+    _vt = Ogre::Vector3::ZERO;
+
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_P)) _playSimulation = !_playSimulation;
+
+    _velocidad = _car->getVelocidadActualCalculada(oldPos,_car->getPosicion(),_deltaT);
+
+    if (oldPos != _car->getPosicion())
+        oldPos = _car->getPosicion();
+
+    if (_keys & static_cast<size_t>(keyPressed_flags::LEFT))  _vt.x += -1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _vt.x += 1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::UP))    _vt.y += 1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::DOWN))  _vt.y += -1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
+    if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
+    
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD5))
+    {
+        if ((_keys & static_cast<size_t>(keyPressed_flags::NUMPAD1)) || (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD3)))
+           _vCarsRayCast[_cursorVehiculo]->acelerar(_vCarsRayCast[_cursorVehiculo]->getFuerzaMotor(),false);
+        else 
+            _vCarsRayCast[_cursorVehiculo]->acelerar(_vCarsRayCast[_cursorVehiculo]->getFuerzaMotor(),true);
+    }
+    else _vCarsRayCast[_cursorVehiculo]->acelerar(0); // Si no aceleramos que actúe la inercia. También sirve para cuando soltamos el freno :D
+
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD2)) _vCarsRayCast[_cursorVehiculo]->frenar();
+    
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD1)) 
+        _vCarsRayCast[_cursorVehiculo]->girar(1);
+    if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD3)) 
+        _vCarsRayCast[_cursorVehiculo]->girar(-1);
+    
+
+    
+    
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
+
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_W))
+//        _car->setVelocity(10);
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
+//        _car->steer((rSteer+=180) * _deltaT * 0.08);
+//    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_D))
+//        _car->steer((rSteer-=180) * _deltaT * 0.08);
+        
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_W))
+        _car->setVelocity(1500); sBrake = 1500; 
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_S))
+        _car->setVelocity(sBrake-=1500*_deltaT);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_A))
+        _car->steer((rSteer+=180) * _deltaT * 0.2);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_D))
+        _car->steer((rSteer-=180) * _deltaT * 0.2);
+    
+
+    
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_0))
+        _world.get()->setShowDebugShapes(!_world.get()->getShowDebugShapes());  // Casca miserablemente :( manda...
+
     _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);-l
     if (_camera->getPosition().length() < 2.0) 
         _camera->moveRelative(-_vt * _deltaT * speed);//10.0 /*tSpeed*/);
@@ -181,13 +277,17 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
 
 }
 
+
 void testStateVehicRayCast::reposicionaCamara()
 {
     switch(_vista)
     {
-        case camara_view::SEMICENITAL:  _camera->setPosition(_carRayCast->getPosicionActual().x,
+        /*case camara_view::SEMICENITAL:  _camera->setPosition(_carRayCast->getPosicionActual().x,
                                                              _carRayCast->getPosicionActual().y +10 ,
-                                                             _carRayCast->getPosicionActual().z + 30);  break;
+                                                             _carRayCast->getPosicionActual().z + 30);  break; */
+        case camara_view::SEMICENITAL:  _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
+                                                             _vCarsRayCast[_cursorVehiculo]->getPosicionActual().y +10 ,
+                                                             _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z + 30);  break;
         case camara_view::TRASERA_BAJA: break;
         case camara_view::TRASERA_ALTA: break;
         case camara_view::INTERIOR:     break;
@@ -196,7 +296,7 @@ void testStateVehicRayCast::reposicionaCamara()
     }
     
 }
-
+/*
 void testStateVehicRayCast::colocaCamara()
 {
     cout << "padre de atacheo de camara: " << _camera->getParentNode() << endl;
@@ -228,6 +328,39 @@ void testStateVehicRayCast::colocaCamara()
     
                             
 }
+*/
+void testStateVehicRayCast::colocaCamara()
+{
+    cout << "padre de atacheo de camara: " << _camera->getParentNode() << endl;
+    switch (_vista)
+    {
+        case camara_view::SEMICENITAL:  {_nodoVista->detachObject(_camera);
+                                        _vCarsRayCast[_cursorVehiculo]->getSceneNode()->removeChild(_nodoVista);
+                                        nodoCamera_t cam = SceneNodeConfig::getSingleton().getInfoCamera("IntroCamera");
+                                        _camera->setPosition(cam.posInicial);
+        _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); }
+                                        break;
+        case camara_view::TRASERA_BAJA: _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
+                                                      _vCarsRayCast[_cursorVehiculo]->getPosicionActual().y + 3,
+                                                      _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z - 5); 
+                                                      _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); break;
+        case camara_view::TRASERA_ALTA: _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
+                                                      _vCarsRayCast[_cursorVehiculo]->getPosicionActual().y + 5,
+                                                      _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z - 5); 
+                                                      _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); break;
+        case camara_view::INTERIOR:     _nodoVista->attachObject(_camera);
+                                        _vCarsRayCast[_cursorVehiculo]->getSceneNode()->addChild(_nodoVista);
+//                                      _camera->setPosition(0,0.13,-0.15); // Camara interior
+                                        _camera->setPosition(0,1.5,-3);
+                                        //_camera->yaw(Ogre::Degree(180));
+
+        case camara_view::TOTAL_COUNT:                                                
+        default: assert(true);
+    }   
+    
+                            
+}
+
 
 void testStateVehicRayCast::pintaOverlayInfo()
 {   
@@ -264,11 +397,22 @@ bool testStateVehicRayCast::keyPressed(const OIS::KeyEvent &e)
         colocaCamara();
     }    
     
+    if (e.key == OIS::KC_V)
+    {
+        _cursorVehiculo += 1;
+        _cursorVehiculo %= _vCarsRayCast.size();
+    }    
+    
+/*    if (e.key == OIS::KC_R)
+        _carRayCast->recolocar(_carRayCast->getPosicionActual());*/
     if (e.key == OIS::KC_R)
-        _carRayCast->recolocar(_carRayCast->getPosicionActual());
+        _vCarsRayCast[_cursorVehiculo]->recolocar(_vCarsRayCast[_cursorVehiculo]->getPosicionActual());
         
+        
+/*    if (e.key == OIS::KC_P)
+        cout << "posicion actual coche raycast:" << _carRayCast->getPosicionActual() << endl;*/
     if (e.key == OIS::KC_P)
-        cout << "posicion actual coche raycast:" << _carRayCast->getPosicionActual() << endl;
+        cout << "posicion actual coche raycast:" << _vCarsRayCast[_cursorVehiculo]->getPosicionActual() << endl;
 
     flagKeys(true);
     
@@ -414,7 +558,7 @@ void testStateVehicRayCast::createFloor()
 
 void testStateVehicRayCast::createPlaneRoad()
 {
-    nodoOgre_t nodoXML = _scn.getInfoNodoOgre("PlaneRoad");
+    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoad");
     SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
     Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
     planeRoadEnt->setCastShadows(true);
@@ -448,7 +592,7 @@ void testStateVehicRayCast::createScene()
     createPlaneRoad();
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
 //    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
-    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",nullptr));
+    _car = unique_ptr<car>(new car("carGroupC1",_world.get(),SceneNodeConfig::getSingleton().getInfoNodoOgre("carGroupC1").posInicial,_sceneMgr,"",nullptr));
     _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
     _carRayCast->buildVehiculo();
     
@@ -458,9 +602,12 @@ void testStateVehicRayCast::createScene()
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
     
+    for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
+        (*it)->buildVehiculo();
     
+    _cursorVehiculo = 0;
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
 //    nodoOgre_t nodoConfigCol = _scn.getInfoNodoOgre("track1colLateral");
@@ -489,24 +636,27 @@ void testStateVehicRayCast::createOverlay()
 void testStateVehicRayCast::cargarParametros(string archivo, bool consoleOut)
 {
     //Cargamos la info para generar elementos de la escena (scenenodes, cameras, lights)
-    _scn.load_xml("SceneNodes.xml");
+    SceneNodeConfig::getSingleton().load_xml("SceneNodes.xml");
     
-    map_nodos_t nodos = _scn.getMapNodos();
-    map_cameras_t camaras = _scn.getMapCameras();
-    map_vehiculos_ray_cast_t vehicRayCast = _scn.getMapVehiculosRaycast();
+    map_nodos_t nodos = SceneNodeConfig::getSingleton().getMapNodos();
+    map_cameras_t camaras = SceneNodeConfig::getSingleton().getMapCameras();
+    map_vehiculos_ray_cast_t vehicRayCast = SceneNodeConfig::getSingleton().getMapVehiculosRaycast();
     
-    for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it)
-            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
-            // first sería la clave y second el valor.
+    if (consoleOut)
+    {
+        for (it_map_nodos it = nodos.begin(); it != nodos.end(); ++it)
+                // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
+                // first sería la clave y second el valor.
+                cout << (*it).second << endl;
+                
+        for (it_map_cameras it = camaras.begin(); it != camaras.end(); ++it)
+                // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
+                // first sería la clave y second el valor.
+                cout << (*it).second << endl;
+                
+        for (it_map_vehiculos_ray_cast it = vehicRayCast.begin(); it != vehicRayCast.end(); ++it)
             cout << (*it).second << endl;
-            
-    for (it_map_cameras it = camaras.begin(); it != camaras.end(); ++it)
-            // cada elemento de it_map_nodos es un tipo pair<tipo1 first,tipo2 second> donde
-            // first sería la clave y second el valor.
-            cout << (*it).second << endl;
-            
-    for (it_map_vehiculos_ray_cast it = vehicRayCast.begin(); it != vehicRayCast.end(); ++it)
-        cout << (*it).second << endl;
+    }
 }
 
 void testStateVehicRayCast::configurarCamaraPrincipal()
@@ -514,8 +664,8 @@ void testStateVehicRayCast::configurarCamaraPrincipal()
     //Configuramos la camara
     double width = _viewport->getActualWidth();
     double height = _viewport->getActualHeight();
-    nodoCamera_t cam = _scn.getInfoCamera("IntroCamera");
-    nodoVehiculoRayCast_t aux = _scn.getInfoVehiculoRayCast("kart"); // ESTO HAY QUE CAMBIARLO QUE EL LOOKAT SEA SIEMPRE AL PLAYER HUMANO.
+    nodoCamera_t cam = SceneNodeConfig::getSingleton().getInfoCamera("IntroCamera");
+    nodoVehiculoRayCast_t aux = SceneNodeConfig::getSingleton().getInfoVehiculoRayCast("kart"); // ESTO HAY QUE CAMBIARLO QUE EL LOOKAT SEA SIEMPRE AL PLAYER HUMANO.
     _camera->setAspectRatio(width / height);
     _camera->setPosition(cam.posInicial);
     //_camera->lookAt(cam.lookAt);
