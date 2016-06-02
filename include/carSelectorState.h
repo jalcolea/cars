@@ -27,6 +27,9 @@ using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
 
 
+#define MAX_ALTURA_SELECCIONADO 0.5
+#define MIN_ALTURA_SELECCIONADO 0
+#define SPEED_MOVIMIENTOS 10.0f
 //enum class keyPressed_flags
 //{
 //    NONE =           0,
@@ -86,11 +89,9 @@ protected:
     Ogre::SceneManager *_sceneMgr;
     Ogre::Viewport *_viewport;
     Ogre::Camera *_camera;
-    //SceneNodeConfig _scn;
     SceneNode* _track;
     std::vector< SceneNode* > _vCars;
     SceneNode* _nodoSelector;
-
 
     bool _exitGame;
     Ogre::Real _deltaT;
@@ -105,25 +106,26 @@ private:
     void createFloor();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
-    void colocaCamara(); // Para cambiar los tipos de vista de la cámara.
-    void reposicionaCamara(); // moverá la cámara en función del tipo de vista actual.
-    void createPlaneRoad();
-    void initBulletWorld(bool showDebug);    
-    void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
-    TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);
-    void createOverlay();
-    void pintaOverlayInfo();
-    void flagKeys(bool flag);
-    Ogre::OverlayManager* _overlayManager;
-    Ogre::Vector3 _vt;
-    Ogre::Real _r;
-    size_t _velocidad;
-    size_t _fps;
-    //size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
-    DebugDrawer* _debugDrawer;
-    size_t _cursorVehiculo; // para el patio de pruebas, indica que objeto coche del vector de coches se maneja.
+    void girarRuleta();
+    void inicializarEstadoRotacionSelector(Real factorRot, Quaternion orientacionOriginal, Real angulo, Vector3 eje, int sentido);
+    void bajarDeseleccionado();
+    void subirSeleccionado();
+    void cambiarMaterialVehicSeleccionado();
+    std::vector<string> _vMateriales {"carmaterial_blue","carmaterial_citrus","carmaterial_green","carmaterial_orange","carmaterial_silver","carmaterial_violet","red.gloss"};
+    int _cursorVehiculo; 
+    int _idVehicSubiendo;
+    int _idVehicBajando;
     bool _girandoRuleta;
-    size_t _sentidoGiro;
+    bool _bajando;
+    bool _subiendo;
+    int _sentidoGiro;
+    int _idMaterialActual;
+    Quaternion _orientOriginal;
+    Quaternion _orientDestino;
+    Real _progresoRotacion;
+    Real _factorRotacion;
+    Real _progresoBajada;
+    Real _progresoSubida;
 
 };
 

@@ -54,8 +54,6 @@ void carSelectorState::enter()
     //Preparar escena
     createScene();
     
-    _girandoRuleta = false;
-    _sentidoGiro = -1;
     _exitGame = false;
     _deltaT = 0;
     sounds::getInstance()->play_music("begin");
@@ -83,15 +81,20 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
     {
         if (e.key == OIS::KC_LEFT)
         {
+            _sentidoGiro = 1;
+            inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,_sentidoGiro);
             _girandoRuleta = true;
-            _sentidoGiro = -1;
         }
         else if (e.key == OIS::KC_RIGHT)
         {
+            _sentidoGiro = -1;
+            inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,_sentidoGiro);
             _girandoRuleta = true;
-            _sentidoGiro = 1;
         }
-    }    
+    }
+
+    if (e.key == OIS::KC_M)
+        cambiarMaterialVehicSeleccionado();
     
     return true;
 }
@@ -119,32 +122,100 @@ bool carSelectorState::mouseReleased(const OIS::MouseEvent& e, OIS::MouseButtonI
 bool carSelectorState::frameStarted(const Ogre::FrameEvent& evt)
 {
     Real rotSeleccionado = 0;
-    Real rotSelector = 0;
+    Real speed = 0.005;
     
     _deltaT = evt.timeSinceLastFrame;
     
     if (!_girandoRuleta)
     {
         rotSeleccionado-=180;
-        _vCars[_cursorVehiculo]->yaw(Ogre::Radian(rotSeleccionado * _deltaT * 0.005));
+        _vCars[_cursorVehiculo]->yaw(Ogre::Radian(rotSeleccionado * _deltaT * speed));
+    }
+    else
+        girarRuleta();
+    
+    if (_subiendo)
+        subirSeleccionado();
+    
+    if (_bajando)
+        bajarDeseleccionado();
+    
+    return !_exitGame;
+}
+
+void carSelectorState::bajarDeseleccionado()
+{
+    Vector3 aux = _vCars[_idVehicBajando]->getPosition();
+    if (_progresoBajada < MIN_ALTURA_SELECCIONADO)
+    {
+        _progresoBajada = MAX_ALTURA_SELECCIONADO;
+        aux.y = MIN_ALTURA_SELECCIONADO;
+        _bajando = false;
     }
     else
     {
-        rotSelector += 360;
-        _nodoSelector->yaw(Ogre::Radian(rotSelector * _deltaT * 0.005));
-        if ((Ogre::Degree(_nodoSelector->getOrientation().getYaw(true))  >= Ogre::Degree(60)) ||
-           (Ogre::Degree(_nodoSelector->getOrientation().getYaw(true)) * Ogre::Degree(_cursorVehiculo+1) <= Ogre::Degree(-60)))
-        {
-            cout <<"grados: " << Ogre::Degree(_nodoSelector->getOrientation().getYaw(true)) << endl;
-            _girandoRuleta = false;
-            _cursorVehiculo++;
-            _cursorVehiculo = _cursorVehiculo % _vCars.size();
-        }
-        
-        
+        _progresoBajada -= 0.1 * _deltaT * SPEED_MOVIMIENTOS;
+        aux.y = _progresoBajada;
     }
+
+    _vCars[_idVehicBajando]->setPosition(aux.x,aux.y,aux.z);
     
-    return !_exitGame;
+}
+
+void carSelectorState::subirSeleccionado()
+{
+    Vector3 aux = _vCars[_idVehicSubiendo]->getPosition();
+    if (_progresoSubida > MAX_ALTURA_SELECCIONADO)
+    {
+        _progresoSubida = MIN_ALTURA_SELECCIONADO;
+        aux.y = MAX_ALTURA_SELECCIONADO;
+        _subiendo = false;
+    }
+    else
+    {
+        _progresoSubida += 0.1 * _deltaT * SPEED_MOVIMIENTOS;
+        aux.y = _progresoSubida;
+    }
+
+    _vCars[_idVehicSubiendo]->setPosition(aux.x,aux.y,aux.z);
+
+}
+
+
+void carSelectorState::girarRuleta()
+{
+    if (_girandoRuleta)
+    {
+        _progresoRotacion += _factorRotacion;
+        if (_progresoRotacion > 1)
+        {
+            inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,_sentidoGiro);
+            //Vector3 pos = _vCars[_cursorVehiculo]->getPosition();
+            //_vCars[_cursorVehiculo]->setPosition(pos.x,0,pos.z);
+            _vCars[_cursorVehiculo]->setScale(Vector3(0.2,0.2,0.2));
+            
+            _idVehicBajando = _cursorVehiculo;
+            _bajando = true;
+            
+            _cursorVehiculo += _sentidoGiro; // siguiente vehiculo a seleccionar. _sentidoGiro puede valer -1 ó 1, luego nos sirve para aumentar/decrementar el cursor de vehículos
+            if (_cursorVehiculo < 0) _cursorVehiculo += _vCars.size(); // Si el indice resultante es negativo complementamos, para que el indice esté en rango(0-5)
+            _cursorVehiculo = abs(_cursorVehiculo) % _vCars.size(); // modulamos para recorrer los vehiculos del vector 
+            
+            _vCars[_cursorVehiculo]->scale(Vector3(2,2,2));
+            
+            _idVehicSubiendo = _cursorVehiculo;
+            _subiendo = true;
+            
+            //pos = _vCars[_cursorVehiculo]->getPosition();
+            //_vCars[_cursorVehiculo]->setPosition(pos.x,pos.y + 0.5,pos.z);
+            
+        }
+        else
+        {
+            Quaternion delta = Quaternion::Slerp(_progresoRotacion, _orientOriginal, _orientDestino, true);
+            _nodoSelector->setOrientation(delta);
+        }
+    }
 }
 
 bool carSelectorState::frameEnded(const Ogre::FrameEvent& evt)
@@ -226,7 +297,7 @@ void carSelectorState::createScene()
     Entity* entSelector = _sceneMgr->createEntity("entSelector","PlanoSelector.mesh");
     _nodoSelector->attachObject(entSelector);
     _sceneMgr->getRootSceneNode()->addChild(_nodoSelector);
-    _nodoSelector->scale(4,4,4);
+    _nodoSelector->scale(3.5,3.5,3.5);
     _nodoSelector->setPosition(0,12,20);
     //_nodoSelector->yaw(Ogre::Degree(-90));
     //_nodoSelector->roll(Ogre::Degree(10));
@@ -249,18 +320,41 @@ void carSelectorState::createScene()
     SceneNode* aux;
     for (size_t i = 0; i != vEntCars.size(); ++i)
     {
+        int anguloOffset = 90; // desplazamos 90 grados para que el primer coche lo ponga justo en (0,-1,0), o sea, que quede en frente nuestra y seleccionado.
         int angulo = i * 60; // En realidad hay 7 coches distintos pero 2 de ellos son prácticamente iguales así que nos quedamos con 6
-        aux = _nodoSelector->createChildSceneNode("nodoCar"+i,Vector3(Ogre::Math::Cos(Ogre::Degree(angulo)),0,Ogre::Math::Sin(Ogre::Degree(angulo))));
+        aux = _nodoSelector->createChildSceneNode("nodoCar"+i,Vector3(Ogre::Math::Cos(Ogre::Degree(angulo + anguloOffset)), 0, Ogre::Math::Sin(Ogre::Degree(angulo+anguloOffset))));
         aux->attachObject(vEntCars[i]);
-        aux->scale(0.2,0.2,0.2);
+        aux->setScale(0.2,0.2,0.2);
         aux->yaw(Ogre::Degree(30));
         _vCars.push_back(aux);
     }
     
     _cursorVehiculo = 0;
+    _vCars[_cursorVehiculo]->scale(2,2,2);
+    Vector3 pos = _vCars[_cursorVehiculo]->getPosition();
+    _vCars[_cursorVehiculo]->setPosition(Vector3(pos.x,pos.y+0.5,pos.z));
     
-    _vCars[_cursorVehiculo]->scale(4,4,4);
+    _sentidoGiro = 1;
+    _bajando = false;
+    _subiendo = false;
+    _progresoBajada = MAX_ALTURA_SELECCIONADO;
+    _progresoBajada = MIN_ALTURA_SELECCIONADO;
+    _idMaterialActual = 0;
+
     
+    inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,1);
+
+}
+
+// Procedimiento por comidad para reinicializar los parámetros de la rotacion Slerp del plano selector de coches.
+void carSelectorState::inicializarEstadoRotacionSelector(Real factorRot, Quaternion orientacionOriginal, Real angulo, Vector3 eje, int sentido)
+{
+    _girandoRuleta = false;
+    _orientOriginal = orientacionOriginal;
+    _factorRotacion = factorRot;
+    Quaternion q = Quaternion(Degree(angulo * sentido),eje);
+    _orientDestino = Quaternion(q * _orientOriginal);
+    _progresoRotacion = 0;
 }
 
 void carSelectorState::createFloor()
@@ -316,22 +410,18 @@ void carSelectorState::configurarCamaraPrincipal()
     _camera->setFarClipDistance(cam.farClipDistance);
 }
 
-void carSelectorState::colocaCamara()
+void carSelectorState::cambiarMaterialVehicSeleccionado()
 {
+    _idMaterialActual++;
+    _idMaterialActual = _idMaterialActual % _vMateriales.size();
+    
+    // NOTA: getSubEntity(0)  El índice de getSubEntity, en este caso 0, se establece cuando exportamos el modelo desde Blender, 
+    // el exportador establece el indice del submesh según el orden de los materiales que use el modelo en Blender. En esta parte del juego
+    // queremos cambiar el material del chasis del vehiculo. Es decir, de la parte del modelo más grande. Si esa parte del modelo en 
+    // blender usa un material cuyo índice no sea 0, es decir el primero, el exportador le asignará a esa parte del modelo (el submesh)
+    // el índice que tenga el material en Blender. Luego si hardcodeamos el índice del subEntity, como en este caso, tendremos que tener
+    // en cuenta este detalle, de lo contrario estaríamos intentando cambiar el material al subEntity (submesh) erróneo.
+    static_cast<Entity *>(_vCars[_cursorVehiculo]->getAttachedObject(0))->getSubEntity(0)->setMaterialName(_vMateriales[_idMaterialActual]);
+
 }
 
-void carSelectorState::gestionaAnimaciones(Ogre::AnimationState*& anim, Ogre::Real deltaT, const String& nombreEnt, const String& nombreAnim)
-{
-}
-
-void carSelectorState::createOverlay()
-{
-}
-
-void carSelectorState::pintaOverlayInfo()
-{
-}
-
-void carSelectorState::flagKeys(bool flag)
-{
-}
