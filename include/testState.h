@@ -99,7 +99,8 @@ protected:
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
-    bool _freeCamera = false;
+    bool _freeCamera = true;
+    bool _pauseSimulation = false;
 
     bool _exitGame;
     Ogre::Real _deltaT;

@@ -1,0 +1,35 @@
+// carmaterial_blue genrated by blender2ogre 0.6.0
+
+material carmaterial_blue 
+{
+    receive_shadows on 
+
+    technique
+    {
+        pass carmaterial_blue
+        {
+            ambient 0.03434000164270401 0.3139890134334564 0.7083759903907776 1.0
+            diffuse 0.027472001723527928 0.25119121448980586 0.5667008007571219 1.0
+            specular 0.5 0.5 0.5 1.0 12.5
+            emissive 0.0 0.0 0.0 1.0
+
+            alpha_to_coverage off
+            colour_write on
+            cull_hardware clockwise
+            depth_check on
+            depth_func less_equal
+            depth_write on
+            illumination_stage 
+            light_clip_planes off
+            light_scissor off
+            lighting on
+            normalise_normals off
+            polygon_mode solid
+            scene_blend one zero
+            scene_blend_op add
+            shading gouraud
+            transparent_sorting on
+
+        }
+    }
+}

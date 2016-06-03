@@ -277,7 +277,7 @@ bool InputManager_::keyPressed(const OIS::KeyEvent &e)
   // Delega en los KeyListener añadidos.
   for (; itKeyListener != itKeyListenerEnd; ++itKeyListener) 
   {
-    cout << "InputManager keypressed: " << e.key << endl;
+    //cout << "InputManager keypressed: " << e.key << endl;
     itKeyListener->second->keyPressed(e);
   }
 

@@ -36,8 +36,8 @@ class track
             //Asociar forma y cuerpo rígido (TrimeshShape y Geometría movible(attachada a un sceneNode))
             OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(_ent);
             OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
-            _body = new OgreBulletDynamics::RigidBody(_nombre, world, COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
-            //_body->setShape(_nodo,tri,0.8,0.95,0,posicionInicio);
+//            _body = new OgreBulletDynamics::RigidBody(_nombre, world, COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
+            _body = new OgreBulletDynamics::RigidBody(_nombre, world);
             _body->setShape(_nodo,tri,nodoConfig.bodyRestitutionBullet,nodoConfig.frictionBullet,nodoConfig.masaBullet,posicionInicio);
 //            delete trimeshConverter;
 

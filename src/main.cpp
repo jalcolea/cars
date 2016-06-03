@@ -33,7 +33,8 @@
 #include "CreditsState.h"
 #include "sounds.h"
 #include "records.h"
-#include "testState.h"
+#include "testStateVehicRayCast.h"
+#include "carSelectorState.h"
 
 #include <iostream>
 
@@ -54,7 +55,9 @@ int main () {
   LooseState* looseState = new LooseState();
   RecordsState * recordState = new RecordsState();
   CreditsState * creditState = new CreditsState();
-  testState* test = new testState();
+  testStateVehicRayCast* test = new testStateVehicRayCast();
+  carSelectorState* selector = new carSelectorState();
+  SceneNodeConfig* snc = new SceneNodeConfig();
   records * r = records::getInstance();
   sounds * s = sounds::getInstance();
 

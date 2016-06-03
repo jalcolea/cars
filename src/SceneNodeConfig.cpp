@@ -46,9 +46,9 @@ bool SceneNodeConfig::load_xml(string fichero)
     }
     
     data = mxmlFindElement(_tree,_tree,"dataVehiculoRayCast", NULL, NULL, MXML_DESCEND);
-    for (node = mxmlFindElement(data, data, "camera", NULL, NULL, MXML_DESCEND);
+    for (node = mxmlFindElement(data, data, "dataRayCast", NULL, NULL, MXML_DESCEND);
          node != NULL;
-         node = mxmlFindElement(node,data, "camera", NULL, NULL, MXML_DESCEND))
+         node = mxmlFindElement(node,data, "dataRayCast", NULL, NULL, MXML_DESCEND))
     {
         nuevoVehiculoRayCast(node);
     }
@@ -138,6 +138,13 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     mxml_node_t* nombre;
     mxml_node_t* nombreMallaRueda;
     mxml_node_t* nombreMallaChasis;
+    mxml_node_t* nombreMaterial;                      // nombre del material que usará el Entity, en caso de poder cambiarse.
+    mxml_node_t* orientacion;               // orientacion del scenenode
+    mxml_node_t* orientacionShapeBullet;    // orientación del shape de bullet que envolverá al modelo
+    mxml_node_t* posShapeBullet;               // posición inicial del shape de bullet
+    mxml_node_t* masaBullet;                      // propiedad masa del rigidbody
+    mxml_node_t* frictionBullet;                  // propiedad índice de fricción del rigidbody
+    mxml_node_t* bodyRestitutionBullet;           // propiedad índice de restitución (elasticidad) del rigidbody    
     mxml_node_t* radioRuedas;
     mxml_node_t* anchoRuedas;
     mxml_node_t* friccionRueda;
@@ -153,11 +160,23 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     mxml_node_t* suspensionDamping;     // indice de restitución de la suspensión
     mxml_node_t* maxSuspensionTravelCm; // limite del recorrido de la suspensión (entiendo que al comprimirse el muelle)
     mxml_node_t* maxSuspensionForce;    // límite máximo de la fuerza de la suspensión
-    mxml_node_t* frictionSlip;              
+    mxml_node_t* frictionSlip;
+    mxml_node_t* posRueda0;              
+    mxml_node_t* posRueda1;              
+    mxml_node_t* posRueda2;              
+    mxml_node_t* posRueda3;              
+    mxml_node_t* escala; 
     
     nombre = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreMallaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreMallaChasis = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_CHASIS)]).c_str(),NULL,NULL,MXML_DESCEND);
+    nombreMaterial = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MATERIAL)]).c_str(),NULL,NULL,MXML_DESCEND);
+    frictionBullet = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICTION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    masaBullet = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MASA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    orientacionShapeBullet = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posShapeBullet = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    bodyRestitutionBullet = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RESTITUTION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    orientacion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION)]).c_str(),NULL,NULL,MXML_DESCEND);
     radioRuedas = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RADIO_RUEDAS)]).c_str(),NULL,NULL,MXML_DESCEND);
     anchoRuedas = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ANCHO_RUEDAS)]).c_str(),NULL,NULL,MXML_DESCEND);
     friccionRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICCION_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
@@ -174,12 +193,27 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     maxSuspensionTravelCm = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MAX_SUSPENSION_TRAVEL_CM)]).c_str(),NULL,NULL,MXML_DESCEND);
     maxSuspensionForce = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MAX_SUSPENSION_FORCE)]).c_str(),NULL,NULL,MXML_DESCEND);
     frictionSlip = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::FRICTION_SLIP)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posRueda0 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA0)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posRueda1 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA1)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posRueda2 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA2)]).c_str(),NULL,NULL,MXML_DESCEND);
+    posRueda3 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA3)]).c_str(),NULL,NULL,MXML_DESCEND);
+    escala = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    
     
     nodoVehiculoRayCast_t nodo;
     
     nodo.nombre = string(mxmlGetText(nombre,NULL));
     nodo.nombreMallaRueda = string(mxmlGetText(nombreMallaRueda,NULL));
     nodo.nombreMallaChasis = string(mxmlGetText(nombreMallaChasis,NULL));
+
+    nodo.nombreMaterial = string(mxmlGetText(nombreMaterial,NULL));
+    nodo.frictionBullet = Ogre::Real(std::stof(mxmlGetText(frictionBullet,NULL)));
+    nodo.masaBullet = Ogre::Real(std::stof(mxmlGetText(masaBullet,NULL)));
+    nodo.orientacionShapeBullet = extraeQuaternio(orientacionShapeBullet);
+    nodo.posShapeBullet = extraeVector3(posShapeBullet);
+    nodo.bodyRestitutionBullet = Ogre::Real(std::stof(mxmlGetText(bodyRestitutionBullet,NULL)));
+    if (orientacion) nodo.orientacion = extraeQuaternio(orientacion); else nodo.orientacion = Ogre::Quaternion(1,0,0,0);
+    
     nodo.radioRuedas = Ogre::Real(std::stof(mxmlGetText(radioRuedas,NULL)));
     nodo.anchoRuedas = Ogre::Real(std::stof(mxmlGetText(anchoRuedas,NULL)));
     nodo.friccionRueda = Ogre::Real(std::stof(mxmlGetText(friccionRueda,NULL)));
@@ -196,6 +230,11 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     nodo.maxSuspensionTravelCm = Ogre::Real(std::stof(mxmlGetText(maxSuspensionTravelCm,NULL)));
     nodo.maxSuspensionForce = Ogre::Real(std::stof(mxmlGetText(maxSuspensionForce,NULL)));
     nodo.frictionSlip = Ogre::Real(std::stof(mxmlGetText(frictionSlip,NULL)));
+    nodo.posRuedas.push_back(extraeVector3(posRueda0));
+    nodo.posRuedas.push_back(extraeVector3(posRueda1));
+    nodo.posRuedas.push_back(extraeVector3(posRueda2));
+    nodo.posRuedas.push_back(extraeVector3(posRueda3));
+    nodo.escala = extraeVector3(escala);
     
     map_vehiculos_raycast[nodo.nombre] = nodo;
     

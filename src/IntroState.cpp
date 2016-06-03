@@ -2,7 +2,8 @@
 #include "IntroState.h"
 #include "PlayState.h"
 #include "MenuState.h"
-#include "testState.h"
+#include "testStateVehicRayCast.h"
+#include "carSelectorState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 
@@ -105,9 +106,14 @@ bool IntroState::keyPressed(const OIS::KeyEvent &e)
     }
     else if (e.key == OIS::KC_T)
     {
-        changeState(testState::getSingletonPtr());
+        changeState(testStateVehicRayCast::getSingletonPtr());
         
     }
+    else if (e.key == OIS::KC_S)
+    {
+        changeState(carSelectorState::getSingletonPtr());
+    }
+    
     
     return true;
 

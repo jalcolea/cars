@@ -86,22 +86,23 @@ void testState::resume()
 bool testState::frameStarted(const Ogre::FrameEvent &evt)
 {
     _deltaT = evt.timeSinceLastFrame;
-    _world.get()->stepSimulation(_deltaT);
+    if (_pauseSimulation) _world.get()->stepSimulation(_deltaT);
     static Vector3 oldPos = _car->getPosicion();
     static Ogre::Real speed = 10.0;
     _fps = 1.0 / _deltaT;
     _r = 0;
+    Real rr = 0;
     Real rSteer = 0;
     Real sCar = 0;
     static Real sBrake = 10;
     _vt = Ogre::Vector3::ZERO;
 
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_P)) _pauseSimulation = !_pauseSimulation;
+
     _velocidad = _car->getVelocidadActualCalculada(oldPos,_car->getPosicion(),_deltaT);
 
     if (oldPos != _car->getPosicion())
         oldPos = _car->getPosicion();
-
-    
 
     if (_keys & static_cast<size_t>(keyPressed_flags::LEFT))  _vt.x += -1;
     if (_keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _vt.x += 1;
@@ -142,9 +143,13 @@ bool testState::frameStarted(const Ogre::FrameEvent &evt)
     if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
         
     _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
+    
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_8)) rr+=180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_9)) rr-=180;
+    _camera->yaw(Ogre::Radian(rr * _deltaT * 0.005));
 
-    float rotx = InputManager_::getSingletonPtr()->getMouse()->getMouseState().X.rel * _deltaT * -1;
-    _camera->yaw(Ogre::Radian(rotx));
+//    float rotx = InputManager_::getSingletonPtr()->getMouse()->getMouseState().X.rel * _deltaT * -1;
+//    _camera->yaw(Ogre::Radian(rotx));
     
     if (!_freeCamera)
         _camera->setPosition(_car->getPosicion().x,_camera->getPosition().y, _car->getPosicion().z + 40);
@@ -332,6 +337,7 @@ void testState::createScene()
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
     _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
     _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get()));
+    _carRayCast->buildVehiculo();
     
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
@@ -387,9 +393,11 @@ void testState::configurarCamaraPrincipal()
     double width = _viewport->getActualWidth();
     double height = _viewport->getActualHeight();
     nodoCamera_t cam = _scn.getInfoCamera("IntroCamera");
+    nodoOgre_t aux = _scn.getInfoNodoOgre("carGroupC1red");
     _camera->setAspectRatio(width / height);
     _camera->setPosition(cam.posInicial);
-    _camera->lookAt(cam.lookAt);
+    //_camera->lookAt(cam.lookAt);
+    _camera->lookAt(aux.posInicial);
     _camera->setNearClipDistance(cam.nearClipDistance);
     _camera->setFarClipDistance(cam.farClipDistance);
 }
