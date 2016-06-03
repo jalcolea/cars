@@ -49,16 +49,20 @@ int main (int argc, char * argv[])
 
 
   // comprobacion metodo follow, este metodo va devolviendo la referencia al siguiente punto hasta que se pasa por el a una distancia menor que min_distance
-  printf("TESTING FOLLOW METHOD: CAR %d:%d:%d\n",car.x(),car.y(),car.z());
+  //printf("TESTING FOLLOW METHOD: CAR %d:%d:%d\n",car.x(),car.y(),car.z());
+  printf("TESTING FOLLOW METHOD: CAR %f:%f:%f\n",car.x(),car.y(),car.z());
   next = ia.follow(&car);
-  printf("TESTING FOLLOW METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  //printf("TESTING FOLLOW METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  printf("TESTING FOLLOW METHOD: CAR %f:%f:%f  POINT %f:%f:%f\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
   car.xyz(2,2,0);
   next = ia.follow(&car);
-  printf("TESTING FOLLOW METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  //printf("TESTING FOLLOW METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  printf("TESTING FOLLOW METHOD: CAR %f:%f:%f  POINT %f:%f:%f\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
 
   // comprobacion metodo next, este metodo va devolviendo la referencia al siguiente punto mas cercano a una distancia menor que min_distance sin orden fijo
   car.xyz(0,0,0);
-  printf("TESTING NEXT METHOD: CAR %d:%d:%d\n",car.x(),car.y(),car.z());
+  //printf("TESTING NEXT METHOD: CAR %d:%d:%d\n",car.x(),car.y(),car.z());
+  printf("TESTING NEXT METHOD: CAR %f:%f:%f\n",car.x(),car.y(),car.z());
   distance = ia.next(&car,next);
   cout <<"TESTING NEXT METHOD: CAR "<<car.x()<<":"<<car.y()<<":"<<car.z()<<" POINT " << next->derived.x()<<":"<<next->derived.y()<<":"<<next->derived.z()<<" DISTANCE " << distance << endl;
 
@@ -72,10 +76,12 @@ int main (int argc, char * argv[])
 
   cout << "TESTING FOLLOW METHOD: CAR "<< car.x()<<":"<<car.y()<<":"<<car.z()<<endl;
   next = ia.follow(&car);
-  printf("TESTING FOLLOW METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  //printf("TESTING FOLLOW METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  printf("TESTING FOLLOW METHOD: CAR %f:%f:%f  POINT %f:%f:%f\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
   car.xyz(2,2,0);
   next = ia.follow(&car);
-  printf("TESTING MOVE METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  //printf("TESTING MOVE METHOD: CAR %d:%d:%d  POINT %d:%d:%d\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
+  printf("TESTING MOVE METHOD: CAR %f:%f:%f  POINT %f:%f:%f\n",car.x(),car.y(),car.z(), next->derived.x(),next->derived.y(),next->derived.z());
 
   //reajuste de coordenadas x,y,z para un iapoint 
   car.xyz(0,0,0);

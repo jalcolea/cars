@@ -46,6 +46,10 @@
     <File Name="src/CarRayCast.cpp"/>
     <File Name="src/testStateVehicRaycast.cpp"/>
     <File Name="src/carSelectorState.cpp"/>
+    <File Name="src/iamanager.cpp"/>
+    <File Name="src/IAPointsDeserializer.cpp"/>
+    <File Name="src/IAPointsSerializer.cpp"/>
+    <File Name="src/pathDrawerState.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="include/Bluez_Util.h"/>
@@ -77,6 +81,11 @@
     <File Name="include/CarRayCast.h"/>
     <File Name="include/testStateVehicRayCast.h"/>
     <File Name="include/carSelectorState.h"/>
+    <File Name="include/iamanager.h"/>
+    <File Name="include/iapoint.h"/>
+    <File Name="include/IAPointsDeserializer.h"/>
+    <File Name="include/IAPointsSerializer.h"/>
+    <File Name="include/pathDrawerState.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

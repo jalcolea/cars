@@ -205,9 +205,9 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
         inline map_nodos_t& getMapNodos(){ return map_nodos;};                              // getter para el mapa de SceneNodes. 
         inline nodoCamera_t getInfoCamera(const string& clave){ return map_cameras[clave]; }; // devuelve un paquete de info nodoCamera_t
         inline map_cameras_t& getMapCameras(){ return map_cameras;};                        // getter para el mapa de Cameras
-        inline map_vehiculos_ray_cast_t& getMapVehiculosRaycast(){ return map_vehiculos_raycast; };
-        inline nodoVehiculoRayCast_t& getInfoVehiculoRayCast(const string& clave){ return map_vehiculos_raycast[clave]; }; 
-        inline void cleanOptions() { map_nodos.clear(); };                                  // se cepilla las opciones cargadas actualmente.
+        inline map_vehiculos_ray_cast_t& getMapVehiculosRaycast(){ return map_vehiculos_raycast; }; // getter para el mapa de vehiculos Raycast
+        inline nodoVehiculoRayCast_t& getInfoVehiculoRayCast(const string& clave){ return map_vehiculos_raycast[clave]; }; // devuelve un paquete de info nodoVehiculoRayCast_t
+        inline void clear() { map_nodos.clear(); map_cameras.clear(); map_vehiculos_raycast.clear(); }; // se cepilla la info de todo cargada actualmente.
 };
 
 #endif // SCENENODECONFIG_H

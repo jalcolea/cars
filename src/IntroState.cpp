@@ -4,6 +4,7 @@
 #include "MenuState.h"
 #include "testStateVehicRayCast.h"
 #include "carSelectorState.h"
+#include "pathDrawerState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 
@@ -112,6 +113,10 @@ bool IntroState::keyPressed(const OIS::KeyEvent &e)
     else if (e.key == OIS::KC_S)
     {
         changeState(carSelectorState::getSingletonPtr());
+    }
+    else if (e.key == OIS::KC_I)
+    {
+        changeState(pathDrawerState::getSingletonPtr());
     }
     
     
