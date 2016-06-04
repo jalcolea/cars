@@ -1,4 +1,6 @@
 #include "pathDrawerState.h"
+#include "IAPointsSerializer.h"
+#include "IAPointsDeserializer.h"
 
 using namespace std;
 using namespace Ogre;
@@ -76,8 +78,61 @@ bool pathDrawerState::keyPressed(const OIS::KeyEvent& e)
     if (e.key == OIS::KC_ESCAPE)
         _exitGame = true;
         
+    if (e.key == OIS::KC_F2)
+        guardarRuta();
+        
+    if (e.key == OIS::KC_F4)
+        cargarRuta("rutasIA.xml");
+        
+    if (e.key == OIS::KC_F9)
+        borrarTodasLasMarcas();
+        
     
     return true;
+}
+
+void pathDrawerState::guardarRuta()
+{
+    IAPointsSerializer iaps;
+    
+    iaps.nuevoXMLIAPoints();
+    for (size_t i = 0; i < vMarcas.size(); i++)
+    {
+        iacomplexpoint p;
+        p.base.x(vMarcas[i]._nodoMarca->getPosition().x);
+        p.base.y(vMarcas[i]._nodoMarca->getPosition().y);
+        p.base.z(vMarcas[i]._nodoMarca->getPosition().z);
+        p.derived = p.base;
+        p.check = false;
+        iaps.addNodoXMLIAPoints(i,p);
+    }    
+    
+    iaps.guardarXMLIAPoints("rutasIA.xml");
+    cout << "FICHERO RUTAS GUARDADO" << endl;
+}
+
+void pathDrawerState::cargarRuta(string fichero)
+{
+    borrarTodasLasMarcas();
+    
+    IAPointsDeserializer iapd;
+    iapd.cargarFichero(fichero);
+    std::vector<iacomplexpoint> vpoints = iapd.getPoints();
+    
+    for (size_t i = 0; i < vpoints.size(); i++)
+    {
+        Vector3 pos(vpoints[i].base.x(),vpoints[i].base.y(),vpoints[i].base.z());
+        addMarca(pos);
+    }    
+    
+}
+
+void pathDrawerState::borrarTodasLasMarcas()
+{
+    _sceneMgr->destroyAllManualObjects();
+    _sceneMgr->clearScene();
+    createScene();
+    vMarcas.clear();
 }
 
 bool pathDrawerState::keyReleased(const OIS::KeyEvent& e)
@@ -87,7 +142,46 @@ bool pathDrawerState::keyReleased(const OIS::KeyEvent& e)
 
 bool pathDrawerState::mouseMoved(const OIS::MouseEvent& e)
 {
-        return true;
+    
+    if (InputManager_::getSingletonPtr()->getMouse()->getMouseState().buttonDown(OIS::MB_Left) &&
+        _nodoSelector && _nodoSelector->getName() != "track1bis")
+    {
+        Ray r = setRayQuery(e.state.X.abs, e.state.Y.abs, MASK_CIRCUITO | MASK_MARCA);
+        RaySceneQueryResult &result = _raySceneQuery->execute();
+        RaySceneQueryResult::iterator it;
+        it = result.begin();
+        if (it != result.end() && it->movable->getParentSceneNode()->getName() == "track1bis") 
+        {   
+            _nodoSelector->setPosition(r.getPoint(it->distance));
+            recolocarLinea();
+        }
+    }
+        
+    
+    return true;
+}
+
+void pathDrawerState::recolocarLinea()
+{
+    for (auto it=vMarcas.begin(); it!=vMarcas.end(); ++it)
+    {
+        if (_nodoSelector == (*it)._nodoMarca)
+        {
+            if ((*it)._id < vMarcas.size()-1) // Si el id del nodo NO es el último, entonces redibujo la linea que sale de él
+            {
+                _sceneMgr->destroyManualObject("line_" + to_string((*it)._id));
+                dibujaLinea((*it)._id, (*it)._id+1);
+            }
+
+            if ((*it)._id) // Si el id del nodo es distinto de 0, entonces redibujo la linea que le llega.
+            {
+                _sceneMgr->destroyManualObject("line_" + to_string((*it)._id-1));
+                dibujaLinea((*it)._id-1, (*it)._id);
+            }
+            return;
+        }
+    }
+        
 }
 
 bool pathDrawerState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID id)
@@ -146,13 +240,13 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
         it = result.begin();
 
         if (it != result.end()) 
-        {
+        {       // Podríamos mejorar esto usando addMarca() pero vamos que nos vamos :D
                 if (it->movable->getParentSceneNode()->getName() == "track1bis") 
                 {
                   marquita marca;
-                  marca._nombreNodo = "nodoMarca" + to_string(_idMarca);
+                  marca._nombreNodo = "nodoMarca_" + to_string(_idMarca);
                   marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
-                  marca._nombreEnt = "entMarca" + to_string(_idMarca);                  
+                  marca._nombreEnt = "entMarca_" + to_string(_idMarca);                  
                   marca._entMarca = _sceneMgr->createEntity(marca._nombreEnt,"marca.mesh");
                   marca._entMarca->setCastShadows(false);
                   marca._entMarca->setQueryFlags(MASK_MARCA);
@@ -164,7 +258,7 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
                   
                   vMarcas.push_back(marca);
                   
-                  if (marca._id > 0) dibujaLinea();
+                  if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
                   
                   cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
                   cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
@@ -183,19 +277,42 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
     return !_exitGame;
 }
 
-void pathDrawerState::dibujaLinea()
+void pathDrawerState::addMarca(Vector3 posicion)
 {
-    // create ManualObject
-    ManualObject* manual = _sceneMgr->createManualObject("line" + to_string(_idMarca-2));
+      marquita marca;
+      marca._nombreNodo = "nodoMarca_" + to_string(_idMarca);
+      marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
+      marca._nombreEnt = "entMarca_" + to_string(_idMarca);                  
+      marca._entMarca = _sceneMgr->createEntity(marca._nombreEnt,"marca.mesh");
+      marca._entMarca->setCastShadows(false);
+      marca._entMarca->setQueryFlags(MASK_MARCA);
+      marca._nodoMarca->attachObject(marca._entMarca);
+      marca._nodoMarca->translate(posicion);
+      _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
+      marca._id = _idMarca;
+      _idMarca++;
+      
+      vMarcas.push_back(marca);
+      
+      if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
+      
+      cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
+      cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
+      cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
+
+}
+
+void pathDrawerState::dibujaLinea(size_t idFrom, size_t idTo)
+{
+    ManualObject* manual = _sceneMgr->createManualObject("line_" + to_string(idFrom));
      
     manual->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_LIST);
-        // define start and end point
-        manual->position(vMarcas[_idMarca-2]._nodoMarca->getPosition()); //start
-        manual->position(vMarcas[_idMarca-1]._nodoMarca->getPosition());    //end
+        manual->position(vMarcas[idFrom]._nodoMarca->getPosition()); //start
+        manual->position(vMarcas[idTo]._nodoMarca->getPosition());    //end
     manual->end();
      
-    // add ManualObject to the RootSceneNode (so it will be visible)
     _sceneMgr->getRootSceneNode()->attachObject(manual);
+    cout << "nombre entity linea: " << manual->getName() << endl;
 }
 
 bool pathDrawerState::frameEnded(const Ogre::FrameEvent& evt)

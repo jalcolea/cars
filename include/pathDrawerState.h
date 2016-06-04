@@ -90,7 +90,12 @@ private:
     void createFloor();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
-    void dibujaLinea();
+    void addMarca(Vector3 posicion);
+    void dibujaLinea(size_t idFrom, size_t idTo);
+    void recolocarLinea();
+    void guardarRuta();
+    void cargarRuta(string fichero);
+    void borrarTodasLasMarcas();
     RaySceneQuery* _raySceneQuery;
     size_t _idMarca;
     bool _crearMarca;

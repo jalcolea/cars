@@ -14,7 +14,6 @@ class IAPointsDeserializer
 {
     public:
         IAPointsDeserializer();
-        IAPointsDeserializer(string fichero) : _fichero(fichero){};
         virtual ~IAPointsDeserializer();
 
         bool cargarFichero(string fichero = "");
