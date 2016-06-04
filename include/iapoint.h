@@ -29,7 +29,10 @@ class iapoint
   void distance (float n) {_distance=n;}
   void userdata (void * n) {_userdata=n;}
 };
-
+typedef struct point_data 
+{
+  float speed_factor;
+};
 
 typedef struct iacomplexpoint
 {
