@@ -5,9 +5,12 @@
 #include <math.h>
 #include <climits>
 
-iamanager::iamanager(int laps, vector <iapoint*> * path, int offset, int min_distance):_laps(laps),_offset(offset),_min_distance(min_distance),_path(path)
+iamanager::iamanager(int laps, vector <iapoint*> * path, int offset, float min_distance):_laps(laps),_offset(offset),_min_distance(min_distance),_path(path)
 {
   iacomplexpoint * p;
+  _fixed_x=false;
+  _fixed_y=false;
+  _fixed_z=false;
   points = new vector <iacomplexpoint*>();
   int range=(offset*2)-1;
   for (int a=0;a<_laps;a++)
@@ -15,12 +18,14 @@ iamanager::iamanager(int laps, vector <iapoint*> * path, int offset, int min_dis
     for (unsigned int c=0;c<_path->size();c++)
     {
       p=new iacomplexpoint();
-      p->derived.x(rand()%range+(*_path)[c]->x());
-      p->derived.y(rand()%range+(*_path)[c]->y());
-      p->derived.z(rand()%range+(*_path)[c]->z());
+      p->derived.x((!_fixed_x)?rand()%range+(*_path)[c]->x():(*_path)[c]->x());
+      p->derived.y((!_fixed_y)?rand()%range+(*_path)[c]->y():(*_path)[c]->y());
+      p->derived.z((!_fixed_z)?rand()%range+(*_path)[c]->z():(*_path)[c]->z());
+      p->derived.userdata((*_path)[c]->userdata());
       p->base.x((*_path)[c]->x());
       p->base.y((*_path)[c]->y());
       p->base.z((*_path)[c]->z());
+      p->base.distance((*_path)[c]->distance());
       p->check=false;
       points->push_back(p);
     }
@@ -31,12 +36,14 @@ iacomplexpoint * iamanager::follow (iapoint * car)
 {
   iacomplexpoint * result = NULL;
   iacomplexpoint * node=NULL;
+  float dis = _min_distance;
   for (unsigned int a=0;a<points->size();a++)
   {
     node=(*points)[a];
     if (!node->check)
     {
-      if (distance(&node->derived,car) < _min_distance)
+      if (node->derived.distance()>0) dis= node->derived.distance();
+      if (distance(&node->derived,car) < dis)
       {
         node->check=true;
         if ((a+1)<points->size()) node = (*points)[a+1];
@@ -117,4 +124,10 @@ float iamanager::distance(iapoint *from,iapoint *to)
 
 }
 
+void iamanager::fixed_coord(bool x, bool y, bool z)
+{
+  _fixed_x = x;
+  _fixed_y = y;
+  _fixed_z = z;
+}
 
