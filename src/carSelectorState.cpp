@@ -1,4 +1,5 @@
 #include "carSelectorState.h"
+#include "PlayState.h"
 //#include <limits>
 
 using namespace std;
@@ -10,7 +11,7 @@ template<> carSelectorState *Ogre::Singleton<carSelectorState>::msSingleton = 0;
 
 void carSelectorState::enter()
 {
-        // Recuperar recursos básicos
+    // Recuperar recursos básicos
     _root = Ogre::Root::getSingletonPtr();
     try
     {
@@ -95,6 +96,9 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
 
     if (e.key == OIS::KC_M)
         cambiarMaterialVehicSeleccionado();
+        
+    if (e.key == OIS::KC_RETURN)
+        changeState(PlayState::getSingletonPtr());
     
     return true;
 }
@@ -303,27 +307,26 @@ void carSelectorState::createScene()
     //_nodoSelector->roll(Ogre::Degree(10));
     
 
-    std::vector<Entity*> vEntCars;
     info = SceneNodeConfig::getSingleton().getInfoNodoOgre("kartOneBlock");
-    vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
     info = SceneNodeConfig::getSingleton().getInfoNodoOgre("farara-sportOneBlock");
-    vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
     info = SceneNodeConfig::getSingleton().getInfoNodoOgre("formulaOneBlock");
-    vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
     info = SceneNodeConfig::getSingleton().getInfoNodoOgre("groupC1OneBlock");
-    vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
     info = SceneNodeConfig::getSingleton().getInfoNodoOgre("lamba-sportOneBlock");
-    vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
     info = SceneNodeConfig::getSingleton().getInfoNodoOgre("parsche-sportOneBlock");
-    vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
 
     SceneNode* aux;
-    for (size_t i = 0; i != vEntCars.size(); ++i)
+    for (size_t i = 0; i != _vEntCars.size(); ++i)
     {
         int anguloOffset = 90; // desplazamos 90 grados para que el primer coche lo ponga justo en (0,-1,0), o sea, que quede en frente nuestra y seleccionado.
         int angulo = i * 60; // En realidad hay 7 coches distintos pero 2 de ellos son prácticamente iguales así que nos quedamos con 6
         aux = _nodoSelector->createChildSceneNode("nodoCar"+i,Vector3(Ogre::Math::Cos(Ogre::Degree(angulo + anguloOffset)), 0, Ogre::Math::Sin(Ogre::Degree(angulo+anguloOffset))));
-        aux->attachObject(vEntCars[i]);
+        aux->attachObject(_vEntCars[i]);
         aux->setScale(0.2,0.2,0.2);
         aux->yaw(Ogre::Degree(30));
         _vCars.push_back(aux);
@@ -425,3 +428,7 @@ void carSelectorState::cambiarMaterialVehicSeleccionado()
 
 }
 
+string carSelectorState::getNombreTipoCocheSeleccionado()
+{
+    return _vEntCars[_cursorVehiculo]->getName().substr(0,_vEntCars[_cursorVehiculo]->getName().find("OneBlock"));
+}

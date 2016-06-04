@@ -39,7 +39,6 @@
     <File Name="src/WinState.cpp"/>
     <File Name="include/CreditsState.h"/>
     <File Name="src/SceneNodeConfig.cpp"/>
-    <File Name="src/testState.cpp"/>
     <File Name="src/car.cpp"/>
     <File Name="src/track.cpp"/>
     <File Name="src/OptionsState.cpp"/>
@@ -74,7 +73,6 @@
     <File Name="include/Wiimote.h"/>
     <File Name="include/WinState.h"/>
     <File Name="include/SceneNodeConfig.h"/>
-    <File Name="include/testState.h"/>
     <File Name="include/car.h"/>
     <File Name="include/track.h"/>
     <File Name="include/OptionsState.h"/>

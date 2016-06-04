@@ -30,18 +30,18 @@ using namespace OgreBulletCollisions;
 #define MASK_CIRCUITO 1 << 0
 #define MASK_MARCA    1 << 1
 
+struct marquita
+{
+    SceneNode* _nodoMarca;
+    Entity* _entMarca;
+    string _nombreNodo;
+    string _nombreEnt;
+    size_t _id;
+};
+
 class pathDrawerState : public Ogre::Singleton<pathDrawerState>, public GameState
 {
 public:
-    struct marquita
-    {
-        SceneNode* _nodoMarca;
-        Entity* _entMarca;
-        string _nombreNodo;
-        string _nombreEnt;
-        size_t _id;
-    };
-    
      pathDrawerState(){}
     ~ pathDrawerState();
     void enter();

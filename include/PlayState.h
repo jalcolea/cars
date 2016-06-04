@@ -35,31 +35,38 @@
 #include "OgreUtil.h"
 #include "Wiimote.h"
 #include "constants.h"
+#include "CarRayCast.h"
+#include "track.h"
+#include "IAPointsDeserializer.h"
+#include "pathDrawerState.h"
+
 
 using namespace std;
 using namespace Ogre;
 using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
+
+
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
- public:
-  PlayState () {}
-  ~PlayState();
+    public:
+    PlayState () {}
+    ~PlayState();
 
-  void enter ();
-  void exit();
-  void pause ();
-  void resume ();
+    void enter ();
+    void exit();
+    void pause ();
+    void resume ();
 
-  bool keyPressed (const OIS::KeyEvent &e);
-  bool keyReleased (const OIS::KeyEvent &e);
+    bool keyPressed (const OIS::KeyEvent &e);
+    bool keyReleased (const OIS::KeyEvent &e);
 
-  bool mouseMoved (const OIS::MouseEvent &e);
-  bool mousePressed (const OIS::MouseEvent &e, OIS::MouseButtonID id);
-  bool mouseReleased (const OIS::MouseEvent &e, OIS::MouseButtonID id);
+    bool mouseMoved (const OIS::MouseEvent &e);
+    bool mousePressed (const OIS::MouseEvent &e, OIS::MouseButtonID id);
+    bool mouseReleased (const OIS::MouseEvent &e, OIS::MouseButtonID id);
 
-  bool frameStarted (const Ogre::FrameEvent& evt);
-  bool frameEnded (const Ogre::FrameEvent& evt);
+    bool frameStarted (const Ogre::FrameEvent& evt);
+    bool frameEnded (const Ogre::FrameEvent& evt);
   
 /* WIIMOTE *********************************************************************/  
     bool WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e);
@@ -68,53 +75,74 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 /*******************************************************************************/  
   
 
-  // Heredados de Ogre::Singleton.
-  static PlayState& getSingleton ();
-  static PlayState* getSingletonPtr ();
-  void set_lives (int lives);
-  int  get_lives ();
+    // Heredados de Ogre::Singleton.
+    static PlayState& getSingleton ();
+    static PlayState* getSingletonPtr ();
+    void set_lives (int lives);
+    int  get_lives ();
 
-  void set_score (int score);
-  int  get_score ();
+    void set_score (int score);
+    int  get_score ();
 
-  void  game_over ();
-  void  win ();
-  void handleCollision(btCollisionObject *body0, btCollisionObject *body1);
-  OgreBulletDynamics::RigidBody* getCameraBody(){return _cameraBody;};
-  
+    void  game_over ();
+    void  win ();
 
- protected:
-  Ogre::Root* _root;
-  Ogre::SceneManager* _sceneMgr;
-  Ogre::Viewport* _viewport;
-  Ogre::Camera* _camera;
-  Ogre::SceneNode* _cameraNode;
-  MyGUI::VectorWidgetPtr layout;
-  void checkCollisions();
-  
+    protected:
+    Ogre::Root *_root;
+    Ogre::SceneManager *_sceneMgr;
+    Ogre::Viewport *_viewport;
+    Ogre::Camera *_camera;
+    //SceneNodeConfig _scn;
+    unique_ptr<track> _track;
+    unique_ptr<CarRayCast> _carRayCast;
+    shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
+    std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
+    CollisionShape* _floorShape;
+    RigidBody* _floorBody;
+    bool _freeCamera = false;
+    bool _playSimulation = true;
+    SceneNode* _nodoVista;
 
-  bool _exitGame;
-  int lives;
-  int score;
-  bool paused;
-  Ogre::Real _deltaT;
-  std::map<OIS::KeyCode,bool> keysArePressed;
-  shared_ptr<DynamicsWorld> _world;
-  DebugDrawer* _debugDrawer;
-  RigidBody* _cameraBody;
-  CollisionShape* _cameraShape;
-  CollisionShape* _floorShape;
-  RigidBody* _floorBody;
 
-  
+    bool _exitGame;
+    Ogre::Real _deltaT;
+    MyGUI::VectorWidgetPtr layout;
+    camara_view _vista = camara_view::SEMICENITAL;
+ 
 
-private:
+    int lives;
+    int score;
+    bool paused;
 
-  void createMyGui();
-  void destroyMyGui();
-  void createScene();
-  void createLight();
-  void moveCamera();
+    private:
+    void createLight();
+    void createMyGui();
+    void destroyMyGui();
+    void createScene();
+    void createFloor();
+    void cargarParametros(string archivo, bool consoleOut);
+    void configurarCamaraPrincipal();
+    void colocaCamara(); // Para cambiar los tipos de vista de la cámara.
+    void reposicionaCamara(); // moverá la cámara en función del tipo de vista actual.
+    void createPlaneRoad();
+    void initBulletWorld(bool showDebug);    
+    void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
+    //void createOverlay();
+    void pintaOverlayInfo();
+    void flagKeys(bool flag);
+    Ogre::OverlayManager* _overlayManager;
+    Ogre::Vector3 _vt;
+    Ogre::Real _r;
+    size_t _velocidad;
+    size_t _fps;
+    size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
+    DebugDrawer* _debugDrawer;
+    size_t _cursorVehiculo; // veremos si hace falta
+    
+    
+    void dibujaLinea(size_t idFrom, size_t idTo); // SOLO PARA COMPROBAR FUNCIONAMIENTO IA, QUITAR LUEGO
+    std::vector<marquita> vMarcas;
+
 
 };
 

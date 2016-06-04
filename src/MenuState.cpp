@@ -13,6 +13,7 @@
 #include "Carrusel.h"
 #include "PlayWidget.h"
 #include "constants.h"
+#include "carSelectorState.h"
 //http://www.cplusplus.com/doc/tutorial/templates/          <--------Visita esta página para entender la linea justo debajo de esta
 template<> MenuState* Ogre::Singleton<MenuState>::msSingleton = 0;
 
@@ -21,13 +22,40 @@ using namespace Ogre;
 
 void MenuState::enter ()
 {
-  _root = Ogre::Root::getSingletonPtr();
-  _sceneMgr = _root->getSceneManager("SceneManager");
-  _camera = _sceneMgr->getCamera("IntroCamera");
-  _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
-  _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
-  createScene();
-  _exitGame = false;
+    // Recuperar recursos básicos
+    _root = Ogre::Root::getSingletonPtr();
+    try
+    {
+        _sceneMgr = _root->getSceneManager("SceneManager");
+    }
+    catch (...)
+    {
+        cout << "SceneManager no existe, creándolo \n";
+        _sceneMgr = _root->createSceneManager(Ogre::ST_GENERIC, "SceneManager");
+    }
+
+    try
+    {
+        _camera = _sceneMgr->getCamera("IntroCamera");
+    }
+    catch (...)
+    {
+        cout << "testCamera no existe, creándola \n";
+        _camera = _sceneMgr->createCamera("IntroCamera");
+    }
+
+    try
+    {
+        _viewport = _root->getAutoCreatedWindow()->addViewport(_camera);
+    }
+    catch (...)
+    {
+        _viewport = _root->getAutoCreatedWindow()->getViewport(0);
+    }    
+
+    _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
+    createScene();
+    _exitGame = false;
 }
 
 void MenuState::exit ()
@@ -60,7 +88,7 @@ bool MenuState::frameEnded(const Ogre::FrameEvent& evt)
 
 bool MenuState::keyPressed(const OIS::KeyEvent &e)
 {
-
+    // CUANDO TODO EL FLUJO DE ESTADOS FUNCIONE BIEN, HAY QUE HACER UN CLEAN UP DE TODO ESTO
   if (e.key == OIS::KC_S) {
     sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
@@ -81,7 +109,7 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(RecordsState::getSingletonPtr());
   }
-  else if (e.key == OIS::KC_P) {
+  else if (e.key == OIS::KC_P) {                                // quitar al final, pausa no ha lugar en menu state
     sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(PauseState::getSingletonPtr());
@@ -116,6 +144,11 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
     play->setPoints(123011);
     play->setLive(75);
 
+  }
+  else if (e.key == OIS::KC_SPACE)
+  {
+      MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+      pushState(carSelectorState::getSingletonPtr()); 
   }
   return true;
 }

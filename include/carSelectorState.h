@@ -83,6 +83,9 @@ public:
     static carSelectorState& getSingleton();
     static carSelectorState* getSingletonPtr();
 
+    string getNombreTipoCocheSeleccionado();
+    inline string getNombreMaterialSeleccionado(){ return _vMateriales[_idMaterialActual]; };
+    inline std::vector<string>& getMateriales() { return _vMateriales; }
 
 protected:
     Ogre::Root *_root;
@@ -112,6 +115,7 @@ private:
     void subirSeleccionado();
     void cambiarMaterialVehicSeleccionado();
     std::vector<string> _vMateriales {"carmaterial_blue","carmaterial_citrus","carmaterial_green","carmaterial_orange","carmaterial_silver","carmaterial_violet","red.gloss"};
+    std::vector<Entity*> _vEntCars;
     int _cursorVehiculo; 
     int _idVehicSubiendo;
     int _idVehicBajando;
