@@ -27,38 +27,21 @@ using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
 
 
-#define MAX_ALTURA_SELECCIONADO 0.5
-#define MIN_ALTURA_SELECCIONADO 0
-#define SPEED_MOVIMIENTOS 10.0f
-//enum class keyPressed_flags
-//{
-//    NONE =           0,
-//    LEFT =      1 << 0,
-//    RIGHT =     1 << 1,
-//    UP =        1 << 2,
-//    DOWN =      1 << 3,
-//    INS =       1 << 4,
-//    DEL =       1 << 5,
-//    PGUP =      1 << 6,
-//    PGDOWN =    1 << 7,
-//    NUMPAD1 =   1 << 8,
-//    NUMPAD2 =   1 << 9,
-//    NUMPAD3 =   1 << 10,
-//    NUMPAD5 =   1 << 11
-//};
-//
-//enum class camara_view : int
-//{
-//    SEMICENITAL,
-//    TRASERA_ALTA,
-//    TRASERA_BAJA,
-//    INTERIOR,
-//    TOTAL_COUNT       // Su valor será el número total de elementos de esta enum. Útil para modular.
-//};
+#define MASK_CIRCUITO 1 << 0
+#define MASK_MARCA    1 << 1
 
 class pathDrawerState : public Ogre::Singleton<pathDrawerState>, public GameState
 {
 public:
+    struct marquita
+    {
+        SceneNode* _nodoMarca;
+        Entity* _entMarca;
+        string _nombreNodo;
+        string _nombreEnt;
+        size_t _id;
+    };
+    
      pathDrawerState(){}
     ~ pathDrawerState();
     void enter();
@@ -91,6 +74,8 @@ protected:
     Ogre::Camera *_camera;
     SceneNode* _track;
     SceneNode* _nodoSelector;
+    
+    std::vector<marquita> vMarcas;
 
     bool _exitGame;
     Ogre::Real _deltaT;
@@ -105,8 +90,12 @@ private:
     void createFloor();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
+    void dibujaLinea();
+    RaySceneQuery* _raySceneQuery;
+    size_t _idMarca;
+    bool _crearMarca;
     
-    int _zoom;
+    Ray setRayQuery(int posx, int posy, uint32 mask);
 
 };
 
