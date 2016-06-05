@@ -11,6 +11,7 @@
         <masaBullet>0.0</masaBullet>
         <frictionBullet>0.5</frictionBullet>
         <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>track1bis</nombreNodo>
@@ -22,7 +23,21 @@
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>0.0</masaBullet>
         <frictionBullet>0.8</frictionBullet>
-        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+        <bodyRestitutionBullet>0.95</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>track1Big</nombreNodo>
+        <nombreEntidad>track1Bigent</nombreEntidad>
+        <nombreMalla>Track1Big.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.8</frictionBullet>
+        <bodyRestitutionBullet>0.95</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>track1bisNoRoad</nombreNodo>
@@ -35,18 +50,46 @@
         <masaBullet>0.0</masaBullet>
         <frictionBullet>0.8</frictionBullet>
         <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
-        <nombreNodo>PlaneRoad</nombreNodo>
-        <nombreEntidad>PlaneRoadent</nombreEntidad>
-        <nombreMalla>PlaneRoad.mesh</nombreMalla>
+        <nombreNodo>track1NoRoadBig</nombreNodo>
+        <nombreEntidad>track1NoRoadBigent</nombreEntidad>
+        <nombreMalla>Track1NoRoadBig.mesh</nombreMalla>
         <nombreMaterial>track1matBI.material</nombreMaterial>
         <posInicial x="0" y="0" z="0"></posInicial>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>0.0</masaBullet>
         <frictionBullet>0.8</frictionBullet>
-        <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+        <bodyRestitutionBullet>0.95</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>PlaneRoad</nombreNodo>
+        <nombreEntidad>PlaneRoadent</nombreEntidad>
+        <nombreMalla>PlaneRoad.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="0.001" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.8</frictionBullet>
+        <bodyRestitutionBullet>0.95</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
+    </scenenode>
+    <scenenode>
+        <nombreNodo>PlaneRoadBig</nombreNodo>
+        <nombreEntidad>PlaneRoadBigent</nombreEntidad>
+        <nombreMalla>PlaneRoadBig.mesh</nombreMalla>
+        <nombreMaterial>track1matBI.material</nombreMaterial>
+        <posInicial x="0" y="1.007" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.8</frictionBullet>
+        <bodyRestitutionBullet>0.95</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>carGroupC1</nombreNodo>
@@ -60,6 +103,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>track1colLateral</nombreNodo>
@@ -72,6 +116,7 @@
         <masaBullet>0.0</masaBullet>
         <frictionBullet>1.0</frictionBullet>
         <bodyRestitutionBullet>1.0</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>planoSalida</nombreNodo>
@@ -85,6 +130,7 @@
         <masaBullet>1.0</masaBullet>
         <frictionBullet>1.0</frictionBullet>
         <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>farara-sportOneBlock</nombreNodo>
@@ -98,6 +144,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>formulaOneBlock</nombreNodo>
@@ -111,6 +158,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>groupC1OneBlock</nombreNodo>
@@ -124,6 +172,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>groupC2OneBlock</nombreNodo>
@@ -137,6 +186,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>kartOneBlock</nombreNodo>
@@ -150,6 +200,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>lamba-sportOneBlock</nombreNodo>
@@ -163,6 +214,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
         <nombreNodo>parsche-sportOneBlock</nombreNodo>
@@ -176,6 +228,7 @@
         <masaBullet>200</masaBullet>
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
     </scenenode>
 </dataSceneNode>
 
@@ -212,7 +265,7 @@
         <friccionRueda>1e30f</friccionRueda>
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.03</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
-        <posicion x="2" y="1.2" z="-12"></posicion>
+        <posicion x="2" y="2.1" z="-22"></posicion>
         <!--<posicion x="8" y="1.2" z="-12"></posicion> -->
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
@@ -231,6 +284,7 @@
         <posRueda2 x="-0.18" y="-0.12" z="-0.215"></posRueda2>
         <posRueda3 x="0.18" y="-0.12" z="-0.215"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>farara-sport</nombreNodo>
@@ -249,7 +303,7 @@
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.03</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="3" y="1.2" z="-12"></posicion>-->
-        <posicion x="-6.20" y="1.2" z="-22"></posicion>
+        <posicion x="-6.20" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
@@ -267,6 +321,7 @@
         <posRueda2 x="-0.41" y="-0.10" z="-0.58"></posRueda2>
         <posRueda3 x="0.41" y="-0.10" z="-0.58"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>formula</nombreNodo>
@@ -286,7 +341,7 @@
         <indiceRestitucionSuspension>0.13</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.1 (flotando) y 0.2 (hundidas en el suelo)
                                                                              0.13 parece un valor adecuado para el formula-->
         <!--<posicion x="4" y="1.2" z="-12"></posicion>-->
-        <posicion x="-2.02" y="1.2" z="-22"></posicion>
+        <posicion x="-2.02" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- por ver -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
@@ -304,6 +359,7 @@
         <posRueda2 x="-0.41" y="0.05" z="-0.75"></posRueda2>
         <posRueda3 x="0.41" y="0.05" z="-0.75"></posRueda3>
         <escalaRuedaTrasera x="1.30" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>groupC1</nombreNodo>
@@ -322,7 +378,7 @@
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>-0.1</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="5" y="1.2" z="-12"></posicion>-->
-        <posicion x="2.08" y="1.2" z="-22"></posicion>
+        <posicion x="2.08" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
@@ -340,6 +396,7 @@
         <posRueda2 x="-0.41" y="-0.2" z="-0.63"></posRueda2>
         <posRueda3 x="0.41" y="-0.2" z="-0.63"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>groupC2</nombreNodo>
@@ -358,7 +415,7 @@
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.04</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="6" y="1.2" z="-12"></posicion>-->
-        <posicion x="6.10" y="1.2" z="-22"></posicion>
+        <posicion x="6.10" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
@@ -376,6 +433,7 @@
         <posRueda2 x="-0.42" y="-0.05" z="-0.69"></posRueda2>
         <posRueda3 x="0.42" y="-0.05" z="-0.69"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>lamba-sport</nombreNodo>
@@ -394,7 +452,7 @@
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.1</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="-2.32" y="1.2" z="-22"></posicion>-->
-        <posicion x="10" y="1.2" z="-22"></posicion>
+        <posicion x="10" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
@@ -412,6 +470,7 @@
         <posRueda2 x="-0.41" y="-0.01" z="-0.58"></posRueda2>
         <posRueda3 x="0.41" y="-0.01" z="-0.58"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>parsche-sport</nombreNodo>
@@ -429,7 +488,7 @@
         <friccionRueda>1e30f</friccionRueda>
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.03</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
-        <posicion x="14.10" y="1.2" z="-22"></posicion>
+        <posicion x="14.10" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>1000</aceleracion>
         <frenada>600</frenada>
@@ -447,6 +506,7 @@
         <posRueda2 x="-0.41" y="-0.10" z="-0.555"></posRueda2>
         <posRueda3 x="0.41" y="-0.10" z="-0.555"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
+        <escala x="1" y="1" z="1"></escala>
     </dataRayCast>  
     
 </dataVehiculoRayCast>

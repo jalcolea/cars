@@ -31,6 +31,7 @@ class track
             _ent->setCastShadows(true);
             _nodo = _scnMgr->createSceneNode(nodoConfig.nombreNodo);
             _nodo->attachObject(_ent);
+            _nodo->scale(nodoConfig.escala);
             _scnMgr->getRootSceneNode()->addChild(_nodo);
             
             //Asociar forma y cuerpo rígido (TrimeshShape y Geometría movible(attachada a un sceneNode))

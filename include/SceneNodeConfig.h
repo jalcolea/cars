@@ -22,6 +22,7 @@ struct nodoOgre                                 // struct con los campos que se 
     Ogre::Quaternion orientacionShapeBullet;    // orientación del shape de bullet que envolverá al modelo
     Ogre::Vector3 posInicial;                   // posicion inicial del SceneNode
     Ogre::Vector3 posShapeBullet;               // posición inicial del shape de bullet
+    Ogre::Vector3 escala;                       // Escalado inicial del modelo
     Ogre::Real masaBullet;                      // propiedad masa del rigidbody
     Ogre::Real frictionBullet;                  // propiedad índice de fricción del rigidbody
     Ogre::Real bodyRestitutionBullet;           // propiedad índice de restitución (elasticidad) del rigidbody
@@ -33,6 +34,7 @@ struct nodoOgre                                 // struct con los campos que se 
             "\t Malla que se está usando: "     << n.nombreMalla << endl <<
             "\t Material que se está usando: "  << n.nombreMaterial << endl <<
             "\t Posicion inicial: "             << n.posInicial << endl <<
+            "\t Escala: "                       << n.escala << endl <<
             "\t Orientacion: "                  << n.orientacion << endl <<
             "\t Orientacion shape de Bullet: "  << n.orientacionShapeBullet << endl <<
             "\t Posicion del shape de Bullet "  << n.posShapeBullet << endl <<
@@ -76,6 +78,7 @@ struct nodoVehiculoRayCast
     Ogre::Quaternion orientacion;               // orientacion del scenenode
     Ogre::Quaternion orientacionShapeBullet;    // orientación del shape de bullet que envolverá al modelo
     Ogre::Vector3 posShapeBullet;               // posición inicial del shape de bullet
+    Ogre::Vector3 escala;                       // escalado inicial del modelo
     Ogre::Real masaBullet;                      // propiedad masa del rigidbody
     Ogre::Real frictionBullet;                  // propiedad índice de fricción del rigidbody
     Ogre::Real bodyRestitutionBullet;           // propiedad índice de restitución (elasticidad) del rigidbody
@@ -96,7 +99,7 @@ struct nodoVehiculoRayCast
     Ogre::Real maxSuspensionForce;    // límite máximo de la fuerza de la suspensión
     Ogre::Real frictionSlip;          // indice de fricción (valor muy gordo, del orden 10e20 o 10e30)
     std::vector<Vector3> posRuedas;        // Vector que almacena la posición de las ruedas respecto a su chasis
-    Vector3 escala;                   // factor de escala para aumentar el ancho de las ruedas traseras si se quiere.
+    Vector3 escalaRueda;                   // factor de escala para aumentar el ancho de las ruedas traseras si se quiere.
     
     friend ostream& operator<<(ostream& o, nodoVehiculoRayCast &n)
     {
@@ -107,6 +110,7 @@ struct nodoVehiculoRayCast
             "\t Orientacion: "                  << n.orientacion << endl <<
             "\t Orientacion shape de Bullet: "  << n.orientacionShapeBullet << endl <<
             "\t Posicion del shape de Bullet "  << n.posShapeBullet << endl <<
+            "\t Escala: "                       << n.escala << endl <<
             "\t Masa del objeto de Bullet: "    << n.masaBullet << endl <<
             "\t Indice de Friccion Bullet: "    << n.frictionBullet << endl <<
             "\t Indice de Restitucion Bullet: " << n.bodyRestitutionBullet << endl <<
@@ -126,7 +130,7 @@ struct nodoVehiculoRayCast
             "\t limite del recorrido de la suspensión: " << n.maxSuspensionTravelCm << endl <<
             "\t límite máximo de la fuerza de la suspensión: " << n.maxSuspensionForce << endl <<
             "\t indice de fricción (valor muy gordo, del orden 10e20 o 10e30): " << n.frictionSlip << endl <<
-            "\t factor de escala rueda trasera: " << n.escala << endl;
+            "\t factor de escala rueda trasera: " << n.escalaRueda << endl;
        return o;
     };
 };                          
@@ -166,7 +170,7 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
                                       INDICE_REST_SUSP,POSICION,VELOCIDAD_GIRO,ACELERACION,FRENADA,ACELERACION_MARCHA_ATRAS,
                                       // Cadenas para los parametros de la suspension
                                       SUSPENSION_STIFFNESS,SUSPENSION_COMPRESION,SUSPENSION_DAMPING,MAX_SUSPENSION_TRAVEL_CM,
-                                      MAX_SUSPENSION_FORCE,FRICTION_SLIP,POSRUEDA0,POSRUEDA1,POSRUEDA2,POSRUEDA3,ESCALA,
+                                      MAX_SUSPENSION_FORCE,FRICTION_SLIP,POSRUEDA0,POSRUEDA1,POSRUEDA2,POSRUEDA3,ESCALARUEDA,ESCALA,
                                       TOTAL_COUNT }; // Este último es un truquillo para saber el número de elementos de esta enum class.
                                       
         string _xmlElements[static_cast<size_t>(xmlElementsIndex::TOTAL_COUNT)] = {"nombreNodo","nombreEntidad","nombreMalla",
@@ -183,7 +187,7 @@ class SceneNodeConfig : public Ogre::Singleton<SceneNodeConfig>
                                                                                  "frenada","aceleracionMarchaAtras","suspensionStiffness",
                                                                                  "suspensionCompresion","suspensionDamping","maxSuspensionTravelCM",
                                                                                  "maxSuspensionForce", "frictionSlip", "posRueda0", "posRueda1",
-                                                                                 "posRueda2", "posRueda3", "escalaRuedaTrasera"
+                                                                                 "posRueda2", "posRueda3", "escalaRuedaTrasera", "escala"
                                                                                  }; // Lista de cadenas para los atributos de un nodo xml
     public:
         // Heredados de Ogre::Singleton.

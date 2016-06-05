@@ -279,7 +279,7 @@ void PlayState::createScene()
     createFloor();
     //createMyGui();
     
-    _track = unique_ptr<track>(new track("track1bis",_world.get(),Vector3(0,0,0),_sceneMgr));
+    _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
     //_carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
     //_carRayCast->buildVehiculo();
@@ -320,7 +320,7 @@ void PlayState::createScene()
     for (size_t i = 0; i < vpoints.size(); i++)
     {
       //Vector3 posicion(vpoints[i].base.x(),vpoints[i].base.y(),vpoints[i].base.z());
-      Vector3 posicion(vpoints[i].base.x(),_track->getSceneNode()->getPosition().y,vpoints[i].base.z());
+      Vector3 posicion(vpoints[i].base.x(),_planeRoadNode->getPosition().y,vpoints[i].base.z());
       marquita marca;
       marca._nombreNodo = "nodoMarca_" + to_string(i);
       marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
@@ -384,17 +384,20 @@ void PlayState::createFloor()
 
 void PlayState::createPlaneRoad()
 {
-    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoad");
-    SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
+    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
+    //SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
+    _planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
     Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
     planeRoadEnt->setCastShadows(true);
-    planeRoadNode->attachObject(planeRoadEnt);
-    _sceneMgr->getRootSceneNode()->addChild(planeRoadNode);
+    _planeRoadNode->attachObject(planeRoadEnt);
+    _sceneMgr->getRootSceneNode()->addChild(_planeRoadNode);
     
     OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
     OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
     OgreBulletDynamics::RigidBody *planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
-    planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
+    //planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
+    planeRoadBody->setShape(_planeRoadNode, roadTrimesh,nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
+     
 }
 
 void PlayState::flagKeys(bool flag)

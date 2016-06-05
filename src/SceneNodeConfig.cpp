@@ -72,6 +72,7 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     mxml_node_t* posShape = nullptr;
     mxml_node_t* restitution = nullptr;
     mxml_node_t* orientacion = nullptr;
+    mxml_node_t* escala = nullptr;
 
     nombreSceneNode = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreEntidad = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_ENTIDAD)]).c_str(),NULL,NULL,MXML_DESCEND);
@@ -84,6 +85,7 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     posShape = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POS_SHAPE)]).c_str(),NULL,NULL,MXML_DESCEND);
     restitution = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::RESTITUTION)]).c_str(),NULL,NULL,MXML_DESCEND);
     orientacion = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ORIENTACION)]).c_str(),NULL,NULL,MXML_DESCEND);
+    escala = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALA)]).c_str(),NULL,NULL,MXML_DESCEND);
     
     nodoOgre_t nodo;
     nodo.nombreNodo = string(mxmlGetText(nombreSceneNode,NULL));
@@ -96,6 +98,7 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     nodo.posInicial = extraeVector3(posInicial);
     nodo.posShapeBullet = extraeVector3(posShape);
     nodo.bodyRestitutionBullet = Ogre::Real(std::stof(mxmlGetText(restitution,NULL)));
+    nodo.escala = extraeVector3(escala);
     if (orientacion) nodo.orientacion = extraeQuaternio(orientacion); else nodo.orientacion = Ogre::Quaternion(1,0,0,0);
     
     map_nodos[nodo.nombreNodo] = nodo;
@@ -165,7 +168,8 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     mxml_node_t* posRueda1;              
     mxml_node_t* posRueda2;              
     mxml_node_t* posRueda3;              
-    mxml_node_t* escala; 
+    mxml_node_t* escalaRueda; 
+    mxml_node_t* escala;
     
     nombre = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreMallaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
@@ -197,6 +201,7 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     posRueda1 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA1)]).c_str(),NULL,NULL,MXML_DESCEND);
     posRueda2 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA2)]).c_str(),NULL,NULL,MXML_DESCEND);
     posRueda3 = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POSRUEDA3)]).c_str(),NULL,NULL,MXML_DESCEND);
+    escalaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALARUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
     escala = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALA)]).c_str(),NULL,NULL,MXML_DESCEND);
     
     
@@ -234,6 +239,7 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     nodo.posRuedas.push_back(extraeVector3(posRueda1));
     nodo.posRuedas.push_back(extraeVector3(posRueda2));
     nodo.posRuedas.push_back(extraeVector3(posRueda3));
+    nodo.escalaRueda = extraeVector3(escalaRueda);
     nodo.escala = extraeVector3(escala);
     
     map_vehiculos_raycast[nodo.nombre] = nodo;

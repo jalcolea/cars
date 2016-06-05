@@ -156,7 +156,7 @@ public:
     void acelerar(Real fuerza, bool endereza = false ); // obvio no?
     void frenar();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
-    void girar(short n); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
+    void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
     void recolocar(Ogre::Vector3 donde); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
     inline std::vector<Rueda> & getRuedas() { return _ruedas; };
     

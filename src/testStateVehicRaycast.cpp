@@ -462,7 +462,7 @@ void testStateVehicRayCast::createFloor()
 
 void testStateVehicRayCast::createPlaneRoad()
 {
-    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoad");
+    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
     SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
     Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
     planeRoadEnt->setCastShadows(true);
@@ -472,7 +472,8 @@ void testStateVehicRayCast::createPlaneRoad()
    OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
    OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
    OgreBulletDynamics::RigidBody *planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
-   planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
+   //planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
+   planeRoadBody->setShape(planeRoadNode, roadTrimesh, nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
 
 
    // PlaneRoadNode->setPosition(Vector3(0, 0, 0));
@@ -492,7 +493,7 @@ void testStateVehicRayCast::createScene()
     createFloor();
     //createMyGui();
     
-    _track = unique_ptr<track>(new track("track1bisNoRoad",_world.get(),Vector3(0,0,0),_sceneMgr));
+    _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
 //    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));

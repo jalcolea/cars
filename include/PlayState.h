@@ -102,6 +102,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     bool _freeCamera = false;
     bool _playSimulation = true;
     SceneNode* _nodoVista;
+    SceneNode* _planeRoadNode;
 
 
     bool _exitGame;

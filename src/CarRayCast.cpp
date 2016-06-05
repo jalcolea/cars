@@ -113,8 +113,8 @@ void CarRayCast::acelerar(Real fuerza, bool endereza)
     if (endereza && _valorGiro != 0.0) // Si queremos enderezar y además _valorGiro es distinto de cero
     {
         cout << "enderezando" << endl;
-        if (_valorGiro > 0) girar(-1);
-        else  girar(1);
+        if (_valorGiro > 0) girar(-1,1.5);
+        else  girar(1,1.2);
     }    
     _vehiculo->applyEngineForce(fuerza,0);
     _vehiculo->applyEngineForce(fuerza,1);
@@ -128,10 +128,10 @@ void CarRayCast::frenar()
 }
 
 
-void CarRayCast::girar(short n) // n positivo = izquierda, n negativo = derecha
+void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquierda, n negativo = derecha
 {
-    if (abs(_valorGiro + (_giro * n)) < 0.6) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA
-        _valorGiro += (_giro * n);
+    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < 0.6) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA
+        _valorGiro += (_giro * n * factorVelocidadGiro);
         
     _vehiculo->setSteeringValue(_valorGiro,0);
     _vehiculo->setSteeringValue(_valorGiro,1);

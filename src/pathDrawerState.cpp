@@ -144,13 +144,13 @@ bool pathDrawerState::mouseMoved(const OIS::MouseEvent& e)
 {
     
     if (InputManager_::getSingletonPtr()->getMouse()->getMouseState().buttonDown(OIS::MB_Left) &&
-        _nodoSelector && _nodoSelector->getName() != "track1bis")
+        _nodoSelector && _nodoSelector->getName() != "track1Big")
     {
         Ray r = setRayQuery(e.state.X.abs, e.state.Y.abs, MASK_CIRCUITO | MASK_MARCA);
         RaySceneQueryResult &result = _raySceneQuery->execute();
         RaySceneQueryResult::iterator it;
         it = result.begin();
-        if (it != result.end() && it->movable->getParentSceneNode()->getName() == "track1bis") 
+        if (it != result.end() && it->movable->getParentSceneNode()->getName() == "track1Big") 
         {   
             _nodoSelector->setPosition(r.getPoint(it->distance));
             recolocarLinea();
@@ -241,7 +241,7 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
 
         if (it != result.end()) 
         {       // Podríamos mejorar esto usando addMarca() pero vamos que nos vamos :D
-                if (it->movable->getParentSceneNode()->getName() == "track1bis") 
+                if (it->movable->getParentSceneNode()->getName() == "track1Big") 
                 {
                   marquita marca;
                   marca._nombreNodo = "nodoMarca_" + to_string(_idMarca);
@@ -383,15 +383,13 @@ void pathDrawerState::createScene()
     //createFloor();
     //createMyGui();
     
-    nodoOgre_t info =  SceneNodeConfig::getSingleton().getInfoNodoOgre("track1bis");
+    nodoOgre_t info =  SceneNodeConfig::getSingleton().getInfoNodoOgre("track1Big");
     Entity* entTrack = _sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla);
     entTrack->setQueryFlags(1);
     _track = _sceneMgr->createSceneNode(info.nombreNodo);
     _track->attachObject(entTrack);
     _sceneMgr->getRootSceneNode()->addChild(_track);
     _track->setPosition(0,0,0);
-    _track->scale(1.5,1.5,1.5);
-    //_track->pitch(Ogre::Degree(90));
 
     _nodoSelector = nullptr;
     _raySceneQuery = _sceneMgr->createRayQuery(Ray());
