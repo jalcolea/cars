@@ -217,10 +217,10 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
         
     // Zoom de la cámara con rueda ratón. Con teclado más suave.
     zoom += -100 * _deltaT * InputManager_::getSingletonPtr()->getMouse()->getMouseState().Z.rel * speed;   
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN))
-        zoom += 1;
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP))
-        zoom -= 1;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_INSERT))
+        vt += Vector3(0,0,1);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DELETE))
+        vt += Vector3(0,0,-1);
 
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP)) _r += 180;
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN)) _r += -180;

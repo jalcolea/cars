@@ -28,12 +28,14 @@ public:
             
             _iaMgr->print_points();
             
+            
     };
     
     virtual ~cpuPlayer();
 
     void update(Real deltaT);
-    inline void build(){ _car->buildVehiculo(); }
+    void build();
+
     
 protected:
 

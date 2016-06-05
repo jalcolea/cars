@@ -1,7 +1,7 @@
 CC=g++
-CFLAGS=-c -Wall -I../../include -I../../IA
+CFLAGS=-c -Wall -I../../include 
 LDFLAGS=-L/usr/local/lib 
-SOURCES=./main.cpp  ../../IA/iamanager.cpp
+SOURCES=./main.cpp  ../../src/iamanager.cpp
 OBJECTS=$(SOURCES:.cpp=.o)
 EXECUTABLE=ia_tester
 

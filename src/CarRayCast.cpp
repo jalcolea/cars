@@ -57,7 +57,7 @@ void CarRayCast::buildVehiculo()
     _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
     _bodyWheeled->setDamping(param.suspensionDamping,param.suspensionDamping); //YA VEREMOS SI HACE FALTA
     _bodyWheeled->disableDeactivation();
-
+    
     // Al parecer los flags de colisión no funcionan con VehicleRayCast "asínque".... (http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Vehicles)
 //    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION); // NI PUTO CASO OIGA :(
 //    cout << "flags" << _bodyWheeled->getBulletRigidBody()->getFlags() << endl;
@@ -145,7 +145,6 @@ void CarRayCast::recolocar(Ogre::Vector3 donde)
     // Reseteamos todo
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setIdentity();
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setOrigin(convert(donde));
-    
     
 //    getCarChassisPtr()->getBulletRigidBody ()->getWorldTransform().setIdentity();
 //    getCarChassisPtr()->getBulletRigidBody ()->getWorldTransform().setOrigin(btVector3(_x, _y, _z));
