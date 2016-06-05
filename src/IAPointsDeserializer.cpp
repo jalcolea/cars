@@ -42,14 +42,12 @@ bool IAPointsDeserializer::cargarFichero(string fichero)
 
 void IAPointsDeserializer::nuevoIAPoint(mxml_node_t* node)
 {
-    iacomplexpoint p;
-    p.base.x(std::stof((mxmlElementGetAttr(node,"x"))));
-    p.base.y(std::stof((mxmlElementGetAttr(node,"y"))));
-    p.base.z(std::stof((mxmlElementGetAttr(node,"z"))));
-    p.derived.x(std::stof((mxmlElementGetAttr(node,"xD"))));
-    p.derived.y(std::stof((mxmlElementGetAttr(node,"yD"))));
-    p.derived.z(std::stof((mxmlElementGetAttr(node,"zD"))));
+    iapoint p;
+    p.x(std::stof((mxmlElementGetAttr(node,"x"))));
+    p.y(std::stof((mxmlElementGetAttr(node,"y"))));
+    p.z(std::stof((mxmlElementGetAttr(node,"z"))));
     // offset = std::stof((mxmlElementGetAttr(node,"offset")));
 
     _vPoints.push_back(p);
+    _vPointsPtr.push_back(&p);
 }

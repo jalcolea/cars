@@ -98,12 +98,10 @@ void pathDrawerState::guardarRuta()
     iaps.nuevoXMLIAPoints();
     for (size_t i = 0; i < vMarcas.size(); i++)
     {
-        iacomplexpoint p;
-        p.base.x(vMarcas[i]._nodoMarca->getPosition().x);
-        p.base.y(vMarcas[i]._nodoMarca->getPosition().y);
-        p.base.z(vMarcas[i]._nodoMarca->getPosition().z);
-        p.derived = p.base;
-        p.check = false;
+        iapoint p;
+        p.x(vMarcas[i]._nodoMarca->getPosition().x);
+        p.y(vMarcas[i]._nodoMarca->getPosition().y);
+        p.z(vMarcas[i]._nodoMarca->getPosition().z);
         iaps.addNodoXMLIAPoints(i,p);
     }    
     
@@ -117,11 +115,11 @@ void pathDrawerState::cargarRuta(string fichero)
     
     IAPointsDeserializer iapd;
     iapd.cargarFichero(fichero);
-    std::vector<iacomplexpoint> vpoints = iapd.getPoints();
+    std::vector<iapoint> vpoints = iapd.getPoints();
     
     for (size_t i = 0; i < vpoints.size(); i++)
     {
-        Vector3 pos(vpoints[i].base.x(),vpoints[i].base.y(),vpoints[i].base.z());
+        Vector3 pos(vpoints[i].x(),vpoints[i].y(),vpoints[i].z());
         addMarca(pos);
     }    
     
@@ -144,15 +142,17 @@ bool pathDrawerState::mouseMoved(const OIS::MouseEvent& e)
 {
     
     if (InputManager_::getSingletonPtr()->getMouse()->getMouseState().buttonDown(OIS::MB_Left) &&
-        _nodoSelector && _nodoSelector->getName() != "track1Big")
+        _nodoSelector && _nodoSelector->getName() != "PlaneRoadBig") //"track1Big")
     {
         Ray r = setRayQuery(e.state.X.abs, e.state.Y.abs, MASK_CIRCUITO | MASK_MARCA);
         RaySceneQueryResult &result = _raySceneQuery->execute();
         RaySceneQueryResult::iterator it;
         it = result.begin();
-        if (it != result.end() && it->movable->getParentSceneNode()->getName() == "track1Big") 
+        if (it != result.end() && it->movable->getParentSceneNode()->getName() == "PlaneRoadBig") 
         {   
-            _nodoSelector->setPosition(r.getPoint(it->distance));
+            Vector3 pos = r.getPoint(it->distance);
+            pos.y = _planeRoadNode->getPosition().y + 0.001;
+            _nodoSelector->setPosition(pos);
             recolocarLinea();
         }
     }

@@ -63,11 +63,13 @@ void PlayState::enter()
     paused = false;
     _deltaT = 0;
 
-    cout << "tipo coche seleccionado: " << carSelectorState::getSingletonPtr()->getNombreTipoCocheSeleccionado() << endl;
-    cout << "material seleccionado: " << carSelectorState::getSingletonPtr()->getNombreMaterialSeleccionado()<< endl;
+    // Recuperar esta información antes de llamar a clearScene(), de lo contrario no existirá.
+    _nombreTipoCoche = carSelectorState::getSingletonPtr()->getNombreTipoCocheSeleccionado();
+    _nombreMaterial = carSelectorState::getSingletonPtr()->getNombreMaterialSeleccionado();
+    cout << "tipo coche seleccionado: " << _nombreTipoCoche << endl;
+    cout << "material seleccionado: " << _nombreMaterial << endl;
     
     _sceneMgr->clearScene();
-
   
     //Color de fondo inicial
     //_viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
@@ -137,7 +139,14 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
         reposicionaCamara();
 
 
+    _cpuPlayer->update(_deltaT);
+
   return !_exitGame;
+}
+
+void PlayState::updateCPU()
+{
+
 }
 
 bool PlayState::frameEnded(const Ogre::FrameEvent &evt) { return true; }
@@ -155,14 +164,14 @@ bool PlayState::keyPressed(const OIS::KeyEvent &e)
         colocaCamara();
     }    
     
-    if (e.key == OIS::KC_V)
-    {
-        _cursorVehiculo += 1;
-        _cursorVehiculo %= _vCarsRayCast.size();
-    }    
-    
-    if (e.key == OIS::KC_R)
-        _vCarsRayCast[_cursorVehiculo]->recolocar(_vCarsRayCast[_cursorVehiculo]->getPosicionActual());
+//    if (e.key == OIS::KC_V)
+//    {
+//        _cursorVehiculo += 1;
+//        _cursorVehiculo %= _vCarsRayCast.size();
+//    }    
+//    
+//    if (e.key == OIS::KC_R)
+//        _vCarsRayCast[_cursorVehiculo]->recolocar(_vCarsRayCast[_cursorVehiculo]->getPosicionActual());
 
     flagKeys(true);
        
@@ -282,19 +291,20 @@ void PlayState::createScene()
     
     _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
-    //_carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
-    //_carRayCast->buildVehiculo();
     
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("formula",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-    
-    for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
-        (*it)->buildVehiculo();
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("formula",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+//    
+//    for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
+//        (*it)->buildVehiculo();
+
+    _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer("Billy",_nombreTipoCoche,_nombreMaterial,"rutasIA.xml",Vector3(0,0,0),_sceneMgr,_world.get(),3)));
+    _vCarsCpuPlayer.back()->build();
     
     _cursorVehiculo = 0;
     
@@ -316,12 +326,12 @@ void PlayState::createScene()
  
     IAPointsDeserializer iapd;
     iapd.cargarFichero("rutasIA.xml");
-    std::vector<iacomplexpoint> vpoints = iapd.getPoints();
+    std::vector<iapoint> vpoints = iapd.getPoints();
     
     for (size_t i = 0; i < vpoints.size(); i++)
     {
       //Vector3 posicion(vpoints[i].base.x(),vpoints[i].base.y(),vpoints[i].base.z());
-      Vector3 posicion(vpoints[i].base.x(),_planeRoadNode->getPosition().y,vpoints[i].base.z());
+      Vector3 posicion(vpoints[i].x(),_planeRoadNode->getPosition().y,vpoints[i].z());
       marquita marca;
       marca._nombreNodo = "nodoMarca_" + to_string(i);
       marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
@@ -469,9 +479,9 @@ void PlayState::reposicionaCamara()
 {
     switch(_vista)
     {
-        case camara_view::SEMICENITAL:  _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
+        case camara_view::SEMICENITAL:/*  _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
                                                              _vCarsRayCast[_cursorVehiculo]->getPosicionActual().y +10 ,
-                                                             _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z + 30);  break;
+                                                             _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z + 30);*/  break;
         case camara_view::TRASERA_BAJA: break;
         case camara_view::TRASERA_ALTA: break;
         case camara_view::INTERIOR:     break;
@@ -486,25 +496,25 @@ void PlayState::colocaCamara()
     cout << "padre de atacheo de camara: " << _camera->getParentNode() << endl;
     switch (_vista)
     {
-        case camara_view::SEMICENITAL:  {_nodoVista->detachObject(_camera);
+        case camara_view::SEMICENITAL: /* {_nodoVista->detachObject(_camera);
                                         _vCarsRayCast[_cursorVehiculo]->getSceneNode()->removeChild(_nodoVista);
                                         nodoCamera_t cam = SceneNodeConfig::getSingleton().getInfoCamera("IntroCamera");
                                         _camera->setPosition(cam.posInicial);
-        _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); }
+        _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); }*/
                                         break;
-        case camara_view::TRASERA_BAJA: _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
+        case camara_view::TRASERA_BAJA:/* _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
                                                       _vCarsRayCast[_cursorVehiculo]->getPosicionActual().y + 3,
                                                       _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z - 5); 
-                                                      _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); break;
-        case camara_view::TRASERA_ALTA: _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
+                                                      _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); */break;
+        case camara_view::TRASERA_ALTA: /* _camera->setPosition(_vCarsRayCast[_cursorVehiculo]->getPosicionActual().x,
                                                       _vCarsRayCast[_cursorVehiculo]->getPosicionActual().y + 5,
                                                       _vCarsRayCast[_cursorVehiculo]->getPosicionActual().z - 5); 
-                                                      _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); break;
-        case camara_view::INTERIOR:     _nodoVista->attachObject(_camera);
+                                                      _camera->lookAt(_vCarsRayCast[_cursorVehiculo]->getPosicionActual()); */break;
+        case camara_view::INTERIOR:     /*_nodoVista->attachObject(_camera);
                                         _vCarsRayCast[_cursorVehiculo]->getSceneNode()->addChild(_nodoVista);
 //                                      _camera->setPosition(0,0.13,-0.15); // Camara interior
                                         _camera->setPosition(0,1.5,-3);
-                                        //_camera->yaw(Ogre::Degree(180));
+                                        //_camera->yaw(Ogre::Degree(180)); */
 
         case camara_view::TOTAL_COUNT:                                                
         default: assert(true);

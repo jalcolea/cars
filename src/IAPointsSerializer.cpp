@@ -10,16 +10,13 @@ void IAPointsSerializer::nuevoXMLIAPoints()
     _data = mxmlNewElement(_xml, "IAPoints");
 }
 
-void IAPointsSerializer::addNodoXMLIAPoints(size_t id, iacomplexpoint point)
+void IAPointsSerializer::addNodoXMLIAPoints(size_t id, iapoint point)
 {
     _nodeIAPoint = mxmlNewElement(_data, "point");
     //mxmlNewText(_nodeIAPoint , 0, "val1");
-    mxmlElementSetAttr(_nodeIAPoint,"x",std::to_string(point.base.x()).c_str());
-    mxmlElementSetAttr(_nodeIAPoint,"y",std::to_string(point.base.y()).c_str());
-    mxmlElementSetAttr(_nodeIAPoint,"z",std::to_string(point.base.z()).c_str());
-    mxmlElementSetAttr(_nodeIAPoint,"xD",std::to_string(point.derived.x()).c_str());
-    mxmlElementSetAttr(_nodeIAPoint,"yD",std::to_string(point.derived.y()).c_str());
-    mxmlElementSetAttr(_nodeIAPoint,"zD",std::to_string(point.derived.z()).c_str());
+    mxmlElementSetAttr(_nodeIAPoint,"x",std::to_string(point.x()).c_str());
+    mxmlElementSetAttr(_nodeIAPoint,"y",std::to_string(point.y()).c_str());
+    mxmlElementSetAttr(_nodeIAPoint,"z",std::to_string(point.z()).c_str());
     mxmlElementSetAttr(_nodeIAPoint,"offset",std::to_string(0.0).c_str()); // cambiarlo luego al campo adecuado de un iacomplexpoint
 }
 

@@ -39,6 +39,7 @@
 #include "track.h"
 #include "IAPointsDeserializer.h"
 #include "pathDrawerState.h"
+#include "cpuPlayer.h"
 
 
 using namespace std;
@@ -96,7 +97,9 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     unique_ptr<track> _track;
     unique_ptr<CarRayCast> _carRayCast;
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
-    std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
+    //std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
+    std::vector< unique_ptr<cpuPlayer> > _vCarsCpuPlayer;
+    unique_ptr<cpuPlayer> _cpuPlayer;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
     bool _freeCamera = false;
@@ -131,6 +134,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     //void createOverlay();
     void pintaOverlayInfo();
     void flagKeys(bool flag);
+    void updateCPU();
     Ogre::OverlayManager* _overlayManager;
     Ogre::Vector3 _vt;
     Ogre::Real _r;
@@ -139,6 +143,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
     DebugDrawer* _debugDrawer;
     size_t _cursorVehiculo; // veremos si hace falta
+    string _nombreTipoCoche; // para cargar la info del xml este nombre debe coincidir con la definición de uno definido en dicho xml
+    string _nombreMaterial; // nombre del material que ha elegido el usuario en el selector de coches.
     
     
     void dibujaLinea(size_t idFrom, size_t idTo); // SOLO PARA COMPROBAR FUNCIONAMIENTO IA, QUITAR LUEGO

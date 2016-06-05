@@ -19,13 +19,15 @@ class IAPointsDeserializer
         bool cargarFichero(string fichero = "");
 
         string getFichero(){ return _fichero; };
-        std::vector<iacomplexpoint>& getPoints(){ return _vPoints;};
+        std::vector<iapoint>& getPoints(){ return _vPoints;};
+        std::vector<iapoint*>& getPointsPtr(){ return _vPointsPtr;};
 
     protected:
 
     private:
         void nuevoIAPoint(mxml_node_t* node);
-        std::vector<iacomplexpoint> _vPoints;
+        std::vector<iapoint> _vPoints;
+        std::vector<iapoint*> _vPointsPtr;
         string _fichero;
 };
 

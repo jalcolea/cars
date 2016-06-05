@@ -14,8 +14,8 @@ class iamanager
   int _laps;
   int _offset;
   float _min_distance;
-  vector <iapoint*>* _path;
-  vector <iacomplexpoint*> * points;
+  std::vector <iapoint*>* _path;
+  std::vector <iacomplexpoint*> * points;
   bool _fixed_x;
   bool _fixed_y;
   bool _fixed_z;
@@ -25,7 +25,7 @@ class iamanager
 
   public:
 
-  iamanager(int laps, vector <iapoint*> * path, int offset, float min_distance=MIN_DISTANCE);
+  iamanager(int laps, std::vector <iapoint*> * path, int offset, float min_distance=MIN_DISTANCE);
   int lap(){return _laps;}
   int offset(){return _offset;}
   float min_distance(){return _min_distance;}

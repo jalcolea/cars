@@ -49,6 +49,7 @@
     <File Name="src/IAPointsDeserializer.cpp"/>
     <File Name="src/IAPointsSerializer.cpp"/>
     <File Name="src/pathDrawerState.cpp"/>
+    <File Name="src/cpuPlayer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="include/Bluez_Util.h"/>
@@ -84,6 +85,7 @@
     <File Name="include/IAPointsDeserializer.h"/>
     <File Name="include/IAPointsSerializer.h"/>
     <File Name="include/pathDrawerState.h"/>
+    <File Name="include/cpuPlayer.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

@@ -19,7 +19,7 @@ class IAPointsSerializer
         virtual ~IAPointsSerializer();
 
         void nuevoXMLIAPoints(); // genera la estructura necesaria para crear los elementos del xml
-        void addNodoXMLIAPoints(size_t id, iacomplexpoint point); // crea un nodo xml con los datos pasados por parametro.
+        void addNodoXMLIAPoints(size_t id, iapoint point); // crea un nodo xml con los datos pasados por parametro.
         bool guardarXMLIAPoints(string nombreFichero); // Guarda los datos xml en fichero dado.
 
     protected:
