@@ -204,6 +204,7 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
     Vector3 vt = Vector3::ZERO;
     Real speed = 10.0;
     Real zoom = 0;
+    Real _r = 0;
     
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP))
         vt += Vector3(0,1,0);
@@ -221,7 +222,11 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP))
         zoom -= 1;
 
-    _camera->setOrthoWindowHeight(_camera->getOrthoWindowHeight() + zoom * _deltaT * speed);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP)) _r += 180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN)) _r += -180;
+        
+    _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
+
     _camera->moveRelative(vt * _deltaT * speed);
     
     // Si hemos presionado MouseButtonLeft flag _crearMarca ON
@@ -229,8 +234,6 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
     {
         if (_nodoSelector)
             _nodoSelector->showBoundingBox(false);
-
-        // TODO AJUSTAR MÁSCARAS PARA EL RAYO, DE MODO QUE PODAMOS SELECCIONAR UNA MARCA Y MOVERLA
         
         int posx = InputManager_::getSingletonPtr()->getMouse()->getMouseState().X.abs;
         int posy = InputManager_::getSingletonPtr()->getMouse()->getMouseState().Y.abs;
@@ -241,7 +244,7 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
 
         if (it != result.end()) 
         {       // Podríamos mejorar esto usando addMarca() pero vamos que nos vamos :D
-                if (it->movable->getParentSceneNode()->getName() == "track1Big") 
+                if (it->movable->getParentSceneNode()->getName() == "PlaneRoadBig") 
                 {
                   marquita marca;
                   marca._nombreNodo = "nodoMarca_" + to_string(_idMarca);
@@ -251,7 +254,11 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
                   marca._entMarca->setCastShadows(false);
                   marca._entMarca->setQueryFlags(MASK_MARCA);
                   marca._nodoMarca->attachObject(marca._entMarca);
-                  marca._nodoMarca->translate(r.getPoint(it->distance));
+                  //marca._nodoMarca->translate(r.getPoint(it->distance));
+                  Vector3 pos(r.getPoint(it->distance));
+                  pos.y = _planeRoadNode->getPosition().y + 0.001;
+                  marca._nodoMarca->setPosition(pos);
+                  
                   _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
                   marca._id = _idMarca;
                   _idMarca++;
@@ -307,8 +314,12 @@ void pathDrawerState::dibujaLinea(size_t idFrom, size_t idTo)
     ManualObject* manual = _sceneMgr->createManualObject("line_" + to_string(idFrom));
      
     manual->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_LIST);
-        manual->position(vMarcas[idFrom]._nodoMarca->getPosition()); //start
-        manual->position(vMarcas[idTo]._nodoMarca->getPosition());    //end
+        Vector3 aux(vMarcas[idFrom]._nodoMarca->getPosition());
+        aux.y = _planeRoadNode->getPosition().y + 1;
+        manual->position(aux); //start
+        aux = vMarcas[idTo]._nodoMarca->getPosition();
+        aux.y = _planeRoadNode->getPosition().y + 1;
+        manual->position(aux);    //end
     manual->end();
      
     _sceneMgr->getRootSceneNode()->attachObject(manual);
@@ -383,19 +394,38 @@ void pathDrawerState::createScene()
     //createFloor();
     //createMyGui();
     
-    nodoOgre_t info =  SceneNodeConfig::getSingleton().getInfoNodoOgre("track1Big");
+    nodoOgre_t info =  SceneNodeConfig::getSingleton().getInfoNodoOgre("track1NoRoadBig");
     Entity* entTrack = _sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla);
-    entTrack->setQueryFlags(1);
+    entTrack->setQueryFlags(MASK_ESCENARIO);
     _track = _sceneMgr->createSceneNode(info.nombreNodo);
     _track->attachObject(entTrack);
     _sceneMgr->getRootSceneNode()->addChild(_track);
     _track->setPosition(0,0,0);
+    
+    createPlaneRoad();
 
     _nodoSelector = nullptr;
     _raySceneQuery = _sceneMgr->createRayQuery(Ray());
     _idMarca = 0;
     _crearMarca = false;
 }
+
+void pathDrawerState::createPlaneRoad()
+{
+    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
+    _planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
+    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
+    planeRoadEnt->setQueryFlags(MASK_CIRCUITO);
+    planeRoadEnt->setCastShadows(true);
+    _planeRoadNode->attachObject(planeRoadEnt);
+    _sceneMgr->getRootSceneNode()->addChild(_planeRoadNode);
+    _planeRoadNode->setPosition(nodoXML.posInicial);
+    
+
+
+   // PlaneRoadNode->setPosition(Vector3(0, 0, 0));
+}
+
 
 
 void pathDrawerState::createFloor()
@@ -441,22 +471,14 @@ void pathDrawerState::cargarParametros(string archivo, bool consoleOut)
 void pathDrawerState::configurarCamaraPrincipal()
 {
     //Configuramos la camara
-//    double width = _viewport->getActualWidth();
-//    double height = _viewport->getActualHeight();
-//    nodoCamera_t cam = SceneNodeConfig::getSingleton().getInfoCamera("IntroCamera");
-//    _camera->setAspectRatio(width / height);
-
-    //_camera->setPosition (Vector3 (-6.6,14.8659,-20));
-    _camera->setPosition (Vector3 (0,15,0));
-    _camera->lookAt (Vector3 (0,0,0.1));
-    _camera->setProjectionType(Ogre::PT_ORTHOGRAPHIC);
-    _camera->setOrthoWindowHeight(40);
-    //_camera->setOrthoWindowWidth(15);
-    
-//    _camera->setPosition(cam.posInicial);
-//    _camera->lookAt(Vector3(0,0,0));
-//    _camera->setNearClipDistance(cam.nearClipDistance);
-//    _camera->setFarClipDistance(cam.farClipDistance);
+    double width = _viewport->getActualWidth();
+    double height = _viewport->getActualHeight();
+    nodoCamera_t cam = SceneNodeConfig::getSingleton().getInfoCamera("IntroCamera");
+    _camera->setAspectRatio(width / height);
+    _camera->setPosition(cam.posInicial);
+    _camera->lookAt(Vector3(0,0,0));
+    _camera->setNearClipDistance(cam.nearClipDistance);
+    _camera->setFarClipDistance(cam.farClipDistance);
 }
 
 Ray pathDrawerState::setRayQuery(int posx, int posy, uint32 mask) {

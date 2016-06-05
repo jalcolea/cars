@@ -27,8 +27,9 @@ using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
 
 
-#define MASK_CIRCUITO 1 << 0
-#define MASK_MARCA    1 << 1
+#define MASK_ESCENARIO 1 << 0
+#define MASK_CIRCUITO  1 << 1
+#define MASK_MARCA     1 << 2
 
 struct marquita
 {
@@ -74,6 +75,7 @@ protected:
     Ogre::Camera *_camera;
     SceneNode* _track;
     SceneNode* _nodoSelector;
+    SceneNode* _planeRoadNode;
     
     std::vector<marquita> vMarcas;
 
@@ -88,6 +90,7 @@ private:
     void destroyMyGui();
     void createScene();
     void createFloor();
+    void createPlaneRoad();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
     void addMarca(Vector3 posicion);

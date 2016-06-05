@@ -116,6 +116,7 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
     if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
     if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
     
+    
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
 
@@ -350,12 +351,17 @@ void PlayState::dibujaLinea(size_t idFrom, size_t idTo)
     ManualObject* manual = _sceneMgr->createManualObject("line_" + to_string(idFrom));
      
     manual->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_LIST);
-        manual->position(vMarcas[idFrom]._nodoMarca->getPosition()); //start
-        manual->position(vMarcas[idTo]._nodoMarca->getPosition());    //end
+        Vector3 pos(vMarcas[idFrom]._nodoMarca->getPosition());
+        pos.y += 1;
+        manual->position(pos); //start
+        pos = vMarcas[idTo]._nodoMarca->getPosition();
+        pos.y += 1;
+        manual->position(pos);    //end
     manual->end();
      
     _sceneMgr->getRootSceneNode()->attachObject(manual);
     cout << "nombre entity linea: " << manual->getName() << endl;
+    cout << "from " << vMarcas[idFrom]._nodoMarca->getPosition() << " to " << vMarcas[idTo]._nodoMarca->getPosition() << endl;
 }
 
 
