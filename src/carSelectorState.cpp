@@ -407,7 +407,8 @@ void carSelectorState::configurarCamaraPrincipal()
     double height = _viewport->getActualHeight();
     nodoCamera_t cam = SceneNodeConfig::getSingleton().getInfoCamera("IntroCamera");
     _camera->setAspectRatio(width / height);
-    _camera->setPosition(cam.posInicial);
+    //_camera->setPosition(cam.posInicial);
+    _camera->setPosition(0,16,28);
     _camera->lookAt(Vector3(0,0,0));
     _camera->setNearClipDistance(cam.nearClipDistance);
     _camera->setFarClipDistance(cam.farClipDistance);

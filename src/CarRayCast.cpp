@@ -7,10 +7,10 @@ using namespace Ogre;
 using namespace std;
 
 
-CarRayCast::CarRayCast()
-{
-    _tuneo = nullptr;
-}
+//CarRayCast::CarRayCast()
+//{
+//    _tuneo = nullptr;
+//}
 
 CarRayCast::CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre)
                        : _nombre(nombre), _posicion(posicion), _world(world), _scnMgr(sceneMgr), _nodoPadre(nodoPadre)

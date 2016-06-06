@@ -130,7 +130,7 @@ private:
 class CarRayCast
 {
 public:
-    CarRayCast();
+    //CarRayCast();
     CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre = nullptr);
     virtual ~CarRayCast();
 

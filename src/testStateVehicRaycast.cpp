@@ -498,8 +498,8 @@ void testStateVehicRayCast::createScene()
 //    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
 //    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
     _car = unique_ptr<car>(new car("carGroupC1",_world.get(),SceneNodeConfig::getSingleton().getInfoNodoOgre("carGroupC1").posInicial,_sceneMgr,"",nullptr));
-    _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
-    _carRayCast->buildVehiculo();
+//    _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
+//    _carRayCast->buildVehiculo();
     
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
@@ -507,7 +507,7 @@ void testStateVehicRayCast::createScene()
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
     
     for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
         (*it)->buildVehiculo();

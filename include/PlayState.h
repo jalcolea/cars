@@ -99,7 +99,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
     //std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
     std::vector< unique_ptr<cpuPlayer> > _vCarsCpuPlayer;
-    unique_ptr<cpuPlayer> _cpuPlayer;
+    //unique_ptr<cpuPlayer> _cpuPlayer;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
     bool _freeCamera = false;

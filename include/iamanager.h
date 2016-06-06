@@ -1,6 +1,7 @@
 #include <iostream>
 #include "iapoint.h"
 #include <vector>
+#include "OgreVector3.h"
 
 
 #ifndef _IAMAN_
@@ -34,6 +35,8 @@ class iamanager
   double next (iapoint * car, iacomplexpoint * result);
   void paint_2d_path ();
   void print_points ();
+  
+  inline Ogre::Vector3 vec(iapoint point) { return Ogre::Vector3(point.x(),point.y(),point.z()); };
 
   //int distance(iapoint *from,iapoint *to);
   float distance(iapoint *from,iapoint *to);

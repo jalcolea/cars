@@ -140,7 +140,10 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
         reposicionaCamara();
 
 
-    _cpuPlayer->update(_deltaT);
+    for (size_t i=0; i<_vCarsCpuPlayer.size(); i++)
+        _vCarsCpuPlayer[i]->update(_deltaT);
+        
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_SPACE)) _playSimulation = !_playSimulation;
 
   return !_exitGame;
 }
