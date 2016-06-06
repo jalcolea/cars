@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<MyGUI type="Layout" version="3.2.0">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0 0 1 1" align="Stretch" layer="Wallpaper" name="start">
+        <Property key="ImageTexture" value="race.png"/>
+        <!--<Property key="ImageTexture" value="racedemo.png"/>-->
+    </Widget>
+    <Widget type="EditBox" skin="WordWrapEmpty" position="100 18 150 50" name="race_position" layer="Main">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="Colour" value="1 0 0"/>
+        <Property key="FontHeight" value="30"/>
+        <Property key="TextColour" value="0 0 0"/>
+        <Property key="Caption" value="8TH"/>
+        <Property key="InheritsAlpha" value="true"/>
+    </Widget>
+
+    <Widget type="EditBox" skin="WordWrapEmpty" position="400 18 250 50" name="race_speed" layer="Main">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Left"/>
+        <Property key="Colour" value="1 0 0"/>
+        <Property key="FontHeight" value="30"/>
+        <Property key="TextColour" value="0 0 0"/>
+        <Property key="Caption" value="200"/>
+        <Property key="InheritsAlpha" value="true"/>
+    </Widget>
+
+    <Widget type="EditBox" skin="WordWrapEmpty" position="620 18 150 50" name="race_lap" layer="Main">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Left"/>
+        <Property key="Colour" value="1 0 0"/>
+        <Property key="FontHeight" value="35"/>
+        <Property key="TextColour" value="0 0 0"/>
+        <Property key="Caption" value="1:3"/>
+        <Property key="InheritsAlpha" value="true"/>
+    </Widget>
+
+    <Widget type="EditBox" skin="WordWrapEmpty" position="850 18 150 50" name="race_time" layer="Main">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="Colour" value="1 0 0"/>
+        <Property key="FontHeight" value="35"/>
+        <Property key="TextColour" value="0 0 0"/>
+        <Property key="Caption" value="12:00"/>
+        <Property key="InheritsAlpha" value="true"/>
+    </Widget>
+
+    <Widget type="EditBox" skin="WordWrapEmpty" position="250 715 150 50" name="race_circuit" layer="Main">
+        <Property key="FontName" value="race"/>
+        <Property key="TextAlign" value="Center"/>
+        <Property key="Colour" value="1 0 0"/>
+        <Property key="FontHeight" value="35"/>
+        <Property key="TextColour" value="0 0 0"/>
+        <Property key="Caption" value="MONTMELO"/>
+        <Property key="InheritsAlpha" value="true"/>
+    </Widget>
+
+
+
+    <CodeGeneratorSettings/>
+</MyGUI>

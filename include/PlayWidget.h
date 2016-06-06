@@ -5,6 +5,8 @@
 #include <Ogre.h>
 #include <OIS/OIS.h>
 #include <string>
+#include <pthread.h>
+
 #include "GameState.h"
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
@@ -17,17 +19,28 @@ using namespace Ogre;
 class PlayWidget 
 {
  public:
-  PlayWidget ( char * layout_id);
+  PlayWidget ();
   ~PlayWidget();
-  void setPoints(int points);
-  void setLive(int level);
-
+  void lap(int lap, int max_lap);
+  void speed(int speed);
+  void position(int pos, int max_pos);
+  void circuit(string circuit);
+  void timer(int time);
+  void startTime ();
+  void stopTime ();
+  static void * timer ( void * data);
+  bool start_thread;
   protected:
    
   private:
   MyGUI::VectorWidgetPtr layout;
-  MyGUI::ProgressBar * progress_live;
-  MyGUI::TextBox * edit_points;
+  MyGUI::TextBox * race_position;
+  MyGUI::TextBox * race_speed;
+  MyGUI::TextBox * race_lap;
+  MyGUI::TextBox * race_time;
+  MyGUI::TextBox * race_circuit;
+
+  static pthread_t thread;
 };
 
 #endif
