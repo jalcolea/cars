@@ -134,7 +134,7 @@ void ControlsState::createMyGui()
   btn_wiimote = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_wiimote");
   text = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("text");
   edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_high");
-  edt_high->setCaption(get_high_score());
+  //edt_high->setCaption(get_high_score());
 }
 
 bool ControlsState::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)

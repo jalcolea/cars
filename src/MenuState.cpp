@@ -145,6 +145,7 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
   }
   else if (e.key == OIS::KC_SPACE)
   {
+      sounds::getInstance()->play_effect("push");
       MyGUI::LayoutManager::getInstance().unloadLayout(layout);
       pushState(carSelectorState::getSingletonPtr()); 
   }
@@ -239,7 +240,7 @@ void MenuState::createMyGui()
   btn_controls = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_controls");
   btn_exit = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_exit");
   edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_high");
-  edt_high->setCaption(get_high_score()); 
+  //edt_high->setCaption(get_high_score()); 
 }
 
 void MenuState::createScene()
