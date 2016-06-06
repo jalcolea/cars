@@ -150,7 +150,7 @@ void OptionsState::createScene()
 
   
   // Desactivo MYGUI pq si no, no se ve. Hay que poner el layout por detrás del coche y yo no sé (ahora claro)  
-  //createMyGui();                                          
+  createMyGui();                                          
   //_sceneMgr->createStaticGeometry("CAR");
   ent_car =  _sceneMgr->createEntity("ent_car","car-groupc-1.mesh");
   ent_car->setCastShadows(true);                            // para que proyecte sombras

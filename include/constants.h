@@ -12,6 +12,7 @@
 #define LAYOUT_PAUSE "pause.layout"
 #define LAYOUT_RECORDS "records.layout"
 #define LAYOUT_OPTIONS "options.layout"
+#define LAYOUT_RACE "race.layout"
 
 #define MAX_RECORDS 6
 

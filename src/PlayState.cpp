@@ -16,6 +16,7 @@
 #include "OgreOverlayManager.h"
 #include "OgreOverlaySystem.h"
 #include "carSelectorState.h"
+#include "PlayWidget.h"
 
 #define CAMSPEED 20
 #define CAMROTATESPEED 0.1
@@ -287,7 +288,7 @@ void PlayState::createScene()
     //createOverlay();
     createLight();
     createFloor();
-    //createMyGui();
+    createMyGui();
     
     _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
@@ -528,5 +529,18 @@ bool PlayState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id) { 
 bool PlayState::mouseReleased(const OIS::MouseEvent &e, OIS::MouseButtonID id) { return true; }
 PlayState *PlayState::getSingletonPtr() { return msSingleton; }
 PlayState &PlayState::getSingleton() { assert(msSingleton); return *msSingleton; }
-void PlayState::createMyGui() {}
-void PlayState::destroyMyGui() {}
+
+void PlayState::createMyGui() 
+{
+  PlayWidget * play = new PlayWidget();
+  play->lap (1,3);
+  play->position (2,8);
+  play->speed(200);
+  play->circuit("JEREZ");
+  play->startTime();
+}
+
+void PlayState::destroyMyGui() 
+{
+    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+}

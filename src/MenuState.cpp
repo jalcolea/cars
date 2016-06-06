@@ -140,9 +140,7 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
   else if (e.key == OIS::KC_A) {
     sounds::getInstance()->play_effect("push");
     //PlayWidget play(NULL);
-    PlayWidget * play = new PlayWidget("shooter_play_up_left.layout");
-    play->setPoints(123011);
-    play->setLive(75);
+    PlayWidget * play = new PlayWidget();
 
   }
   else if (e.key == OIS::KC_SPACE)
