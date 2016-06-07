@@ -99,6 +99,10 @@ protected:
     bool _exitGame;
     Ogre::Real _deltaT;
     MyGUI::VectorWidgetPtr layout;
+    MyGUI::Button* btn_back;
+    MyGUI::EditBox* text;
+    MyGUI::EditBox* edt_high;
+
 
 private:
 

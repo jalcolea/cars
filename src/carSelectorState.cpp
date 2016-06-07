@@ -63,6 +63,7 @@ void carSelectorState::enter()
 
 void carSelectorState::exit()
 {
+  destroyMyGui();
 }
 
 void carSelectorState::pause()
@@ -271,10 +272,16 @@ void carSelectorState::createLight()
 
 void carSelectorState::createMyGui()
 {
+  layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_OPTIONS);
+  btn_back = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_back");
+  text = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("text");
+  edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_high");
+  //edt_high->setCaption(get_high_score());
 }
 
 void carSelectorState::destroyMyGui()
 {
+  MyGUI::LayoutManager::getInstance().unloadLayout(layout);
 }
 
 void carSelectorState::createScene()
@@ -288,7 +295,7 @@ void carSelectorState::createScene()
     //createOverlay();
     createLight();
     createFloor();
-    //createMyGui();
+    createMyGui();
     
     nodoOgre_t info =  SceneNodeConfig::getSingleton().getInfoNodoOgre("track1bis");
     Entity* entTrack = _sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla);
