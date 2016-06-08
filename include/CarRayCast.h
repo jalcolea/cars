@@ -153,7 +153,7 @@ public:
     void setVehicle(OgreBulletDynamics::RaycastVehicle* rv);
     void setChassis(Ogre::Entity* entChasis); // Establece la malla del chasis.
     void buildVehiculo();
-    void acelerar(Real fuerza, bool endereza = false ); // obvio no?
+    void acelerar(Real fuerza, bool endereza = false, Real factorEnderezamiento = 1.5 ); // obvio no?
     void frenar();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
     void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado

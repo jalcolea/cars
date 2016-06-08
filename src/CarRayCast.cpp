@@ -49,11 +49,13 @@ void CarRayCast::buildVehiculo()
     _frenada = param.frenada;
     
     OgreBulletCollisions::BoxCollisionShape* formaChasis = new BoxCollisionShape(_entChasis->getBoundingBox().getHalfSize());
-    cout << "chasis boundingbox halfsize: " << _entChasis->getBoundingBox().getHalfSize() << endl;
-    CompoundCollisionShape* formaCompuesta = new CompoundCollisionShape();
-    formaCompuesta->addChildShape(formaChasis,param.posShapeBullet); //Vector3(0,1,0)); // En la demo de OgreBullet (que ni compila :( ) desplaza la forma 1 unidad, a saber por qué???
+// PRUEBA SIN COMPOUND SHAPE
+//    cout << "chasis boundingbox halfsize: " << _entChasis->getBoundingBox().getHalfSize() << endl;
+//    CompoundCollisionShape* formaCompuesta = new CompoundCollisionShape();
+//    formaCompuesta->addChildShape(formaChasis,param.posShapeBullet); //Vector3(0,1,0)); // En la demo de OgreBullet (que ni compila :( ) desplaza la forma 1 unidad, a saber por qué???
     
     _bodyWheeled = new OgreBulletDynamics::WheeledRigidBody(param.nombre + "_body",_world);
+//    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
     _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
     _bodyWheeled->setDamping(param.suspensionDamping,param.suspensionDamping); //YA VEREMOS SI HACE FALTA
     _bodyWheeled->disableDeactivation();
@@ -108,13 +110,13 @@ void CarRayCast::buildVehiculo()
 
 }
 
-void CarRayCast::acelerar(Real fuerza, bool endereza)
+void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
 {
     if (endereza && _valorGiro != 0.0) // Si queremos enderezar y además _valorGiro es distinto de cero
     {
         cout << "enderezando" << endl;
-        if (_valorGiro > 0) girar(-1,1.5);
-        else  girar(1,1.2);
+        if (_valorGiro > 0) girar(-1,factorEnderezamiento); // factorEnderezamiento = 1.5 por defecto
+        else  girar(1,factorEnderezamiento);
     }    
     _vehiculo->applyEngineForce(fuerza,0);
     _vehiculo->applyEngineForce(fuerza,1);

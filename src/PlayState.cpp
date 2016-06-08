@@ -82,7 +82,7 @@ void PlayState::enter()
     configurarCamaraPrincipal();
 
     // Activar Bullet
-    initBulletWorld(false);
+    initBulletWorld(true);
 
     //Preparar escena
     createScene();
@@ -139,9 +139,7 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
     if (!_freeCamera)
         reposicionaCamara();
 
-
-    for (size_t i=0; i<_vCarsCpuPlayer.size(); i++)
-        _vCarsCpuPlayer[i]->update(_deltaT);
+    //updateCPU();
         
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_SPACE)) _playSimulation = !_playSimulation;
 
@@ -150,10 +148,17 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
 
 void PlayState::updateCPU()
 {
+    for (size_t i=0; i<_vCarsCpuPlayer.size(); i++)
+        _vCarsCpuPlayer[i]->update(_deltaT);
 
 }
 
-bool PlayState::frameEnded(const Ogre::FrameEvent &evt) { return true; }
+bool PlayState::frameEnded(const Ogre::FrameEvent &evt) 
+{ 
+    updateCPU();
+    
+    return true; 
+}
 
 bool PlayState::keyPressed(const OIS::KeyEvent &e) 
 {

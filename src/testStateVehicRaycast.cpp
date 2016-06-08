@@ -176,6 +176,17 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
         reposicionaCamara();
 
     pintaOverlayInfo();
+    
+    
+//    btTransform btTrans = _vCarsRayCast[_cursorVehiculo]->getRigidBody()->getBulletRigidBody()->getWorldTransform();
+//    btMatrix3x3 matRotacion = btTrans.getBasis();
+//    float yaw, pitch, roll;
+//    matRotacion.getEulerYPR(pitch,yaw,roll);
+//    btQuaternion rotacionYaw(yaw,0,0);
+//    cout << "y el resultado es yaw:" << Degree(Radian(yaw)) << " pitch:" << Degree(Radian(pitch)) << " roll:" << Degree(Radian(roll)) << endl;
+//    cout << "forward vector: " << convert(_vCarsRayCast[_cursorVehiculo]->getVehiculo()->getBulletVehicle()->getForwardVector()) << endl;
+    
+
 
     return !_exitGame;
 
