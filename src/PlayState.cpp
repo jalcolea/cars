@@ -155,7 +155,8 @@ void PlayState::updateCPU()
 
 bool PlayState::frameEnded(const Ogre::FrameEvent &evt) 
 { 
-    updateCPU();
+    if (_playSimulation)
+        updateCPU();
     
     return true; 
 }

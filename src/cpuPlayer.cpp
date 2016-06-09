@@ -16,7 +16,6 @@ void cpuPlayer::build()
     btTransform trans = _car->getRigidBody()->getBulletRigidBody()->getCenterOfMassTransform();
     btQuaternion quat;
     quat.setEuler(Radian(Ogre::Degree(-90)).valueRadians(),0,0);
-    cout << "quat.getAngle() "<< quat.getAngle() << endl;
     trans.setRotation(quat);
     _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(trans);
     
@@ -27,32 +26,55 @@ void cpuPlayer::update(Real deltaT)
 {
     Vector3 origen;
     Vector3 destino;
+    static Vector3 destinoOld = Vector3::ZERO;
     Vector3 direccion;
     btTransform btTrans;
     Real distancia;
     Quaternion quat;
     
-    
 
 //  INTENTANDO ORIENTAR EL CHASIS. DE MOMENTO SE ORIENTA PERO LA ROTACIÓN LA HACE AL CONTRARIO DE LO QUE DEBERÍA
+//    btTrans.setIdentity(); // Por si acaso, la matriz de transformación la dejamos Inmaculadita para empezar :D
+//    btTrans = _car->getVehiculo()->getBulletVehicle()->getChassisWorldTransform(); // Obtenemos la matriz de transformación del chasis
+//    destino = _iaMgr->vec(_iaMgr->follow(new iapoint())->base); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
+//    origen = convert(btTrans.getOrigin()); // Obtenemos la posición actual del chasis 
+//    origen.normalise();    // Normalizamos ambos vectores, de lo contrario los cálculos de ángulos y demás se vuelven locos.
+//    destino.normalise();
+//    destino.y = origen.y; // igualo la y para que no la tenga en cuenta al calcular el angulo de rotación entre origen y destino
+//    Quaternion orientacionActual = convert(btTrans.getRotation()); // Obtenemos el cuaternio con la rotación actual del chasis desde su matriz de transformacion.
+//    origen = orientacionActual * Vector3::UNIT_X; // Producto vectorial para deshacernos de las componentes que no nos interesan (X,Z)
+//    direccion = (destino - origen) *  -convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());// * Vector3::UNIT_X;
+//    //direccion.normalise();
+//    quat = origen.getRotationTo(direccion);
+//    cout << "yaw resultante " << quat.getYaw().valueAngleUnits() << endl;
+//    btTrans.setRotation(convert(quat));
+//    _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(btTrans);
+
     btTrans.setIdentity(); // Por si acaso, la matriz de transformación la dejamos Inmaculadita para empezar :D
     btTrans = _car->getVehiculo()->getBulletVehicle()->getChassisWorldTransform(); // Obtenemos la matriz de transformación del chasis
-    destino = _iaMgr->vec(_iaMgr->follow(new iapoint())->base); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
     origen = convert(btTrans.getOrigin()); // Obtenemos la posición actual del chasis 
-    origen.normalise();    // Normalizamos ambos vectores, de lo contrario los cálculos de ángulos y demás se vuelven locos.
-    destino.normalise();
-    destino.y = origen.y; // igualo la y para que no la tenga en cuenta al calcular el angulo de rotación entre origen y destino
-    Quaternion orientacionActual = convert(btTrans.getRotation()); // Obtenemos el cuaternio con la rotación actual del chasis desde su matriz de transformacion.
-    origen = orientacionActual * Vector3::UNIT_X; // Producto vectorial para deshacernos de las componentes que no nos interesan (X,Z)
-    direccion = (destino - origen) *  -convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());// * Vector3::UNIT_X;
-    //direccion.normalise();
-    quat = origen.getRotationTo(direccion);
-    cout << "yaw resultante " << quat.getYaw().valueAngleUnits() << endl;
-    btTrans.setRotation(convert(quat));
-    _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(btTrans);
-    
+
+    destino = _iaMgr->vec(_iaMgr->follow(new iapoint(origen.x,origen.y,origen.z))->base); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
+    cout << "Destino actual " << destino << endl;
+    if (destino != destinoOld)
+    {
+        cout << "Destino alcanzado, orientando a siguiente destino " << endl;
+        destinoOld = destino;
+        //origen.normalise();    // Normalizamos ambos vectores, de lo contrario los cálculos de ángulos y demás se vuelven locos.
+        //destino.normalise();
+        destino.y = origen.y; // igualo la y para que no la tenga en cuenta al calcular el angulo de rotación entre origen y destino
+        Vector3 orientacionActual = convert(btTrans.getRotation()) * Vector3::UNIT_X; // Obtenemos la rotación actual del chasis desde su matriz de transformacion.
+        //origen = orientacionActual * Vector3::UNIT_X; // Producto vectorial para deshacernos de las componentes que no nos interesan (X,Z)
+        direccion = (destino - origen); //* -convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());// * Vector3::UNIT_X;
+        direccion.normalise();
+        quat = orientacionActual.getRotationTo(direccion); //origen.getRotationTo(direccion);
+        cout << "yaw resultante " << quat.getYaw().valueAngleUnits() << endl;
+        btTrans.setRotation(convert(quat));
+        _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(btTrans);
+    }
 
 
+    _car->acelerar(_car->getFuerzaMotor(),false,0.1);
 
 
 
@@ -79,7 +101,6 @@ void cpuPlayer::update(Real deltaT)
     
 
 
-   //_car->acelerar(_car->getFuerzaMotor(),false,0.1);
 
 
 
