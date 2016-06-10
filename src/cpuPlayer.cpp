@@ -54,7 +54,7 @@ void cpuPlayer::update(Real deltaT)
     btTrans = _car->getVehiculo()->getBulletVehicle()->getChassisWorldTransform(); // Obtenemos la matriz de transformación del chasis
     origen = convert(btTrans.getOrigin()); // Obtenemos la posición actual del chasis 
 
-    destino = _iaMgr->vec(_iaMgr->follow(new iapoint(origen.x,origen.y,origen.z))->base); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
+    destino = _iaMgr->vec(_iaMgr->follow(new iapoint(origen.x,origen.y,origen.z))->derived); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
     cout << "Destino actual " << destino << endl;
     if (destino != destinoOld)
     {

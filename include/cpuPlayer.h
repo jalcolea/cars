@@ -24,7 +24,7 @@ public:
             _iapd = unique_ptr<IAPointsDeserializer>(new IAPointsDeserializer());
             _iapd->cargarFichero(_ficheroRutasIA);
             
-            _iaMgr = unique_ptr<iamanager>(new iamanager(_laps,&_iapd->getPointsPtr(),0));
+            _iaMgr = unique_ptr<iamanager>(new iamanager(_laps,&_iapd->getPointsPtr(),0,1));
             
             _iaMgr->print_points();
             

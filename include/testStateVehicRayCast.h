@@ -100,7 +100,10 @@ public:
     // Heredados de Ogre::Singleton.
     static testStateVehicRayCast &getSingleton();
     static testStateVehicRayCast *getSingletonPtr();
-
+    
+/* PARA MANEJAR COLISIONES *****************************************************/          
+    void handleCollision(btCollisionObject *body0, btCollisionObject *body1);
+/*******************************************************************************/      
 
 protected:
     Ogre::Root *_root;
@@ -115,6 +118,7 @@ protected:
     std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
     CollisionShape* _floorShape;
     RigidBody* _floorBody;
+    RigidBody* _bodyCheckPoint;
     bool _freeCamera = false;
     bool _playSimulation = true;
     SceneNode* _nodoVista;

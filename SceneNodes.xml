@@ -133,6 +133,20 @@
         <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
+        <nombreNodo>CheckPointPlane</nombreNodo>
+        <nombreEntidad>CheckPointPlaneEnt</nombreEntidad>
+        <nombreMalla>CheckPointPlane.mesh</nombreMalla>
+        <nombreMaterial>unknown</nombreMaterial>
+        <orientacion w="1" x="0" y="0" z="0"></orientacion>
+        <posInicial x="0" y="10" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.0</frictionBullet>
+        <bodyRestitutionBullet>0.0</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
+    </scenenode>
+    <scenenode>
         <nombreNodo>farara-sportOneBlock</nombreNodo>
         <nombreEntidad>farara-sport</nombreEntidad>
         <nombreMalla>farara-sport.mesh</nombreMalla>

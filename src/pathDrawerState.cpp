@@ -189,6 +189,9 @@ bool pathDrawerState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID 
         
     if (id == OIS::MB_Left)
         _crearMarca = true;
+        
+    if (id == OIS::MB_Right)
+        _rotarMarca = true;
     
     return true;
 }
@@ -204,7 +207,9 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
     Vector3 vt = Vector3::ZERO;
     Real speed = 10.0;
     Real zoom = 0;
-    Real _r = 0;
+    Real r = 0;
+    Real rYaw = 0;
+    Real rotCheckPoint = 0;
     
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP))
         vt += Vector3(0,1,0);
@@ -222,12 +227,22 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DELETE))
         vt += Vector3(0,0,-1);
 
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP)) _r += 180;
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN)) _r += -180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGUP)) r += 180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_PGDOWN)) r += -180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LSHIFT) &&
+        InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT)) rYaw += 180;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LSHIFT) &&
+        InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT)) rYaw += -180;
+
+
         
-    _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
+    _camera->pitch(Ogre::Radian(r * _deltaT * 0.005));
+    _camera->yaw(Ogre::Radian(rYaw * _deltaT * 0.005));
 
     _camera->moveRelative(vt * _deltaT * speed);
+    
+    if (InputManager_::getSingletonPtr()->getMouse()->getMouseState().buttonDown(OIS::MB_Right)) rotCheckPoint += 180;
+    if (_nodoSelector) _nodoSelector->yaw(Ogre::Radian(rotCheckPoint * _deltaT * 0.005));
     
     // Si hemos presionado MouseButtonLeft flag _crearMarca ON
     if (_crearMarca)
@@ -247,6 +262,32 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
                 if (it->movable->getParentSceneNode()->getName() == "PlaneRoadBig") 
                 {
                   marquita marca;
+                  marca._nombreNodo =  _checkPointInfo.nombreNodo + "_" + to_string(_idMarca);
+                  marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
+                  marca._nombreEnt = _checkPointInfo.nombreEntidad + "_" + to_string(_idMarca);                  
+                  marca._entMarca = _sceneMgr->createEntity(marca._nombreEnt,_checkPointInfo.nombreMalla);
+                  marca._entMarca->setCastShadows(false);
+                  marca._entMarca->setQueryFlags(MASK_MARCA);
+                  marca._nodoMarca->attachObject(marca._entMarca);
+                  //marca._nodoMarca->translate(r.getPoint(it->distance));
+                  Vector3 pos(r.getPoint(it->distance));
+                  pos.y = _planeRoadNode->getPosition().y + 0.001;
+                  marca._nodoMarca->setPosition(pos);
+                  
+                  _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
+                  marca._id = _idMarca;
+                  _idMarca++;
+                  
+                  vMarcas.push_back(marca);
+                  
+                  if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
+                  
+                  cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
+                  cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
+                  cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
+                    
+                    
+                  /*marquita marca;
                   marca._nombreNodo = "nodoMarca_" + to_string(_idMarca);
                   marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
                   marca._nombreEnt = "entMarca_" + to_string(_idMarca);                  
@@ -269,7 +310,7 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
                   
                   cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
                   cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
-                  cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
+                  cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;*/
                 }
                 
             _nodoSelector = it->movable->getParentSceneNode();
@@ -408,6 +449,8 @@ void pathDrawerState::createScene()
     _raySceneQuery = _sceneMgr->createRayQuery(Ray());
     _idMarca = 0;
     _crearMarca = false;
+    _rotarMarca = false;
+    _checkPointInfo = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("CheckPointPlane");
 }
 
 void pathDrawerState::createPlaneRoad()

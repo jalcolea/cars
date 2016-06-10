@@ -10,7 +10,7 @@ void IAPointsSerializer::nuevoXMLIAPoints()
     _data = mxmlNewElement(_xml, "IAPoints");
 }
 
-void IAPointsSerializer::addNodoXMLIAPoints(size_t id, iapoint point)
+void IAPointsSerializer::addNodoXMLIAPoints(size_t id, iapoint point, Ogre::Quaternion rotacion)
 {
     _nodeIAPoint = mxmlNewElement(_data, "point");
     //mxmlNewText(_nodeIAPoint , 0, "val1");
@@ -18,6 +18,10 @@ void IAPointsSerializer::addNodoXMLIAPoints(size_t id, iapoint point)
     mxmlElementSetAttr(_nodeIAPoint,"y",std::to_string(point.y()).c_str());
     mxmlElementSetAttr(_nodeIAPoint,"z",std::to_string(point.z()).c_str());
     mxmlElementSetAttr(_nodeIAPoint,"offset",std::to_string(0.0).c_str()); // cambiarlo luego al campo adecuado de un iacomplexpoint
+    mxmlElementSetAttr(_nodeIAPoint,"qW",std::to_string(rotacion.w).c_str());
+    mxmlElementSetAttr(_nodeIAPoint,"qX",std::to_string(rotacion.x).c_str());
+    mxmlElementSetAttr(_nodeIAPoint,"qY",std::to_string(rotacion.y).c_str());
+    mxmlElementSetAttr(_nodeIAPoint,"qZ",std::to_string(rotacion.z).c_str());
 }
 
 bool IAPointsSerializer::guardarXMLIAPoints(string nombreFichero)

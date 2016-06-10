@@ -54,3 +54,21 @@ void IAPointsDeserializer::nuevoIAPoint(mxml_node_t* node)
     r = new iapoint(p.x(),p.y(),p.z());
     _vPointsPtr.push_back(r);
 }
+
+void IAPointsDeserializer::nuevoCheckPoint(mxml_node_t* node)
+{
+    CheckPoint check;
+    
+    
+    check.p = new iapoint(std::stof((mxmlElementGetAttr(node,"x"))),
+                          std::stof((mxmlElementGetAttr(node,"y"))),
+                          std::stof((mxmlElementGetAttr(node,"Z"))));
+                          
+    check.quat = Ogre::Quaternion(std::stof((mxmlElementGetAttr(node,"qW"))),
+                                  std::stof((mxmlElementGetAttr(node,"qX"))),
+                                  std::stof((mxmlElementGetAttr(node,"qY"))),
+                                  std::stof((mxmlElementGetAttr(node,"qZ"))));
+                                  
+    _vCheckPoints.push_back(check);
+    
+}

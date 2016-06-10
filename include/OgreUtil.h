@@ -11,7 +11,8 @@ enum collisiontypes {
     COL_CAR =4, 
     COL_TRACK = 8, 
     COL_CAMERA = 16,
-    COL_TRACK_COLISION = 32
+    COL_TRACK_COLISION = 32,
+    COL_CHECK = 64
 };
 
 enum class keyPressed_flags

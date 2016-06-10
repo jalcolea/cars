@@ -38,7 +38,9 @@ struct marquita
     string _nombreNodo;
     string _nombreEnt;
     size_t _id;
+    Quaternion rotacion;
 };
+
 
 class pathDrawerState : public Ogre::Singleton<pathDrawerState>, public GameState
 {
@@ -76,6 +78,7 @@ protected:
     SceneNode* _track;
     SceneNode* _nodoSelector;
     SceneNode* _planeRoadNode;
+    nodoOgre_t _checkPointInfo;
     
     std::vector<marquita> vMarcas;
 
@@ -102,6 +105,7 @@ private:
     RaySceneQuery* _raySceneQuery;
     size_t _idMarca;
     bool _crearMarca;
+    bool _rotarMarca;
     
     Ray setRayQuery(int posx, int posy, uint32 mask);
 

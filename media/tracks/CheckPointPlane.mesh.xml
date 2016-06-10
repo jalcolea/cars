@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mesh>
+    <sharedgeometry vertexcount="4">
+        <vertexbuffer texture_coords="0" normals="true" colours_diffuse="False" positions="true">
+            <vertex>
+                <position x="-7.375288" z="0.000000" y="-3.284353"/>
+                <normal x="0.000000" z="1.000000" y="0.000000"/>
+            </vertex>
+            <vertex>
+                <position x="7.375288" z="0.000000" y="-3.284353"/>
+                <normal x="0.000000" z="1.000000" y="0.000000"/>
+            </vertex>
+            <vertex>
+                <position x="7.375288" z="-0.000000" y="3.284353"/>
+                <normal x="0.000000" z="1.000000" y="0.000000"/>
+            </vertex>
+            <vertex>
+                <position x="-7.375288" z="-0.000000" y="3.284353"/>
+                <normal x="0.000000" z="1.000000" y="0.000000"/>
+            </vertex>
+        </vertexbuffer>
+    </sharedgeometry>
+    <submeshes>
+        <submesh material="MaterialRosita" operationtype="triangle_list" usesharedvertices="true" use32bitindexes="False">
+            <faces count="2">
+                <face v3="2" v1="0" v2="1"/>
+                <face v3="3" v1="0" v2="2"/>
+            </faces>
+        </submesh>
+    </submeshes>
+    <submeshnames>
+        <submesh name="MaterialRosita" index="0">
+        </submesh>
+    </submeshnames>
+</mesh>

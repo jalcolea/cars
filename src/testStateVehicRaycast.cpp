@@ -16,6 +16,14 @@ using namespace OgreBulletCollisions;
 
 template<> testStateVehicRayCast *Ogre::Singleton<testStateVehicRayCast>::msSingleton = 0;
 
+static bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisionObject* body1)
+{
+  testStateVehicRayCast::getSingletonPtr()->handleCollision(body0,body1);
+  return false;
+}
+
+extern ContactProcessedCallback gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
+
 void testStateVehicRayCast::enter()
 {
     // Recuperar recursos básicos
@@ -64,6 +72,9 @@ void testStateVehicRayCast::enter()
 
     //Preparar escena
     createScene();
+    
+    
+    gContactProcessedCallback = (ContactProcessedCallback)HandleContacts;
     
     _exitGame = false;
     _deltaT = 0;
@@ -177,16 +188,6 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
 
     pintaOverlayInfo();
     
-    
-//    btTransform btTrans = _vCarsRayCast[_cursorVehiculo]->getRigidBody()->getBulletRigidBody()->getWorldTransform();
-//    btMatrix3x3 matRotacion = btTrans.getBasis();
-//    float yaw, pitch, roll;
-//    matRotacion.getEulerYPR(pitch,yaw,roll);
-//    btQuaternion rotacionYaw(yaw,0,0);
-//    cout << "y el resultado es yaw:" << Degree(Radian(yaw)) << " pitch:" << Degree(Radian(pitch)) << " roll:" << Degree(Radian(roll)) << endl;
-//    cout << "forward vector: " << convert(_vCarsRayCast[_cursorVehiculo]->getVehiculo()->getBulletVehicle()->getForwardVector()) << endl;
-    
-
 
     return !_exitGame;
 
@@ -506,11 +507,7 @@ void testStateVehicRayCast::createScene()
     
     _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
-//    _car = unique_ptr<car>(new car("carKartYellow",_world.get(),_scn.getInfoNodoOgre("carKartYellow").posInicial,_sceneMgr));
-//    _car = unique_ptr<car>(new car("carGroupC1red",_world.get(),_scn.getInfoNodoOgre("carGroupC1red").posInicial,_sceneMgr,"",_track->getSceneNode()));
     _car = unique_ptr<car>(new car("carGroupC1",_world.get(),SceneNodeConfig::getSingleton().getInfoNodoOgre("carGroupC1").posInicial,_sceneMgr,"",nullptr));
-//    _carRayCast = unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get()));
-//    _carRayCast->buildVehiculo();
     
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
     _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
@@ -536,6 +533,19 @@ void testStateVehicRayCast::createScene()
 //    OgreBulletDynamics::RigidBody* body = new OgreBulletDynamics::RigidBody(nodoConfigCol.nombreNodo, _world.get(), COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
 //    body->setShape(nodoColLateral,tri,nodoConfigCol.bodyRestitutionBullet,nodoConfigCol.frictionBullet,nodoConfigCol.masaBullet,nodoConfigCol.posShapeBullet);
 //    nodoColLateral->setVisible(false);
+
+    // Prueba de bullet para un CheckPoint
+    nodoOgre_t infoCheckPoint = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("CheckPointPlane");
+    Entity* entCheckPoint = _sceneMgr->createEntity(infoCheckPoint.nombreEntidad, infoCheckPoint.nombreMalla);
+    SceneNode* nodoCheckPoint = _sceneMgr->createSceneNode(infoCheckPoint.nombreNodo);
+    nodoCheckPoint->attachObject(entCheckPoint);
+    _sceneMgr->getRootSceneNode()->addChild(nodoCheckPoint);
+    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(entCheckPoint);
+    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
+    _bodyCheckPoint = new OgreBulletDynamics::RigidBody(infoCheckPoint.nombreNodo, _world.get(),0,btCollisionObject::CF_NO_CONTACT_RESPONSE);
+    _bodyCheckPoint->setShape(nodoCheckPoint,tri,infoCheckPoint.bodyRestitutionBullet,infoCheckPoint.frictionBullet,infoCheckPoint.masaBullet,infoCheckPoint.posShapeBullet);
+    nodoCheckPoint->setVisible(true);
+    
   
 }
 
@@ -620,6 +630,27 @@ void testStateVehicRayCast::createMyGui()
     mGUI->initialise();
     layout = MyGUI::LayoutManager::getInstance().loadLayout("shooter_test.layout");
 //    MyGUI::PointerManager::getInstancePtr()->setVisible(true);
+}
+
+
+void testStateVehicRayCast::handleCollision(btCollisionObject *body0, btCollisionObject *body1)
+{
+
+    if (body0 == _bodyCheckPoint->getBulletRigidBody() || body1 == _bodyCheckPoint->getBulletRigidBody()) 
+    {
+        cout << "colision con el CheckPoint " << endl;
+        btCollisionObject* checkBody = (body0 == _bodyCheckPoint->getBulletRigidBody()) ? body0 : body1;
+        btCollisionObject* otherObject = (checkBody == body0)?body1:body0;
+        // Chequeamos con quien ha colisionado el plano
+        for (std::vector< std::unique_ptr<CarRayCast> >::iterator it = _vCarsRayCast.begin();  it != _vCarsRayCast.end(); ++it) 
+        {
+            if ( (btCollisionObject*) (*it)->getRigidBody() == otherObject) 
+            {           
+            }
+        }
+    
+    }
+    
 }
 
 bool testStateVehicRayCast::WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e)

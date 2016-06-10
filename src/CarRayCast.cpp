@@ -61,7 +61,7 @@ void CarRayCast::buildVehiculo()
     _bodyWheeled->disableDeactivation();
     
     // Al parecer los flags de colisión no funcionan con VehicleRayCast "asínque".... (http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Vehicles)
-//    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION); // NI PUTO CASO OIGA :(
+//    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION | COL_CHECK); // NI PUTO CASO OIGA :(
 //    cout << "flags" << _bodyWheeled->getBulletRigidBody()->getFlags() << endl;
     
     _tuneo = new OgreBulletDynamics::VehicleTuning(param.suspensionStiffness,  // suspensionStiffness: dureza de la suspensión
