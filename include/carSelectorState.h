@@ -96,12 +96,21 @@ protected:
     std::vector< SceneNode* > _vCars;
     SceneNode* _nodoSelector;
 
+    int difficult;
+
     bool _exitGame;
     Ogre::Real _deltaT;
     MyGUI::VectorWidgetPtr layout;
     MyGUI::Button* btn_back;
+    MyGUI::Button* btn_left;
+    MyGUI::Button* btn_right;
+    MyGUI::Button* btn_play;
+    MyGUI::Button* btn_d1;
+    MyGUI::Button* btn_d2;
+    MyGUI::Button* btn_d3;
     MyGUI::EditBox* text;
     MyGUI::EditBox* edt_high;
+    MyGUI::EditBox* edt_diff;
 
 
 private:

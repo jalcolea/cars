@@ -22,7 +22,7 @@ class Carrusel
   void go();
   MyGUI::VectorWidgetPtr count_layout;
   MyGUI::ImageBox* img[MAX_IMG];
-  char * img_names[MAX_IMG]={"img_start","img_tres","img_dos","img_uno","img_go"};
+//  char * img_names[MAX_IMG]={"img_start","img_tres","img_dos","img_uno","img_go"};
   private:
   static void * run(void * arg);
 };

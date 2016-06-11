@@ -11,6 +11,7 @@ template<> carSelectorState *Ogre::Singleton<carSelectorState>::msSingleton = 0;
 
 void carSelectorState::enter()
 {
+    difficult = 1;
     // Recuperar recursos básicos
     _root = Ogre::Root::getSingletonPtr();
     try
@@ -116,6 +117,52 @@ bool carSelectorState::mouseMoved(const OIS::MouseEvent& e)
 
 bool carSelectorState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID id)
 {
+  int x = e.state.X.abs;
+  int y = e.state.Y.abs;
+  char tmp [32];
+
+  if (btn_back->_checkPoint(x,y))
+  {
+    sounds::getInstance()->play_effect("push");
+    popState();
+  }
+  else if (btn_left->_checkPoint(x,y)) 
+  {
+    OIS::KeyEvent e(NULL,OIS::KC_LEFT,0);
+    carSelectorState::keyPressed(e);
+  }
+  else if (btn_right->_checkPoint(x,y)) 
+  {
+    OIS::KeyEvent e(NULL,OIS::KC_RIGHT,0);
+    carSelectorState::keyPressed(e);
+  }
+  else if (btn_play->_checkPoint(x,y))
+  {
+    OIS::KeyEvent e(NULL,OIS::KC_RETURN,0);
+    carSelectorState::keyPressed(e);
+  }
+  else if (btn_d1->_checkPoint(x,y))
+  {
+    difficult = 1;
+    sprintf(tmp,"%d",difficult);
+cout << "aaa"<<endl;
+    string a (tmp);
+    edt_diff->setCaption(a);
+cout << "aaaa"<<endl;
+  }
+  else if (btn_d2->_checkPoint(x,y))
+  {
+    difficult = 2;
+    sprintf(tmp,"%d",difficult);
+    edt_diff->setCaption(string(tmp));
+  }
+  else if (btn_d3->_checkPoint(x,y))
+  {
+    difficult = 3;
+    sprintf(tmp,"%d",difficult);
+    edt_diff->setCaption(string(tmp));
+  }
+
         return true;
 }
 
@@ -274,9 +321,15 @@ void carSelectorState::createMyGui()
 {
   layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_OPTIONS);
   btn_back = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_back");
+  btn_left = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_left");
+  btn_right = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_right");
+  btn_play = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_play");
+  btn_d1 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d1");
+  btn_d2 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d2");
+  btn_d3 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d3");
   text = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("text");
   edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_high");
-  //edt_high->setCaption(get_high_score());
+  edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_diff");
 }
 
 void carSelectorState::destroyMyGui()
