@@ -21,6 +21,18 @@
         <Property key="Caption" value=""/>
         <Property key="InheritsAlpha" value="true"/>
     </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="250 640 100 120" align="Stretch" layer="Wallpaper" name="img_d1">
+        <Property key="ImageTexture" value="d1.png"/>
+        <Property key="Visible" value="true"/>
+    </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="250 640 100 120" align="Stretch" layer="Wallpaper" name="img_d2">
+        <Property key="ImageTexture" value="d2.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
+    <Widget type="ImageBox" skin="ImageBox" position="250 640 100 120" align="Stretch" layer="Wallpaper" name="img_d3">
+        <Property key="ImageTexture" value="d3.png"/>
+        <Property key="Visible" value="false"/>
+    </Widget>
 
 
     <Widget type="EditBox" skin="WordWrapEmpty" position="60 480 820 180" layer="Main" name="text">

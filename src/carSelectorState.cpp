@@ -144,23 +144,20 @@ bool carSelectorState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID
   else if (btn_d1->_checkPoint(x,y))
   {
     difficult = 1;
-    sprintf(tmp,"%d",difficult);
-cout << "aaa"<<endl;
-    string a (tmp);
-    edt_diff->setCaption(a);
-cout << "aaaa"<<endl;
+    for (int a=0;a<3;a++) img[a]->setVisible(false);
+    img[difficult-1]->setVisible(true);
   }
   else if (btn_d2->_checkPoint(x,y))
   {
     difficult = 2;
-    sprintf(tmp,"%d",difficult);
-    edt_diff->setCaption(string(tmp));
+    for (int a=0;a<3;a++) img[a]->setVisible(false);
+    img[difficult-1]->setVisible(true);
   }
   else if (btn_d3->_checkPoint(x,y))
   {
     difficult = 3;
-    sprintf(tmp,"%d",difficult);
-    edt_diff->setCaption(string(tmp));
+    for (int a=0;a<3;a++) img[a]->setVisible(false);
+    img[difficult-1]->setVisible(true);
   }
 
         return true;
@@ -328,8 +325,9 @@ void carSelectorState::createMyGui()
   btn_d2 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d2");
   btn_d3 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d3");
   text = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("text");
-  edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_high");
-  edt_high = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_diff");
+  img[0] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d1");
+  img[1] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d2");
+  img[2] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d3");
 }
 
 void carSelectorState::destroyMyGui()

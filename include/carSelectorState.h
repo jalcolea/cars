@@ -110,8 +110,7 @@ protected:
     MyGUI::Button* btn_d3;
     MyGUI::EditBox* text;
     MyGUI::EditBox* edt_high;
-    MyGUI::EditBox* edt_diff;
-
+    MyGUI::ImageBox* img[3];
 
 private:
 
