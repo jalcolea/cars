@@ -105,6 +105,7 @@ protected:
     MyGUI::Button* btn_left;
     MyGUI::Button* btn_right;
     MyGUI::Button* btn_play;
+    MyGUI::Button* btn_mat;
     MyGUI::Button* btn_d1;
     MyGUI::Button* btn_d2;
     MyGUI::Button* btn_d3;

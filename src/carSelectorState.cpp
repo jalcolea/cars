@@ -84,23 +84,33 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
     {
         if (e.key == OIS::KC_LEFT)
         {
+            sounds::getInstance()->play_effect("push");
             _sentidoGiro = 1;
             inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,_sentidoGiro);
             _girandoRuleta = true;
         }
         else if (e.key == OIS::KC_RIGHT)
         {
+            sounds::getInstance()->play_effect("push");
             _sentidoGiro = -1;
             inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,_sentidoGiro);
             _girandoRuleta = true;
         }
     }
 
-    if (e.key == OIS::KC_M)
+    if ((e.key == OIS::KC_M)||(e.key == OIS::KC_C))
+    {
+        sounds::getInstance()->play_effect("push");
         cambiarMaterialVehicSeleccionado();
-        
-    if (e.key == OIS::KC_RETURN)
+    }
+
+    else if ((e.key == OIS::KC_RETURN) || (e.key == OIS::KC_P))
+    {
+        sounds::getInstance()->play_effect("push");
         changeState(PlayState::getSingletonPtr());
+    }
+    else if (e.key == OIS::KC_E) 
+        popState();
     
     return true;
 }
@@ -126,6 +136,11 @@ bool carSelectorState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID
     sounds::getInstance()->play_effect("push");
     popState();
   }
+  if (btn_mat->_checkPoint(x,y))
+  {
+    OIS::KeyEvent e(NULL,OIS::KC_C,0);
+    carSelectorState::keyPressed(e);
+  }
   else if (btn_left->_checkPoint(x,y)) 
   {
     OIS::KeyEvent e(NULL,OIS::KC_LEFT,0);
@@ -144,18 +159,21 @@ bool carSelectorState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID
   else if (btn_d1->_checkPoint(x,y))
   {
     difficult = 1;
+    sounds::getInstance()->play_effect("push");
     for (int a=0;a<3;a++) img[a]->setVisible(false);
     img[difficult-1]->setVisible(true);
   }
   else if (btn_d2->_checkPoint(x,y))
   {
     difficult = 2;
+    sounds::getInstance()->play_effect("push");
     for (int a=0;a<3;a++) img[a]->setVisible(false);
     img[difficult-1]->setVisible(true);
   }
   else if (btn_d3->_checkPoint(x,y))
   {
     difficult = 3;
+    sounds::getInstance()->play_effect("push");
     for (int a=0;a<3;a++) img[a]->setVisible(false);
     img[difficult-1]->setVisible(true);
   }
@@ -321,6 +339,7 @@ void carSelectorState::createMyGui()
   btn_left = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_left");
   btn_right = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_right");
   btn_play = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_play");
+  btn_mat = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_mat");
   btn_d1 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d1");
   btn_d2 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d2");
   btn_d3 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d3");
