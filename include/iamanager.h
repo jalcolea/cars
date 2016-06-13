@@ -26,13 +26,27 @@ class iamanager
 
   public:
 
+  //constructor
+  // laps: numero de vueltas
+  // path: ruta creada con el editor de puntos
+  // offset: rango de aleatoriedad a la hora de generar la ruta alternativa
+  // distance: distancia minima a la que un punto se considera superado
   iamanager(int laps, std::vector <iapoint*> * path, int offset, float min_distance=MIN_DISTANCE);
+
+
+  // devuelve el siguiente punto a superar, la ia considera un punto superado cuando el coche se acerca a menos de la distancia minima fijada 
+  iacomplexpoint* follow (iapoint * car);
+
+  // devuelve el siguiente punto desde la ultima llamada a esta funcion independientemente de que el punto haya sido superado o no.
+  iacomplexpoint* next ();
+
+  // devuelve el punto mas cercano a la posicion actual del coche
+  double near (iapoint * car, iacomplexpoint * result);
   int lap(){return _laps;}
   int offset(){return _offset;}
   float min_distance(){return _min_distance;}
   void min_distance(float m) {_min_distance=m;} 
-  iacomplexpoint* follow (iapoint * car);
-  double next (iapoint * car, iacomplexpoint * result);
+
   void paint_2d_path ();
   void print_points ();
   

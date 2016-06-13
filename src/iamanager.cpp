@@ -33,6 +33,34 @@ iamanager::iamanager(int laps, vector <iapoint*> * path, int offset, float min_d
   }
 }
   
+iacomplexpoint * iamanager::next ()
+{
+  iacomplexpoint * result = NULL;
+  iacomplexpoint * node=NULL;
+  for (unsigned int a=0;a<points->size();a++)
+  {
+    node=(*points)[a];
+    if (!node->check)
+    {
+      node->check=true;
+      if ((a+1)<points->size()) 
+      {
+        node = (*points)[a+1];
+        result =new iacomplexpoint();
+        result->derived.x(node->derived.x());
+        result->derived.y(node->derived.y());
+        result->derived.z(node->derived.z());
+        result->base.x(node->base.x());
+        result->base.y(node->base.y());
+        result->base.z(node->base.z());
+        result->check=node->check;
+        break;
+      }
+    }
+  }
+  return result;
+}
+
 iacomplexpoint * iamanager::follow (iapoint * car)
 {
   iacomplexpoint * result = NULL;
@@ -47,24 +75,27 @@ iacomplexpoint * iamanager::follow (iapoint * car)
       if (distance(&node->derived,car) < dis)
       {
         node->check=true;
-        if ((a+1)<points->size()) node = (*points)[a+1];
+        if ((a+1)<points->size()) 
+        {
+          node = (*points)[a+1];
+          result =new iacomplexpoint();
+          result->derived.x(node->derived.x());
+          result->derived.y(node->derived.y());
+          result->derived.z(node->derived.z());
+          result->base.x(node->base.x());
+          result->base.y(node->base.y());
+          result->base.z(node->base.z());
+          result->check=node->check;
+          break;
+        }
       }
-      result =new iacomplexpoint();
-      result->derived.x(node->derived.x());
-      result->derived.y(node->derived.y());
-      result->derived.z(node->derived.z());
-      result->base.x(node->base.x());
-      result->base.y(node->base.y());
-      result->base.z(node->base.z());
-      result->check=node->check;
-      break;
     }
   }
  
   return result;
 }
 
-double iamanager::next (iapoint * car, iacomplexpoint * result)
+double iamanager::near (iapoint * car, iacomplexpoint * result)
 {
   double result_d=UINT_MAX;
   double d;
