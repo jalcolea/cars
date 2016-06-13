@@ -3,10 +3,6 @@
     <Widget type="ImageBox" skin="ImageBox" position_real="0 0 1 1" align="Stretch" layer="Wallpaper" name="start">
         <Property key="ImageTexture" value="main.png"/>
     </Widget>
-    <Widget type="Button" skin="ButtonImage" position="65 405 100 90" layer="Main" name="btn_records"/>
-    <Widget type="Button" skin="ButtonImage" position="235 520 95 90" layer="Main" name="btn_credits"/>
-    <Widget type="Button" skin="ButtonImage" position="705 525 100 90" layer="Main" name="btn_play"/>
-    <Widget type="Button" skin="ButtonImage" position="870 390 95 90" layer="Main" name="btn_controls"/>
     <Widget type="Button" skin="ButtonImage" position="485 610 95 90" layer="Main" name="btn_exit"/>
     <Widget type="EditBox" skin="WordWrapEmpty" position="420 665 580 120" layer="Main" name="edt_high">
         <Property key="FontName" value="race"/>
@@ -15,27 +11,9 @@
         <Property key="TextColour" value="1 0 0"/>
         <Property key="Caption" value=""/>
     </Widget>
-<!--
-    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_start">
-        <Property key="ImageTexture" value="cuentaatras.png"/>
-        <Property key="Visible" value="false"/>
-    </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_tres">
-        <Property key="ImageTexture" value="cuentaatras.png"/>
-        <Property key="Visible" value="false"/>
-    </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_dos">
-        <Property key="ImageTexture" value="cuentaatras.png"/>
-        <Property key="Visible" value="false"/>
-    </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_uno">
-        <Property key="ImageTexture" value="cuentaatras.png"/>
-        <Property key="Visible" value="false"/>
-    </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="240 150 600 300" align="Stretch" layer="Wallpaper" name="img_go">
-        <Property key="ImageTexture" value="cuentaatras.png"/>
-        <Property key="Visible" value="false"/>
-    </Widget>
--->
+    <Widget type="Button" skin="ButtonImage" position="200 250 60 70" align="Default" layer="Main" name="btn_play"/>
+    <Widget type="Button" skin="ButtonImage" position="300 325 60 70" align="Default" layer="Main" name="btn_controls"/>
+    <Widget type="Button" skin="ButtonImage" position="400 415 60 70" align="Default" layer="Main" name="btn_records"/>
+    <Widget type="Button" skin="ButtonImage" position="510 495 60 70" align="Default" layer="Main" name="btn_credits"/>
     <CodeGeneratorSettings/>
 </MyGUI>
