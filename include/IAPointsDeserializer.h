@@ -23,6 +23,7 @@ class IAPointsDeserializer
         virtual ~IAPointsDeserializer();
 
         bool cargarFichero(string fichero = "");
+        bool cargarFicheroCheckPoint(string fichero = "");
 
         string getFichero(){ return _fichero; };
         std::vector<iapoint>& getPoints(){ return _vPoints;};

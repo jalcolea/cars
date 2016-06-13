@@ -71,7 +71,8 @@ iacomplexpoint * iamanager::follow (iapoint * car)
     node=(*points)[a];
     if (!node->check)
     {
-      if (node->derived.distance()>0) dis= node->derived.distance();
+      if (node->derived.distance()>0) 
+          dis= node->derived.distance();
       if (distance(&node->derived,car) < dis)
       {
         node->check=true;

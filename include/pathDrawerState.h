@@ -41,7 +41,6 @@ struct marquita
     Quaternion rotacion;
 };
 
-
 class pathDrawerState : public Ogre::Singleton<pathDrawerState>, public GameState
 {
 public:
@@ -85,6 +84,8 @@ protected:
     bool _exitGame;
     Ogre::Real _deltaT;
     MyGUI::VectorWidgetPtr layout;
+    
+    string extraeNombreSinID(string& nombre);
 
 private:
 
@@ -96,12 +97,14 @@ private:
     void createPlaneRoad();
     void cargarParametros(string archivo, bool consoleOut);
     void configurarCamaraPrincipal();
-    void addMarca(Vector3 posicion);
+    void addMarca(Vector3 posicion); // en fase de deprecado
+    void addCheckPoint(Vector3 posicion, Quaternion q);
     void dibujaLinea(size_t idFrom, size_t idTo);
     void recolocarLinea();
     void guardarRuta();
-    void cargarRuta(string fichero);
+    void cargarRuta(string fichero);  // en fase de deprecado
     void borrarTodasLasMarcas();
+    void cargarRutaCheckPoint(string fichero);
     RaySceneQuery* _raySceneQuery;
     size_t _idMarca;
     bool _crearMarca;

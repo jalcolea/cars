@@ -82,10 +82,20 @@ bool pathDrawerState::keyPressed(const OIS::KeyEvent& e)
         guardarRuta();
         
     if (e.key == OIS::KC_F4)
-        cargarRuta("rutasIA.xml");
+        cargarRutaCheckPoint("rutasIA.xml");
+        //cargarRuta("rutasIA.xml");
         
     if (e.key == OIS::KC_F9)
         borrarTodasLasMarcas();
+        
+    if (e.key == OIS::KC_U &&
+        _nodoSelector && 
+        _nodoSelector->getName().substr(0,_nodoSelector->getName().find("_")-1) != _checkPointInfo.nombreNodo)
+    {
+        Quaternion q = Quaternion::IDENTITY;
+        q.FromAngleAxis(Ogre::Degree(-90),Vector3::UNIT_Y);
+        _nodoSelector->setOrientation(q);
+    }
         
     
     return true;
@@ -102,7 +112,7 @@ void pathDrawerState::guardarRuta()
         p.x(vMarcas[i]._nodoMarca->getPosition().x);
         p.y(vMarcas[i]._nodoMarca->getPosition().y);
         p.z(vMarcas[i]._nodoMarca->getPosition().z);
-        iaps.addNodoXMLIAPoints(i,p);
+        iaps.addNodoXMLIAPoints(i,p,vMarcas[i]._nodoMarca->getOrientation());
     }    
     
     iaps.guardarXMLIAPoints("rutasIA.xml");
@@ -125,6 +135,23 @@ void pathDrawerState::cargarRuta(string fichero)
     
 }
 
+void pathDrawerState::cargarRutaCheckPoint(string fichero)
+{
+    borrarTodasLasMarcas();
+    
+    IAPointsDeserializer iapd;
+    iapd.cargarFicheroCheckPoint(fichero);
+    std::vector<CheckPoint> vpoints = iapd.getCheckPoints();
+    
+    for (size_t i = 0; i < vpoints.size(); i++)
+    {
+        Vector3 pos(vpoints[i].p->x(),vpoints[i].p->y(),vpoints[i].p->z());
+        Quaternion q = vpoints[i].quat;
+        addCheckPoint(pos,q);
+    }    
+    
+}
+
 void pathDrawerState::borrarTodasLasMarcas()
 {
     _sceneMgr->destroyAllManualObjects();
@@ -140,9 +167,12 @@ bool pathDrawerState::keyReleased(const OIS::KeyEvent& e)
 
 bool pathDrawerState::mouseMoved(const OIS::MouseEvent& e)
 {
-    
+    //cout << _nodoSelector->getName().substr(0,_nodoSelector->getName().find("_")) << endl;
+    //cout << "mousemove " << _nodoSelector->getName() << endl;
     if (InputManager_::getSingletonPtr()->getMouse()->getMouseState().buttonDown(OIS::MB_Left) &&
-        _nodoSelector && _nodoSelector->getName() != "PlaneRoadBig") //"track1Big")
+        //_nodoSelector && _nodoSelector->getName() != "PlaneRoadBig") //"track1Big")
+        _nodoSelector && 
+        _nodoSelector->getName().substr(0,_nodoSelector->getName().find("_")-1) != _checkPointInfo.nombreNodo)
     {
         Ray r = setRayQuery(e.state.X.abs, e.state.Y.abs, MASK_CIRCUITO | MASK_MARCA);
         RaySceneQueryResult &result = _raySceneQuery->execute();
@@ -151,7 +181,7 @@ bool pathDrawerState::mouseMoved(const OIS::MouseEvent& e)
         if (it != result.end() && it->movable->getParentSceneNode()->getName() == "PlaneRoadBig") 
         {   
             Vector3 pos = r.getPoint(it->distance);
-            pos.y = _planeRoadNode->getPosition().y + 0.001;
+            pos.y = _planeRoadNode->getPosition().y + 1;
             _nodoSelector->setPosition(pos);
             recolocarLinea();
         }
@@ -205,20 +235,39 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
 {
     _deltaT = evt.timeSinceLastFrame;
     Vector3 vt = Vector3::ZERO;
+    Vector3 vtCheck = Vector3::ZERO;
     Real speed = 10.0;
     Real zoom = 0;
     Real r = 0;
     Real rYaw = 0;
     Real rotCheckPoint = 0;
     
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP))
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP) &&
+        !InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
         vt += Vector3(0,1,0);
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DOWN))
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DOWN) &&
+        !InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
         vt += Vector3(0,-1,0);
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT))
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT) &&
+        !InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
         vt += Vector3(-1,0,0);
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT))
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT) &&
+        !InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
         vt += Vector3(1,0,0);
+        
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_UP) &&
+        InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
+        vtCheck += Vector3(0,0,-1);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_DOWN) &&
+        InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
+        vtCheck += Vector3(0,0,1);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LEFT) &&
+        InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
+        vtCheck += Vector3(-1,0,0);
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_RIGHT) &&
+        InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_LCONTROL))
+        vtCheck += Vector3(1,0,0);
+
         
     // Zoom de la cámara con rueda ratón. Con teclado más suave.
     zoom += -100 * _deltaT * InputManager_::getSingletonPtr()->getMouse()->getMouseState().Z.rel * speed;   
@@ -241,8 +290,14 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
 
     _camera->moveRelative(vt * _deltaT * speed);
     
+    
+    
     if (InputManager_::getSingletonPtr()->getMouse()->getMouseState().buttonDown(OIS::MB_Right)) rotCheckPoint += 180;
-    if (_nodoSelector) _nodoSelector->yaw(Ogre::Radian(rotCheckPoint * _deltaT * 0.005));
+    if (_nodoSelector)
+    {   
+        _nodoSelector->yaw(Ogre::Radian(rotCheckPoint * _deltaT * 0.005));
+        _nodoSelector->setPosition(_nodoSelector->getPosition() + vtCheck * _deltaT);
+    }
     
     // Si hemos presionado MouseButtonLeft flag _crearMarca ON
     if (_crearMarca)
@@ -271,7 +326,7 @@ bool pathDrawerState::frameStarted(const Ogre::FrameEvent& evt)
                   marca._nodoMarca->attachObject(marca._entMarca);
                   //marca._nodoMarca->translate(r.getPoint(it->distance));
                   Vector3 pos(r.getPoint(it->distance));
-                  pos.y = _planeRoadNode->getPosition().y + 0.001;
+                  pos.y = _planeRoadNode->getPosition().y + 1;
                   marca._nodoMarca->setPosition(pos);
                   
                   _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
@@ -349,6 +404,35 @@ void pathDrawerState::addMarca(Vector3 posicion)
       cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
 
 }
+
+void pathDrawerState::addCheckPoint(Vector3 posicion, Quaternion q)
+{
+    marquita marca;
+    marca._nombreNodo =  _checkPointInfo.nombreNodo + "_" + to_string(_idMarca);
+    marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
+    marca._nombreEnt = _checkPointInfo.nombreEntidad + "_" + to_string(_idMarca);                  
+    marca._entMarca = _sceneMgr->createEntity(marca._nombreEnt,_checkPointInfo.nombreMalla);
+    marca._entMarca->setCastShadows(false);
+    marca._entMarca->setQueryFlags(MASK_MARCA);
+    marca._nodoMarca->attachObject(marca._entMarca);
+    marca._nodoMarca->translate(posicion);
+    _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
+    marca.rotacion = q;
+    marca._nodoMarca->setOrientation(q);
+    
+    marca._id = _idMarca;
+    _idMarca++;
+
+    vMarcas.push_back(marca);
+
+    if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
+
+    cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
+    cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
+    cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
+
+}
+
 
 void pathDrawerState::dibujaLinea(size_t idFrom, size_t idTo)
 {
@@ -531,3 +615,4 @@ Ray pathDrawerState::setRayQuery(int posx, int posy, uint32 mask) {
   _raySceneQuery->setQueryMask(mask);
   return (rayMouse);
 }
+

@@ -335,32 +335,53 @@ void PlayState::createScene()
 //**SOLO PARA VER SI LA IA FUNCIONA QUITAR DESPUÉS DE QUE FUNCIONE**************************************************
  
     IAPointsDeserializer iapd;
-    iapd.cargarFichero("rutasIA.xml");
-    std::vector<iapoint> vpoints = iapd.getPoints();
+    iapd.cargarFicheroCheckPoint("rutasIA.xml");
+    std::vector<CheckPoint> vpoints = iapd.getCheckPoints();
+    
+    nodoOgre_t _checkPointInfo = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("CheckPointPlane");
     
     for (size_t i = 0; i < vpoints.size(); i++)
     {
-      //Vector3 posicion(vpoints[i].base.x(),vpoints[i].base.y(),vpoints[i].base.z());
-      Vector3 posicion(vpoints[i].x(),_planeRoadNode->getPosition().y,vpoints[i].z());
-      marquita marca;
-      marca._nombreNodo = "nodoMarca_" + to_string(i);
-      marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
-      marca._nombreEnt = "entMarca_" + to_string(i);                  
-      marca._entMarca = _sceneMgr->createEntity(marca._nombreEnt,"marca.mesh");
-      marca._entMarca->setCastShadows(false);
-      marca._entMarca->setQueryFlags(MASK_MARCA);
-      marca._nodoMarca->attachObject(marca._entMarca);
-      marca._nodoMarca->translate(posicion);
-      _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
-      marca._id = i;
-      
-      vMarcas.push_back(marca);
-      
-      if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
-      
-      cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
-      cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
-      cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
+        marquita marca;
+        marca._nombreNodo =  _checkPointInfo.nombreNodo + "_" + to_string(i);
+        marca._nodoMarca = _sceneMgr->createSceneNode(marca._nombreNodo);
+        marca._nombreEnt = _checkPointInfo.nombreEntidad + "_" + to_string(i);                  
+        marca._entMarca = _sceneMgr->createEntity(marca._nombreEnt,_checkPointInfo.nombreMalla);
+        marca._entMarca->setCastShadows(false);
+        marca._entMarca->setQueryFlags(MASK_MARCA);
+        marca._nodoMarca->attachObject(marca._entMarca);
+        marca._nodoMarca->setPosition(vpoints[i].p->x(),_planeRoadNode->getPosition().y + 1,vpoints[i].p->z());
+        _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
+        marca.rotacion = vpoints[i].quat;
+        marca._nodoMarca->setOrientation(marca.rotacion);
+        marca._id = i;
+        vMarcas.push_back(marca);
+//        if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
+
+//        OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(marca._entMarca);
+//        OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
+        OgreBulletCollisions::BoxCollisionShape* boxShape = new BoxCollisionShape(marca._entMarca->getBoundingBox().getHalfSize());
+        cout << "marca._entMarca->getBoundingBox().getHalfSize(): " << marca._entMarca->getBoundingBox().getHalfSize() << endl;
+        RigidBody* bodyCheckPoint = new OgreBulletDynamics::RigidBody(marca._nombreNodo, _world.get());
+//        bodyCheckPoint->setShape(marca._nodoMarca,tri,_checkPointInfo.bodyRestitutionBullet,_checkPointInfo.frictionBullet,_checkPointInfo.masaBullet,marca._nodoMarca->getPosition(),marca.rotacion);
+        bodyCheckPoint->setShape(marca._nodoMarca,boxShape,_checkPointInfo.bodyRestitutionBullet,_checkPointInfo.frictionBullet,_checkPointInfo.masaBullet,marca._nodoMarca->getPosition(),marca.rotacion);
+        cout << "marca creada en posicion: " << marca._nodoMarca->getPosition() << endl;        
+        bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName()));
+        
+        // NOTA:
+        // Por alguna razón que desconozco, aún habiendo indicado la posición inicial (bodyCheckPoint->setShape(SceneNode,shape,restitution,friction,masa,POSICION,rotacion))
+        // OgreBullet (ó bullet) asignan la posicion (0,0,0) independientemente del valor que le pase. La rotación si que la establece bien al parecer.
+        // Así pues, una vez configurado bullet para este CheckPoint, lo vuelvo a trasladar a su lugar correcto. Y así parece que funciona. 
+        marca._nodoMarca->setPosition(vpoints[i].p->x(),_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p->z());
+        btTransform trans = bodyCheckPoint->getBulletRigidBody()->getWorldTransform();
+        trans.setOrigin(btVector3(vpoints[i].p->x(),_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p->z()));
+        bodyCheckPoint->getBulletRigidBody()->setWorldTransform(trans);
+
+
+
+        cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
+        cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
+        cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
     }    
 
   

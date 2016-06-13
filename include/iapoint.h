@@ -42,4 +42,11 @@ typedef struct iacomplexpoint
   bool check;
 } iacomplexpoint;
 
+// PARA EL USERPOINTER DE btCollisionObject*, HAY QUE VER DONDE IRÍA MEJOR ESTO O SI SE PUEDE APROVECHAR OTRA ESTRUCTURA
+struct CheckPoint_data
+{
+    CheckPoint_data(size_t id, string nombre):_id(id),_nombre(nombre){}
+    size_t _id;
+    string _nombre;
+};
 #endif

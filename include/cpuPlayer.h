@@ -38,6 +38,7 @@ public:
 
     
 protected:
+    bool compruebaCheckPoint();
 
 private:
     string _nombreEnPantalla;

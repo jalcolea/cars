@@ -35,7 +35,9 @@
 #include "Shapes/OgreBulletCollisionsStaticPlaneShape.h"
 #include "Shapes/OgreBulletCollisionsSphereShape.h"
 #include "Shapes/OgreBulletCollisionsBoxShape.h"
+#include "Shapes/OgreBulletCollisionsConvexHullShape.h"
 #include "OgreBulletDynamicsWorld.h"
+#include "BulletCollision/CollisionDispatch/btCollisionWorld.h"
 #include "SceneNodeConfig.h"
 #include "car.h"
 #include "track.h"
@@ -101,9 +103,11 @@ public:
     static testStateVehicRayCast &getSingleton();
     static testStateVehicRayCast *getSingletonPtr();
     
-/* PARA MANEJAR COLISIONES *****************************************************/          
-    void handleCollision(btCollisionObject *body0, btCollisionObject *body1);
+/* PARA MANEJAR COLISIONES (NO FUNCIONAN BIEN)**********************************/          
+//    void handleCollision(btCollisionObject *body0, btCollisionObject *body1);
 /*******************************************************************************/      
+
+    bool compruebaCheckPoint();
 
 protected:
     Ogre::Root *_root;
