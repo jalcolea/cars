@@ -89,65 +89,68 @@ bool MenuState::frameEnded(const Ogre::FrameEvent& evt)
 bool MenuState::keyPressed(const OIS::KeyEvent &e)
 {
     // CUANDO TODO EL FLUJO DE ESTADOS FUNCIONE BIEN, HAY QUE HACER UN CLEAN UP DE TODO ESTO
-  if (e.key == OIS::KC_S) {
-    sounds::getInstance()->play_effect("push");
-    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
-    pushState(OptionsState::getSingletonPtr());
+  if (e.key == OIS::KC_SPACE || e.key==OIS::KC_P) // PLAY
+  {
+      sounds::getInstance()->play_effect("push");
+      MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+      pushState(carSelectorState::getSingletonPtr()); 
   }
-  else if (e.key == OIS::KC_U) {
+  else if (e.key == OIS::KC_U) { // USER CONTROLS
     sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(ControlsState::getSingletonPtr());
   }
-  else if (e.key == OIS::KC_C) {
-    sounds::getInstance()->play_effect("push");
-    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
-    pushState(CreditsState::getSingletonPtr());
-  }
-  else if (e.key == OIS::KC_R) {
+  else if (e.key == OIS::KC_G) { // GAME RANKINGS
     sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(RecordsState::getSingletonPtr());
   }
-  else if (e.key == OIS::KC_P) {                                // quitar al final, pausa no ha lugar en menu state
+  else if (e.key == OIS::KC_C) { // CREDITS
     sounds::getInstance()->play_effect("push");
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
-    pushState(PauseState::getSingletonPtr());
+    pushState(CreditsState::getSingletonPtr());
   }
-  else if (e.key == OIS::KC_ESCAPE) 
+
+  else if (e.key == OIS::KC_ESCAPE || e.key==OIS::KC_E)  // EXIT
   {
     sounds::getInstance()->play_effect("push");
     _exitGame = true;
   }
-  else if (e.key == OIS::KC_W) {
+
+//  else if (e.key == OIS::KC_S) {
+//    sounds::getInstance()->play_effect("push");
+//    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+//    pushState(OptionsState::getSingletonPtr());
+//  }
+
+  else if (e.key == OIS::KC_P) {                                // DEMO PAUSA
+    sounds::getInstance()->play_effect("push");
+    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+    pushState(PauseState::getSingletonPtr());
+  }
+  else if (e.key == OIS::KC_W) {				// DEMO WIN
     sounds::getInstance()->play_effect("push");
     //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     WinState::getSingletonPtr()->setPoints(123123);
     pushState(WinState::getSingletonPtr());
   }
-  else if (e.key == OIS::KC_L) {
+  else if (e.key == OIS::KC_L) {				// DEMO LOOSE
     sounds::getInstance()->play_effect("push");
     //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     LooseState::getSingletonPtr()->setPoints(111222);
     pushState(LooseState::getSingletonPtr());
   }
-  else if (e.key == OIS::KC_G) {
+  else if (e.key == OIS::KC_R) {				// DEMO CARRUSEL
     sounds::getInstance()->play_effect("push");
     //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     Carrusel c;
     c.go();
   }
-  else if (e.key == OIS::KC_A) {
+  else if (e.key == OIS::KC_A) {				// DEMO PLAY WIDGETS
     sounds::getInstance()->play_effect("push");
     //PlayWidget play(NULL);
     PlayWidget * play = new PlayWidget();
 
-  }
-  else if (e.key == OIS::KC_SPACE)
-  {
-      sounds::getInstance()->play_effect("push");
-      MyGUI::LayoutManager::getInstance().unloadLayout(layout);
-      pushState(carSelectorState::getSingletonPtr()); 
   }
   return true;
 }
@@ -169,28 +172,28 @@ bool MenuState::mousePressed(const OIS::MouseEvent &e, OIS::MouseButtonID id)
 
   if (btn_credits->_checkPoint(x,y))
   {
-    sounds::getInstance()->play_effect("push");
-    pushState(CreditsState::getSingletonPtr());
+    OIS::KeyEvent e(NULL,OIS::KC_C,0);
+    MenuState::keyPressed(e);
   }
   else if (btn_records->_checkPoint(x,y))
   {
-    sounds::getInstance()->play_effect("push");
-    pushState(RecordsState::getSingletonPtr());
+    OIS::KeyEvent e(NULL,OIS::KC_G,0);
+    MenuState::keyPressed(e);
   }
   else if (btn_play->_checkPoint(x,y))
   {
-    sounds::getInstance()->play_effect("push");
-    pushState(OptionsState::getSingletonPtr());
+    OIS::KeyEvent e(NULL,OIS::KC_P,0);
+    MenuState::keyPressed(e);
   }
   else if (btn_controls->_checkPoint(x,y))
   {
-    sounds::getInstance()->play_effect("push");
-    pushState(ControlsState::getSingletonPtr());
+    OIS::KeyEvent e(NULL,OIS::KC_U,0);
+    MenuState::keyPressed(e);
   }
   else if (btn_exit->_checkPoint(x,y))
   {
-    sounds::getInstance()->play_effect("push");
-   _exitGame = true;
+    OIS::KeyEvent e(NULL,OIS::KC_E,0);
+    MenuState::keyPressed(e);
   }
 
   return true;

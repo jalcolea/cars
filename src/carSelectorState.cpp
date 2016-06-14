@@ -77,8 +77,6 @@ void carSelectorState::resume()
 
 bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
 {
-    if (e.key == OIS::KC_ESCAPE)
-        _exitGame = true;
         
     if (!_girandoRuleta)
     {
@@ -109,7 +107,8 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
         sounds::getInstance()->play_effect("push");
         changeState(PlayState::getSingletonPtr());
     }
-    else if (e.key == OIS::KC_E) 
+    else if (e.key == OIS::KC_E || e.key == OIS::KC_ESCAPE)
+        _exitGame = true;
         popState();
     
     return true;
