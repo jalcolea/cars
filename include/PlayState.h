@@ -40,6 +40,7 @@
 #include "IAPointsDeserializer.h"
 #include "pathDrawerState.h"
 #include "cpuPlayer.h"
+#include "PlayWidget.h"
 
 
 using namespace std;
@@ -87,6 +88,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 
     void  game_over ();
     void  win ();
+    
+    PlayWidget* _play;
 
     protected:
     Ogre::Root *_root;

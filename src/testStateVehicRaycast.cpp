@@ -702,7 +702,6 @@ bool testStateVehicRayCast::compruebaCheckPoint()
 //    i++;
 //    _sceneMgr->getRootSceneNode()->attachObject(manual);    
     
-    //btVector3 fin = convert(_vCarsRayCast[_cursorVehiculo]->getPosicionActual() * Ogre::Vector3::NEGATIVE_UNIT_Y * 10); 
     btCollisionWorld::AllHitsRayResultCallback rayCallback(inicio,fin);
                                                            
     _world->getBulletDynamicsWorld()->rayTest(inicio,fin, rayCallback);

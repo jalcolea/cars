@@ -39,6 +39,9 @@ class iamanager
 
   // devuelve el siguiente punto desde la ultima llamada a esta funcion independientemente de que el punto haya sido superado o no.
   iacomplexpoint* next ();
+  
+  // devuelve simplemente un punto de la lista de puntos que se maneja actualmente. 
+  inline iacomplexpoint* getPoint(size_t id){ return (*points)[id]; };
 
   // devuelve el punto mas cercano a la posicion actual del coche
   double near (iapoint * car, iacomplexpoint * result);
@@ -55,6 +58,9 @@ class iamanager
   //int distance(iapoint *from,iapoint *to);
   float distance(iapoint *from,iapoint *to);
   void fixed_coord(bool x, bool y, bool z);
+  
+  // un getter de los complexpoints
+  std::vector <iacomplexpoint*> * getVectorPtrPoints(){ return points; };
 };
 
 #endif

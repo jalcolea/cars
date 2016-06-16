@@ -122,6 +122,20 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
     _vehiculo->applyEngineForce(fuerza,1);
 }
 
+// La cpu si endereza lo hace del tirón (por conveniencia);
+void CarRayCast::acelerarCPU(Real fuerza, bool endereza)
+{
+    if (endereza)
+    {
+        _valorGiro = 0;
+        _vehiculo->setSteeringValue(_valorGiro,0);
+        _vehiculo->setSteeringValue(_valorGiro,1);
+    }    
+    _vehiculo->applyEngineForce(fuerza,0);
+    _vehiculo->applyEngineForce(fuerza,1);
+}
+
+
 
 void CarRayCast::frenar()
 {
@@ -132,15 +146,44 @@ void CarRayCast::frenar()
 
 void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquierda, n negativo = derecha
 {
-    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < 0.6) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA
+    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
         _valorGiro += (_giro * n * factorVelocidadGiro);
         
     _vehiculo->setSteeringValue(_valorGiro,0);
     _vehiculo->setSteeringValue(_valorGiro,1);
     
     
-    cout << _valorGiro << endl;
+//    cout << _valorGiro << endl;
 }
+
+// Para coches controlados por la CPU, el valor del giro se deja que se calcule por la entidad pertinente.
+void CarRayCast::girarCPU(Real valorGiro) // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
+{
+    if (abs(_valorGiro) <= MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
+        _valorGiro = valorGiro;
+    else
+    {
+        cout << "GIRARCPU(" << valorGiro << ") VALOR GIRO DEMASIADO GRANDE, AJUSTANDO" << endl;
+        if (valorGiro == 0)
+            _valorGiro = 0; // "malditos decimales (léase con acento de Don Gato)
+        else if (valorGiro > 0)
+            _valorGiro = MAX_VALOR_GIRO_RUEDAS;
+        else if (valorGiro < 0)
+            _valorGiro = - MAX_VALOR_GIRO_RUEDAS;
+    }
+
+    //assert(!(_valorGiro > MAX_VALOR_GIRO_RUEDAS));   // Si salta este assert, podría indicar la señal de que el coche ha chocado y su angulo respecto a su destino es demasiado abierto
+ 
+//    if(_valorGiro > 0 ) cout << "girando a la izquierda" << endl;
+//    else if (_valorGiro < 0) cout << "girando a la derecha" << endl;
+       
+    _vehiculo->setSteeringValue(_valorGiro,0);
+    _vehiculo->setSteeringValue(_valorGiro,1);
+    
+    cout << "GIRARCPU(" << valorGiro << ")" << endl;
+    cout << "Giro finalmente aplicado " << _valorGiro << endl;
+}
+
 
 void CarRayCast::recolocar(Ogre::Vector3 donde)
 {
@@ -163,3 +206,6 @@ void CarRayCast::recolocar(Ogre::Vector3 donde)
 //    _mVehicle->setSteeringValue ( _mSteering, 0 );
 //    _mVehicle->setSteeringValue ( _mSteering, 1 );
 }
+
+
+     

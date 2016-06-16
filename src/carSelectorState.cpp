@@ -109,7 +109,8 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
     }
     else if (e.key == OIS::KC_E || e.key == OIS::KC_ESCAPE)
         _exitGame = true;
-        popState();
+
+//        popState();
     
     return true;
 }

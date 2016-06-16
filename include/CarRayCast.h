@@ -16,6 +16,9 @@ using namespace OgreBulletDynamics;
 using namespace Ogre;
 using namespace std;
 
+#define MAX_VALOR_GIRO_RUEDAS 0.6 //radianes (0.6 radianes = 34.38º) las ruedas no pueden girar más que este valor tanto a izquierda como a derecha
+
+
 class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ESO ES TRABAJO DE LA CLASE QUE MANEJE EL CHASIS
 {
     public:
@@ -144,7 +147,8 @@ public:
     inline OgreBulletDynamics::VehicleRayCaster* getVehiculoRayCaster() const { return _vehiculoRayCaster; };
     inline OgreBulletDynamics::RaycastVehicle* getVehiculo() const { return _vehiculo; };
     inline Rueda getSceneNodeRueda (size_t n) const { return _ruedas[n]; };
-    inline Real getGiro() const{ return _giro; };
+    inline Real getGiro() const{ return _giro; }; // Devuelve la velocidad del giro de este coche
+    inline Real getGiroActualTotal() const { return _valorGiro; }; // Devuelve la cantidad de de giro que tienen las ruedas en un momento dado. O sea si están derechas valdrá 0.
     inline void setNombre(const string& nombre){ _nombre = nombre; };
     inline void setPosicion(Vector3 posicion){ _posicion = posicion; };
     inline void setFuerzaMotor(float fuerzaMotor ) { _fuerzaMotor = fuerzaMotor; };
@@ -154,11 +158,14 @@ public:
     void setChassis(Ogre::Entity* entChasis); // Establece la malla del chasis.
     void buildVehiculo();
     void acelerar(Real fuerza, bool endereza = false, Real factorEnderezamiento = 1.5 ); // obvio no?
+    void acelerarCPU(Real fuerza, bool endereza); // La cpu si endereza, lo hace del tirón (por conveniencia).
     void frenar();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
     void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
+    void girarCPU(Real valorGiro); // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
     void recolocar(Ogre::Vector3 donde); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
     inline std::vector<Rueda> & getRuedas() { return _ruedas; };
+    inline Real getVelocidadKmH(){ return ((_vehiculo->getBulletVehicle())?_vehiculo->getBulletVehicle()->getCurrentSpeedKmHour():0.0); };
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };

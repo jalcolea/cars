@@ -28,6 +28,13 @@ public:
             
             _iaMgr->print_points();
             
+            _idCheck_destino = 0;
+            _idCheck_origen = 0;
+            _idCheck_meta = (_iaMgr->getVectorPtrPoints()->size() * _laps) - 1;
+            _finish = false;
+            _sentidoContrario = false;
+            _onHisWay = false;
+            
             
     };
     
@@ -35,7 +42,8 @@ public:
 
     void update(Real deltaT);
     void build();
-
+    inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
+    inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
     
 protected:
     bool compruebaCheckPoint();
@@ -52,6 +60,14 @@ private:
     SceneManager* _sceneMgr;
     OgreBulletDynamics::DynamicsWorld* _world;
     size_t _laps;
+    size_t _idCheck_destino;
+    size_t _idCheck_origen;
+    size_t _idCheck_meta;
+    bool _finish;
+    bool _sentidoContrario;
+    bool _onHisWay;
+    
+    void dibujaLinea(Vector3 inicio, Vector3 fin);
 
 
 };

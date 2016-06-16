@@ -16,7 +16,6 @@
 #include "OgreOverlayManager.h"
 #include "OgreOverlaySystem.h"
 #include "carSelectorState.h"
-#include "PlayWidget.h"
 
 #define CAMSPEED 20
 #define CAMROTATESPEED 0.1
@@ -142,6 +141,18 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
     //updateCPU();
         
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_SPACE)) _playSimulation = !_playSimulation;
+    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_L)) _freeCamera = !_freeCamera;
+    
+    if (_playSimulation)
+        updateCPU();
+
+    
+    if (!_freeCamera)
+        _camera->setPosition(_vCarsCpuPlayer[0]->getPosicionActual().x,
+                             _vCarsCpuPlayer[0]->getPosicionActual().y +10 ,
+                             _vCarsCpuPlayer[0]->getPosicionActual().z + 30);
+                             
+    _play->speed((int)_vCarsCpuPlayer[0]->getVelocidadActual());
 
   return !_exitGame;
 }
@@ -155,8 +166,8 @@ void PlayState::updateCPU()
 
 bool PlayState::frameEnded(const Ogre::FrameEvent &evt) 
 { 
-    if (_playSimulation)
-        updateCPU();
+//    if (_playSimulation)
+//        updateCPU();
     
     return true; 
 }
@@ -376,12 +387,14 @@ void PlayState::createScene()
         btTransform trans = bodyCheckPoint->getBulletRigidBody()->getWorldTransform();
         trans.setOrigin(btVector3(vpoints[i].p->x(),_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p->z()));
         bodyCheckPoint->getBulletRigidBody()->setWorldTransform(trans);
+        bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition()));
 
 
 
         cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
         cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
         cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
+        cout << "id de la marca creada:" << i << endl;
     }    
 
   
@@ -562,12 +575,13 @@ PlayState &PlayState::getSingleton() { assert(msSingleton); return *msSingleton;
 
 void PlayState::createMyGui() 
 {
-  PlayWidget * play = new PlayWidget();
-  play->lap (1,3);
-  play->position (2,8);
-  play->speed(200);
-  play->circuit("JEREZ");
-  play->startTime();
+  //PlayWidget * play = new PlayWidget();
+  _play = new PlayWidget();
+  _play->lap (1,3);
+  _play->position (1,4);
+  _play->speed(0);
+  _play->circuit("JEREZ");
+  _play->startTime();
 }
 
 void PlayState::destroyMyGui() 
