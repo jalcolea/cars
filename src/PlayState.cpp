@@ -5,7 +5,7 @@
 #include "OgreBulletCollisionsShape.h"
 #include "Shapes/OgreBulletCollisionsTrimeshShape.h"
 #include "Shapes/OgreBulletCollisionsStaticPlaneShape.h"
-#include "Shapes/OgreBulletCollisionsSphereShape.h"
+//#include "Shapes/OgreBulletCollisionsSphereShape.h"
 #include "Shapes/OgreBulletCollisionsBoxShape.h"
 #include "OgreBulletDynamicsWorld.h"
 #include <string>
@@ -16,6 +16,7 @@
 #include "OgreOverlayManager.h"
 #include "OgreOverlaySystem.h"
 #include "carSelectorState.h"
+#include "bulletUtil.h"
 
 #define CAMSPEED 20
 #define CAMROTATESPEED 0.1
@@ -324,10 +325,12 @@ void PlayState::createScene()
 //    for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
 //        (*it)->buildVehiculo();
 
+    _cursorVehiculo = 0;
     _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer("Billy",_nombreTipoCoche,_nombreMaterial,"rutasIA.xml",Vector3(0,0,0),_sceneMgr,_world.get(),3)));
     _vCarsCpuPlayer.back()->build();
+    _vCarsCpuPlayer.back()->start();
     
-    _cursorVehiculo = 0;
+    
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
 //    nodoOgre_t nodoConfigCol = _scn.getInfoNodoOgre("track1colLateral");
@@ -387,7 +390,8 @@ void PlayState::createScene()
         btTransform trans = bodyCheckPoint->getBulletRigidBody()->getWorldTransform();
         trans.setOrigin(btVector3(vpoints[i].p->x(),_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p->z()));
         bodyCheckPoint->getBulletRigidBody()->setWorldTransform(trans);
-        bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition()));
+        //bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition()));
+        bodyCheckPoint->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CHECK_POINT,new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition())));
 
 
 
@@ -454,9 +458,11 @@ void PlayState::createPlaneRoad()
     
     OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
     OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
-    OgreBulletDynamics::RigidBody *planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
+    _planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
     //planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
-    planeRoadBody->setShape(_planeRoadNode, roadTrimesh,nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
+    _planeRoadBody->setShape(_planeRoadNode, roadTrimesh,nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
+    _planeRoadBody->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CARRETERA,_planeRoadBody));
+    
      
 }
 

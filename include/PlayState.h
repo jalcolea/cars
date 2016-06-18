@@ -109,6 +109,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     bool _playSimulation = true;
     SceneNode* _nodoVista;
     SceneNode* _planeRoadNode;
+    OgreBulletDynamics::RigidBody* _planeRoadBody;
 
 
     bool _exitGame;

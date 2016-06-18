@@ -51,4 +51,5 @@ struct CheckPoint_data
     string _nombre;
     Ogre::Vector3 _worldPosition;
 };
+
 #endif

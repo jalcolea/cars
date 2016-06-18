@@ -12,12 +12,14 @@ using namespace std;
 using namespace OgreBulletCollisions;
 using namespace OgreBulletDynamics;
 
+#define MAX_TIME_STOPPED 1.5 // segundos
+
 class cpuPlayer
 {
 public:
-    cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, string ficheroRutasIA, Vector3 posicionSalida, SceneManager* sceneMgr, DynamicsWorld* world, size_t laps)
+    cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, string ficheroRutasIA, Vector3 posicionSalida, SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, void* groundObject = nullptr)
              : _nombreEnPantalla(nombreEnPantalla), _nombreVehiculo(nombreVehiculo), _nombreMaterial(nombreMaterial), _ficheroRutasIA(ficheroRutasIA), _posicionSalida(posicionSalida),
-               _sceneMgr(sceneMgr), _world(world), _laps(laps)
+               _sceneMgr(sceneMgr), _world(world), _laps(laps), _groundObject(groundObject)
     {
             _car = unique_ptr<CarRayCast>(new CarRayCast(_nombreVehiculo,_posicionSalida,_sceneMgr,_world,nullptr));
             
@@ -34,6 +36,8 @@ public:
             _finish = false;
             _sentidoContrario = false;
             _onHisWay = false;
+            _timeStopped = 0;
+            _timeWrongWay = 0;
             
             
     };
@@ -42,6 +46,9 @@ public:
 
     void update(Real deltaT);
     void build();
+    inline void start() { _onHisWay = true; };
+    inline void stop() { _onHisWay = false; };
+    
     inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
     inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
     
@@ -60,13 +67,16 @@ private:
     SceneManager* _sceneMgr;
     OgreBulletDynamics::DynamicsWorld* _world;
     size_t _laps;
+    void * _groundObject;
     size_t _idCheck_destino;
     size_t _idCheck_origen;
     size_t _idCheck_meta;
     bool _finish;
     bool _sentidoContrario;
     bool _onHisWay;
-    
+    Ogre::Real _timeStopped; // Si el valor es mayor que uno dado, consideraremos que el coche se ha quedado atascado y forzaremos un respawn
+    Ogre::Real _timeWrongWay; // Daremos un tiempo para que la CPU se recupere si por azar (choques, etc) acaba yendo contra sentido. Si supera el tiempo dado forzamos un respawn
+
     void dibujaLinea(Vector3 inicio, Vector3 fin);
 
 

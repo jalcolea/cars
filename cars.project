@@ -86,6 +86,7 @@
     <File Name="include/IAPointsSerializer.h"/>
     <File Name="include/pathDrawerState.h"/>
     <File Name="include/cpuPlayer.h"/>
+    <File Name="include/bulletUtil.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

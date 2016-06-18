@@ -18,6 +18,15 @@ using namespace std;
 
 #define MAX_VALOR_GIRO_RUEDAS 0.6 //radianes (0.6 radianes = 34.38º) las ruedas no pueden girar más que este valor tanto a izquierda como a derecha
 
+struct contactInfo
+{
+    int indexRueda;
+    RigidBody* contactoCon;
+};
+
+typedef std::vector< pair<bool,contactInfo> > ruedasContactInfo_t;
+
+
 
 class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ESO ES TRABAJO DE LA CLASE QUE MANEJE EL CHASIS
 {
@@ -163,9 +172,11 @@ public:
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
     void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
     void girarCPU(Real valorGiro); // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
-    void recolocar(Ogre::Vector3 donde); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
-    inline std::vector<Rueda> & getRuedas() { return _ruedas; };
+    void recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
     inline Real getVelocidadKmH(){ return ((_vehiculo->getBulletVehicle())?_vehiculo->getBulletVehicle()->getCurrentSpeedKmHour():0.0); };
+    bool ruedasEnContacto();
+    inline std::vector<Rueda> & getRuedas() { return _ruedas; };
+    inline ruedasContactInfo_t& getContactInfoRuedas(){ return _ruedasContactInfo; };
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };
@@ -194,6 +205,7 @@ public:
     SceneNode* _nodoPadre;
     SceneNodeConfig* _snc;
     Real _valorGiro = 0;
+    ruedasContactInfo_t _ruedasContactInfo;
         
     // Parámetros de tuneo del coche
     Ogre::Real _suspensionStiffness;   // dureza de la suspensión
@@ -202,7 +214,6 @@ public:
     Ogre::Real _maxSuspensionTravelCm; // limite del recorrido de la suspensión (entiendo que al comprimirse el muelle)
     Ogre::Real _maxSuspensionForce;    // límite máximo de la fuerza de la suspensión
     Ogre::Real _frictionSlip;          // indice de fricción (AÚN NO SÉ EXACTAMENTE QUE ES ESTE TIPO DE FRICCIÓN: SLIP=RESBALAR)
-
     
 };
 
