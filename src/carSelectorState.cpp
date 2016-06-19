@@ -1,5 +1,6 @@
 #include "carSelectorState.h"
 #include "PlayState.h"
+#include "actualOptions.h"
 //#include <limits>
 
 using namespace std;
@@ -65,6 +66,11 @@ void carSelectorState::enter()
 void carSelectorState::exit()
 {
   destroyMyGui();
+  // Preparar bundle con las opciones seleccionadas.
+  actualOptions::getSingletonPtr()->setDificultad(difficult);
+  actualOptions::getSingletonPtr()->setIdNombreVehiculoXML(getNombreTipoCocheSeleccionado());
+  actualOptions::getSingletonPtr()->setIdMaterialActual(_idMaterialActual);
+  
 }
 
 void carSelectorState::pause()

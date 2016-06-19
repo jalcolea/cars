@@ -17,11 +17,13 @@ using namespace OgreBulletDynamics;
 class cpuPlayer
 {
 public:
-    cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, string ficheroRutasIA, Vector3 posicionSalida, SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, void* groundObject = nullptr)
+    cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, string ficheroRutasIA, Vector3 posicionSalida, 
+              SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, void* groundObject = nullptr, size_t id = 0)
              : _nombreEnPantalla(nombreEnPantalla), _nombreVehiculo(nombreVehiculo), _nombreMaterial(nombreMaterial), _ficheroRutasIA(ficheroRutasIA), _posicionSalida(posicionSalida),
-               _sceneMgr(sceneMgr), _world(world), _laps(laps), _groundObject(groundObject)
+               _sceneMgr(sceneMgr), _world(world), _laps(laps), _groundObject(groundObject), _id(id)
     {
-            _car = unique_ptr<CarRayCast>(new CarRayCast(_nombreVehiculo,_posicionSalida,_sceneMgr,_world,nullptr));
+            cout << "possalida cpuplayer: " << _posicionSalida << endl;
+            _car = unique_ptr<CarRayCast>(new CarRayCast(_nombreVehiculo,_posicionSalida,_sceneMgr,_world,nullptr,_id));
             
             _iapd = unique_ptr<IAPointsDeserializer>(new IAPointsDeserializer());
             _iapd->cargarFichero(_ficheroRutasIA);
@@ -76,6 +78,7 @@ private:
     bool _onHisWay;
     Ogre::Real _timeStopped; // Si el valor es mayor que uno dado, consideraremos que el coche se ha quedado atascado y forzaremos un respawn
     Ogre::Real _timeWrongWay; // Daremos un tiempo para que la CPU se recupere si por azar (choques, etc) acaba yendo contra sentido. Si supera el tiempo dado forzamos un respawn
+    size_t _id;
 
     void dibujaLinea(Vector3 inicio, Vector3 fin);
 

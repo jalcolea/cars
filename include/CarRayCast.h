@@ -32,12 +32,12 @@ class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ES
 {
     public:
     Rueda(){};
-    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index,Vector3 escala = Vector3(1,1,1))
-          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis), _escala(escala)
+    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index, size_t idCoche, Vector3 escala = Vector3(1,1,1))
+          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis), _idCoche(idCoche), _escala(escala)
     {
-        _entRueda = _scnMgr->createEntity(param.nombre + "_ent" + std::to_string(index), param.nombreMallaRueda);
+        _entRueda = _scnMgr->createEntity(param.nombre + "_ent_" + std::to_string(index) + " " + std::to_string(_idCoche), param.nombreMallaRueda);
         _entRueda->setCastShadows(true);
-        _nodo = _scnMgr->createSceneNode(param.nombre + "_nodo" + std::to_string(index));
+        _nodo = _scnMgr->createSceneNode(param.nombre + "_nodo_" + std::to_string(index) + " " + std::to_string(_idCoche));
         _nodo->attachObject(_entRueda);
         if (_nodoPadre) _nodoPadre->addChild(_nodo);            // Si el nodopadre no es otro que el Root, parece que no funciona bien.
         else _scnMgr->getRootSceneNode()->addChild(_nodo);      // TODO: Este código está en vías de desaparecer.
@@ -134,6 +134,7 @@ private:
     // es decir, la banda de rodadura mira hacia el observador).
     Vector3 _ejeCS = Vector3(-1,0,0); // En la demo de OgreBullet lo pone así
     
+    size_t _idCoche;
     Vector3 _escala; // Para hacer ruedas traseras más anchas en caso de quererlo así.
 
     
@@ -143,7 +144,7 @@ class CarRayCast
 {
 public:
     //CarRayCast();
-    CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre = nullptr);
+    CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre = nullptr, size_t id = 0);
     virtual ~CarRayCast();
 
     inline string getNombre() const { return _nombre; };
@@ -206,6 +207,7 @@ public:
     SceneNodeConfig* _snc;
     Real _valorGiro = 0;
     ruedasContactInfo_t _ruedasContactInfo;
+    size_t _id; // si se necesitan crear más de un CarRayCast será necesario concatenar el nombre del SceneNode y su Entity con el id pertinente.
         
     // Parámetros de tuneo del coche
     Ogre::Real _suspensionStiffness;   // dureza de la suspensión

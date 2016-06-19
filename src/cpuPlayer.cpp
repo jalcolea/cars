@@ -83,7 +83,7 @@ void cpuPlayer::update(Real deltaT)
         
     if (destinoOld != destino)
     {
-        dibujaLinea(origen,destino);
+        //dibujaLinea(origen,destino);
         destinoOld = destino;
         _onHisWay = false;
         origen.y = destino.y;

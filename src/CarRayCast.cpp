@@ -13,8 +13,8 @@ using namespace std;
 //    _tuneo = nullptr;
 //}
 
-CarRayCast::CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre)
-                       : _nombre(nombre), _posicion(posicion), _world(world), _scnMgr(sceneMgr), _nodoPadre(nodoPadre)
+CarRayCast::CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre, size_t id)
+                       : _nombre(nombre), _posicion(posicion), _world(world), _scnMgr(sceneMgr), _nodoPadre(nodoPadre), _id(id)
 {
 }
 
@@ -28,8 +28,8 @@ void CarRayCast::buildVehiculo()
     _snc = SceneNodeConfig::getSingletonPtr();
     nodoVehiculoRayCast param = _snc->getInfoVehiculoRayCast(_nombre);
     
-    _entChasis = _scnMgr->createEntity(param.nombre + "_ent", param.nombreMallaChasis);
-    _nodoChasis = _scnMgr->createSceneNode(param.nombre + "_nodo");
+    _entChasis = _scnMgr->createEntity(param.nombre + "_ent_" + std::to_string(_id), param.nombreMallaChasis);
+    _nodoChasis = _scnMgr->createSceneNode(param.nombre + "_nodo_" + to_string(_id));
     _nodoChasis->attachObject(_entChasis);
 
 //    if(this->_nodoPadre) _nodoPadre->addChild(_nodoChasis);
@@ -41,7 +41,9 @@ void CarRayCast::buildVehiculo()
 //    SceneNode* nodo = _scnMgr->getRootSceneNode()->createChildSceneNode();
 //    nodo->addChild(_nodoChasis);
     
-    _nodoChasis->setPosition(param.posicion);
+    //_nodoChasis->setPosition(param.posicion);
+    cout << "possalida carRayCast: " << _posicion << endl;
+    _nodoChasis->setPosition(_posicion);
     
     _frictionSlip = param.frictionSlip;
     _fuerzaMotor = param.aceleracion;
@@ -55,9 +57,10 @@ void CarRayCast::buildVehiculo()
 //    CompoundCollisionShape* formaCompuesta = new CompoundCollisionShape();
 //    formaCompuesta->addChildShape(formaChasis,param.posShapeBullet); //Vector3(0,1,0)); // En la demo de OgreBullet (que ni compila :( ) desplaza la forma 1 unidad, a saber por qué???
     
-    _bodyWheeled = new OgreBulletDynamics::WheeledRigidBody(param.nombre + "_body",_world);
+    _bodyWheeled = new OgreBulletDynamics::WheeledRigidBody(param.nombre + "_body_" + to_string(_id),_world);
 //    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
-    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
+//    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
+    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,_posicion,Quaternion::IDENTITY);
     _bodyWheeled->setDamping(param.suspensionDamping,param.suspensionDamping); //YA VEREMOS SI HACE FALTA
     _bodyWheeled->disableDeactivation();
     _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
@@ -82,11 +85,6 @@ void CarRayCast::buildVehiculo()
     // Es decir, cada parámetro se corresponde con los ejes X,Y,Z y el valor establece el orden en el que se van a interpretar. */
     _vehiculo->setCoordinateSystem(0, 1, 2);
     
-//    Vector3Array vPosicionRuedas { Vector3(0.18,-0.12,0.21), Vector3(-0.18,-0.12,0.21), Vector3(-0.18,-0.12,-0.215), Vector3(0.18,-0.12,-0.215) }; // Para el kart
-//    Vector3Array vPosicionRuedas { Vector3(0.4,-0.10,0.69), Vector3(-0.4,-0.10,0.69), Vector3(-0.41,-0.10,-0.58), Vector3(0.41,-0.10,-0.58) }; // Para el farara
-//    Vector3Array vPosicionRuedas { Vector3(0.4,-0.10,0.65), Vector3(-0.4,-0.10,0.65), Vector3(-0.41,-0.10,-0.75), Vector3(0.41,-0.10,-0.75) }; // Para el formula
-    //HAY QUE PASAR UN FACTOR DE ESCALA, HAY COCHES QUE USAN RUEDAS TRASERAS MÁS ANCHAS
-    
     // Ahora le ponemos las rueditas :D
     for (size_t i=0; i<4; ++i) // Por ahora solo vehículos de 4 ruedas, las motos, camiones de 16 ruedas y esas cosas, otra día ya si eso.
         _ruedas.push_back(Rueda(param,              // parametros de configuracion de la rueda (friccion, influencia rodado, etc)
@@ -97,8 +95,10 @@ void CarRayCast::buildVehiculo()
                                                     // la suspensión. Son coordenadas locales del chasis. Aún tengo que ver que valores son los
                                                     // adecuados. Probablemente varíe bastante según el modelo de coche que se cargue.
                                 i,                  // Id de la rueda, me lo daría el vector, pero la clase rueda no sabe donde se aloja :D
-                                param.escala));
-    // TODO: ENLAZAR RUEDAS CON CHASIS (QUE FÁCIL ES DECIRLO :D)
+                                _id,                // id del coche (el cliente debe proporcionar un id válido, debe controlar su unicidad)
+                                param.escala));     // FACTOR DE ESCALA, HAY COCHES QUE USAN RUEDAS TRASERAS MÁS ANCHAS
+                                
+    // ENLAZAR RUEDAS CON CHASIS (QUE FÁCIL ES DECIRLO :D)
     int i = 0;
     for (auto it = _ruedas.begin(); it != _ruedas.end(); ++it)
     {

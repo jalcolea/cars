@@ -5,7 +5,6 @@
 #include "OgreBulletCollisionsShape.h"
 #include "Shapes/OgreBulletCollisionsTrimeshShape.h"
 #include "Shapes/OgreBulletCollisionsStaticPlaneShape.h"
-//#include "Shapes/OgreBulletCollisionsSphereShape.h"
 #include "Shapes/OgreBulletCollisionsBoxShape.h"
 #include "OgreBulletDynamicsWorld.h"
 #include <string>
@@ -17,6 +16,7 @@
 #include "OgreOverlaySystem.h"
 #include "carSelectorState.h"
 #include "bulletUtil.h"
+#include "actualOptions.h"
 
 #define CAMSPEED 20
 #define CAMROTATESPEED 0.1
@@ -65,7 +65,7 @@ void PlayState::enter()
     _deltaT = 0;
 
     // Recuperar esta información antes de llamar a clearScene(), de lo contrario no existirá.
-    _nombreTipoCoche = carSelectorState::getSingletonPtr()->getNombreTipoCocheSeleccionado();
+    //_nombreTipoCoche = carSelectorState::getSingletonPtr()->getNombreTipoCocheSeleccionado();
     _nombreMaterial = carSelectorState::getSingletonPtr()->getNombreMaterialSeleccionado();
     cout << "tipo coche seleccionado: " << _nombreTipoCoche << endl;
     cout << "material seleccionado: " << _nombreMaterial << endl;
@@ -314,35 +314,16 @@ void PlayState::createScene()
     _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
     
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("formula",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-//    
-//    for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
-//        (*it)->buildVehiculo();
+    createPlayersCPU();
+    
 
-    _cursorVehiculo = 0;
-    _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer("Billy",_nombreTipoCoche,_nombreMaterial,"rutasIA.xml",Vector3(0,0,0),_sceneMgr,_world.get(),3)));
-    _vCarsCpuPlayer.back()->build();
-    _vCarsCpuPlayer.back()->start();
+    for (size_t j=0; j<_vCarsCpuPlayer.size(); j++)
+        _vCarsCpuPlayer.at(j)->start();
     
     
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
-//    nodoOgre_t nodoConfigCol = _scn.getInfoNodoOgre("track1colLateral");
-//    Entity* entColLateral = _sceneMgr->createEntity(nodoConfigCol.nombreEntidad, nodoConfigCol.nombreMalla);
-//    SceneNode* nodoColLateral = _sceneMgr->createSceneNode(nodoConfigCol.nombreNodo);
-//    nodoColLateral->attachObject(entColLateral);
-//    _track->getSceneNode()->addChild(nodoColLateral);
-//    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(entColLateral);
-//    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
-//    OgreBulletDynamics::RigidBody* body = new OgreBulletDynamics::RigidBody(nodoConfigCol.nombreNodo, _world.get(), COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
-//    body->setShape(nodoColLateral,tri,nodoConfigCol.bodyRestitutionBullet,nodoConfigCol.frictionBullet,nodoConfigCol.masaBullet,nodoConfigCol.posShapeBullet);
-//    nodoColLateral->setVisible(false);
+    //createVallaVirtual();
 
 
 //******************************************************************************************************************
@@ -402,6 +383,67 @@ void PlayState::createScene()
     }    
 
   
+}
+
+void PlayState::createVallaVirtual()
+{
+    nodoOgre_t nodoConfigCol = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("track1colLateral");
+    Entity* entColLateral = _sceneMgr->createEntity(nodoConfigCol.nombreEntidad, nodoConfigCol.nombreMalla);
+    SceneNode* nodoColLateral = _sceneMgr->createSceneNode(nodoConfigCol.nombreNodo);
+    nodoColLateral->attachObject(entColLateral);
+    _track->getSceneNode()->addChild(nodoColLateral);
+    OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(entColLateral);
+    OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
+    OgreBulletDynamics::RigidBody* body = new OgreBulletDynamics::RigidBody(nodoConfigCol.nombreNodo, _world.get(), COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
+    body->setShape(nodoColLateral,tri,nodoConfigCol.bodyRestitutionBullet,nodoConfigCol.frictionBullet,nodoConfigCol.masaBullet,nodoConfigCol.posShapeBullet);
+    nodoColLateral->setVisible(false);
+}
+
+void PlayState::createPlayersCPU()
+{
+    _nombreTipoCoche = actualOptions::getSingletonPtr()->getNombreVehiculoXML();
+    
+    auto & nombres = actualOptions::getSingletonPtr()->getNombresCPU();
+    auto & materials = actualOptions::getSingletonPtr()->getNombreMateriales();
+    std::vector<string> vNombresCPU;
+    std::vector<string> vMateriales;
+    string& nombreCPU = nombres[rand() % nombres.size()-1];
+    string& nombreMaterial = materials[rand() % materials.size()-1];
+    string auxNombreCPU = "";
+    string auxNombreMaterial = _nombreMaterial;
+
+    for (size_t i = 0; i < CPU_PLAYERS; i++)
+    {
+        while((nombreCPU == auxNombreCPU) && [&vNombresCPU,&nombreCPU]()->bool  // LAMBDA POWAH!!!!
+                                           {
+                                                auto it = std::find(vNombresCPU.begin(), vNombresCPU.end(),nombreCPU);
+                                                return (it == vNombresCPU.end()); 
+                                           }())
+        {
+            nombreCPU = nombres[rand() % nombres.size()];
+        }
+        auxNombreCPU = nombreCPU;
+        vNombresCPU.push_back(nombreCPU);
+        
+        while(nombreMaterial == _nombreMaterial && nombreMaterial == auxNombreMaterial && [&vMateriales,&nombreMaterial]()->bool  // LAMBDA POWAH!!!!
+                                                                                          {
+                                                                                            auto it = std::find(vMateriales.begin(), vMateriales.end(),nombreMaterial);
+                                                                                            return (it == vMateriales.end()); 
+                                                                                          }())
+        {
+            nombreMaterial = materials[rand() % materials.size()-1];
+        }
+        auxNombreMaterial = nombreMaterial;
+        vMateriales.push_back(nombreMaterial);
+        
+        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),3,nullptr,i)));
+        _vCarsCpuPlayer.back()->build();
+
+    }
+    
+
+    _cursorVehiculo = 0;
+
 }
 
 void PlayState::dibujaLinea(size_t idFrom, size_t idTo)
