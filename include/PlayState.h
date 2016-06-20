@@ -40,12 +40,15 @@
 #include "IAPointsDeserializer.h"
 #include "pathDrawerState.h"
 #include "cpuPlayer.h"
+#include "PlayWidget.h"
 
 
 using namespace std;
 using namespace Ogre;
 using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
+
+#define CPU_PLAYERS 3
 
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
@@ -79,6 +82,9 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     // Heredados de Ogre::Singleton.
     static PlayState& getSingleton ();
     static PlayState* getSingletonPtr ();
+    
+    std::vector<Vector3> posSalida { Vector3(-4,2.1,-22), Vector3(-4,2.1,-24), Vector3(-2,2.1,-22), Vector3(-2,2.1,-24) };
+    
     void set_lives (int lives);
     int  get_lives ();
 
@@ -87,6 +93,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
 
     void  game_over ();
     void  win ();
+    
+    PlayWidget* _play;
 
     protected:
     Ogre::Root *_root;
@@ -106,6 +114,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     bool _playSimulation = true;
     SceneNode* _nodoVista;
     SceneNode* _planeRoadNode;
+    OgreBulletDynamics::RigidBody* _planeRoadBody;
 
 
     bool _exitGame;
@@ -131,6 +140,9 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
     void createPlaneRoad();
     void initBulletWorld(bool showDebug);    
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
+    void createPlayersCPU();
+    void createHumanPlayer();
+    void createVallaVirtual();
     //void createOverlay();
     void pintaOverlayInfo();
     void flagKeys(bool flag);

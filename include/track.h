@@ -10,6 +10,7 @@
 #include "Shapes/OgreBulletCollisionsConvexHullShape.h"
 #include "SceneNodeConfig.h"
 #include "OgreUtil.h"
+#include "bulletUtil.h"
 
 using namespace Ogre;
 using namespace OgreBulletDynamics;
@@ -40,6 +41,7 @@ class track
 //            _body = new OgreBulletDynamics::RigidBody(_nombre, world, COL_TRACK,  COL_CAMERA | COL_FLOOR | COL_CAR | COL_TRACK_COLISION);
             _body = new OgreBulletDynamics::RigidBody(_nombre, world);
             _body->setShape(_nodo,tri,nodoConfig.bodyRestitutionBullet,nodoConfig.frictionBullet,nodoConfig.masaBullet,posicionInicio);
+            _body->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CIRCUITO,nullptr));
 //            delete trimeshConverter;
 
             //Asociar forma y cuerpo rígido (CON UN CONVEXHULLCOLLISIONSHAPE y Geometría movible (attachada a un sceneNode))

@@ -24,14 +24,6 @@ struct datosVarios
     int id;
 };
 
-//static bool HandleContacts(btManifoldPoint& point, btCollisionObject* body0, btCollisionObject* body1)
-//{
-//  testStateVehicRayCast::getSingletonPtr()->handleCollision(body0,body1);
-//  return false;
-//}
-//
-//extern ContactProcessedCallback gContactProcessedCallback = (ContactProcessedCallback) HandleContacts;
-
 void testStateVehicRayCast::enter()
 {
     // Recuperar recursos básicos
@@ -80,9 +72,6 @@ void testStateVehicRayCast::enter()
 
     //Preparar escena
     createScene();
-    
-    
-//    gContactProcessedCallback = (ContactProcessedCallback)HandleContacts;
     
     _exitGame = false;
     _deltaT = 0;
@@ -197,6 +186,9 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
     pintaOverlayInfo();
     
     compruebaCheckPoint();
+    
+    if (!_vCarsRayCast[_cursorVehiculo]->ruedasEnContacto())
+        cout << "EL COCHE HA VOLCADO!!!!!!!!!!????????" << endl;
     
 
     return !_exitGame;
@@ -332,7 +324,7 @@ bool testStateVehicRayCast::keyPressed(const OIS::KeyEvent &e)
 /*    if (e.key == OIS::KC_R)
         _carRayCast->recolocar(_carRayCast->getPosicionActual());*/
     if (e.key == OIS::KC_R)
-        _vCarsRayCast[_cursorVehiculo]->recolocar(_vCarsRayCast[_cursorVehiculo]->getPosicionActual());
+        _vCarsRayCast[_cursorVehiculo]->recolocar(_vCarsRayCast[_cursorVehiculo]->getPosicionActual(),Quaternion(1,0,0,0));
         
         
 /*    if (e.key == OIS::KC_P)
@@ -702,7 +694,6 @@ bool testStateVehicRayCast::compruebaCheckPoint()
 //    i++;
 //    _sceneMgr->getRootSceneNode()->attachObject(manual);    
     
-    //btVector3 fin = convert(_vCarsRayCast[_cursorVehiculo]->getPosicionActual() * Ogre::Vector3::NEGATIVE_UNIT_Y * 10); 
     btCollisionWorld::AllHitsRayResultCallback rayCallback(inicio,fin);
                                                            
     _world->getBulletDynamicsWorld()->rayTest(inicio,fin, rayCallback);

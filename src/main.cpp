@@ -36,6 +36,7 @@
 #include "testStateVehicRayCast.h"
 #include "carSelectorState.h"
 #include "pathDrawerState.h"
+#include "actualOptions.h"
 
 #include <iostream>
 
@@ -60,6 +61,7 @@ int main () {
   carSelectorState* selector = new carSelectorState();
   pathDrawerState* pathDrawer = new pathDrawerState();
   SceneNodeConfig* snc = new SceneNodeConfig();
+  actualOptions* actOpt = new actualOptions();
   records * r = records::getInstance();
   sounds * s = sounds::getInstance();
 

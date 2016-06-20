@@ -16,16 +16,28 @@ using namespace OgreBulletDynamics;
 using namespace Ogre;
 using namespace std;
 
+#define MAX_VALOR_GIRO_RUEDAS 0.6 //radianes (0.6 radianes = 34.38º) las ruedas no pueden girar más que este valor tanto a izquierda como a derecha
+
+struct contactInfo
+{
+    int indexRueda;
+    RigidBody* contactoCon;
+};
+
+typedef std::vector< pair<bool,contactInfo> > ruedasContactInfo_t;
+
+
+
 class Rueda // SOLO GUARDA EL ESTADO DE LA RUEDA, NO LA ENLAZA CON EL CHASIS. ESO ES TRABAJO DE LA CLASE QUE MANEJE EL CHASIS
 {
     public:
     Rueda(){};
-    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index,Vector3 escala = Vector3(1,1,1))
-          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis), _escala(escala)
+    Rueda(const nodoVehiculoRayCast_t & param, SceneNode* nodoPadre, SceneManager* scnMgr, bool delantera, Vector3 conexionChasis, size_t index, size_t idCoche, Vector3 escala = Vector3(1,1,1))
+          : _nodoPadre(nodoPadre), _scnMgr(scnMgr), _delantera(delantera), _puntoConexionChasis(conexionChasis), _idCoche(idCoche), _escala(escala)
     {
-        _entRueda = _scnMgr->createEntity(param.nombre + "_ent" + std::to_string(index), param.nombreMallaRueda);
+        _entRueda = _scnMgr->createEntity(param.nombre + "_ent_" + std::to_string(index) + " " + std::to_string(_idCoche), param.nombreMallaRueda);
         _entRueda->setCastShadows(true);
-        _nodo = _scnMgr->createSceneNode(param.nombre + "_nodo" + std::to_string(index));
+        _nodo = _scnMgr->createSceneNode(param.nombre + "_nodo_" + std::to_string(index) + " " + std::to_string(_idCoche));
         _nodo->attachObject(_entRueda);
         if (_nodoPadre) _nodoPadre->addChild(_nodo);            // Si el nodopadre no es otro que el Root, parece que no funciona bien.
         else _scnMgr->getRootSceneNode()->addChild(_nodo);      // TODO: Este código está en vías de desaparecer.
@@ -122,6 +134,7 @@ private:
     // es decir, la banda de rodadura mira hacia el observador).
     Vector3 _ejeCS = Vector3(-1,0,0); // En la demo de OgreBullet lo pone así
     
+    size_t _idCoche;
     Vector3 _escala; // Para hacer ruedas traseras más anchas en caso de quererlo así.
 
     
@@ -131,7 +144,7 @@ class CarRayCast
 {
 public:
     //CarRayCast();
-    CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre = nullptr);
+    CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre = nullptr, size_t id = 0);
     virtual ~CarRayCast();
 
     inline string getNombre() const { return _nombre; };
@@ -144,7 +157,8 @@ public:
     inline OgreBulletDynamics::VehicleRayCaster* getVehiculoRayCaster() const { return _vehiculoRayCaster; };
     inline OgreBulletDynamics::RaycastVehicle* getVehiculo() const { return _vehiculo; };
     inline Rueda getSceneNodeRueda (size_t n) const { return _ruedas[n]; };
-    inline Real getGiro() const{ return _giro; };
+    inline Real getGiro() const{ return _giro; }; // Devuelve la velocidad del giro de este coche
+    inline Real getGiroActualTotal() const { return _valorGiro; }; // Devuelve la cantidad de de giro que tienen las ruedas en un momento dado. O sea si están derechas valdrá 0.
     inline void setNombre(const string& nombre){ _nombre = nombre; };
     inline void setPosicion(Vector3 posicion){ _posicion = posicion; };
     inline void setFuerzaMotor(float fuerzaMotor ) { _fuerzaMotor = fuerzaMotor; };
@@ -154,11 +168,16 @@ public:
     void setChassis(Ogre::Entity* entChasis); // Establece la malla del chasis.
     void buildVehiculo();
     void acelerar(Real fuerza, bool endereza = false, Real factorEnderezamiento = 1.5 ); // obvio no?
+    void acelerarCPU(Real fuerza, bool endereza); // La cpu si endereza, lo hace del tirón (por conveniencia).
     void frenar();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
     void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
-    void recolocar(Ogre::Vector3 donde); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
+    void girarCPU(Real valorGiro); // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
+    void recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion); // habrá que ver donde lo recolocamos, se autorecoloca o otra entidad le pasa como parámetro donde se recoloca????
+    inline Real getVelocidadKmH(){ return ((_vehiculo->getBulletVehicle())?_vehiculo->getBulletVehicle()->getCurrentSpeedKmHour():0.0); };
+    bool ruedasEnContacto();
     inline std::vector<Rueda> & getRuedas() { return _ruedas; };
+    inline ruedasContactInfo_t& getContactInfoRuedas(){ return _ruedasContactInfo; };
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };
@@ -187,6 +206,8 @@ public:
     SceneNode* _nodoPadre;
     SceneNodeConfig* _snc;
     Real _valorGiro = 0;
+    ruedasContactInfo_t _ruedasContactInfo;
+    size_t _id; // si se necesitan crear más de un CarRayCast será necesario concatenar el nombre del SceneNode y su Entity con el id pertinente.
         
     // Parámetros de tuneo del coche
     Ogre::Real _suspensionStiffness;   // dureza de la suspensión
@@ -195,7 +216,6 @@ public:
     Ogre::Real _maxSuspensionTravelCm; // limite del recorrido de la suspensión (entiendo que al comprimirse el muelle)
     Ogre::Real _maxSuspensionForce;    // límite máximo de la fuerza de la suspensión
     Ogre::Real _frictionSlip;          // indice de fricción (AÚN NO SÉ EXACTAMENTE QUE ES ESTE TIPO DE FRICCIÓN: SLIP=RESBALAR)
-
     
 };
 

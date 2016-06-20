@@ -1,5 +1,6 @@
 #include "CarRayCast.h"
 #include "OgreUtil.h"
+#include "bulletUtil.h"
 
 using namespace OgreBulletCollisions;
 using namespace OgreBulletDynamics;
@@ -12,8 +13,8 @@ using namespace std;
 //    _tuneo = nullptr;
 //}
 
-CarRayCast::CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre)
-                       : _nombre(nombre), _posicion(posicion), _world(world), _scnMgr(sceneMgr), _nodoPadre(nodoPadre)
+CarRayCast::CarRayCast(const string& nombre, Vector3 posicion, Ogre::SceneManager* sceneMgr, OgreBulletDynamics::DynamicsWorld* world, Ogre::SceneNode* nodoPadre, size_t id)
+                       : _nombre(nombre), _posicion(posicion), _world(world), _scnMgr(sceneMgr), _nodoPadre(nodoPadre), _id(id)
 {
 }
 
@@ -27,8 +28,8 @@ void CarRayCast::buildVehiculo()
     _snc = SceneNodeConfig::getSingletonPtr();
     nodoVehiculoRayCast param = _snc->getInfoVehiculoRayCast(_nombre);
     
-    _entChasis = _scnMgr->createEntity(param.nombre + "_ent", param.nombreMallaChasis);
-    _nodoChasis = _scnMgr->createSceneNode(param.nombre + "_nodo");
+    _entChasis = _scnMgr->createEntity(param.nombre + "_ent_" + std::to_string(_id), param.nombreMallaChasis);
+    _nodoChasis = _scnMgr->createSceneNode(param.nombre + "_nodo_" + to_string(_id));
     _nodoChasis->attachObject(_entChasis);
 
 //    if(this->_nodoPadre) _nodoPadre->addChild(_nodoChasis);
@@ -40,7 +41,9 @@ void CarRayCast::buildVehiculo()
 //    SceneNode* nodo = _scnMgr->getRootSceneNode()->createChildSceneNode();
 //    nodo->addChild(_nodoChasis);
     
-    _nodoChasis->setPosition(param.posicion);
+    //_nodoChasis->setPosition(param.posicion);
+    cout << "possalida carRayCast: " << _posicion << endl;
+    _nodoChasis->setPosition(_posicion);
     
     _frictionSlip = param.frictionSlip;
     _fuerzaMotor = param.aceleracion;
@@ -54,11 +57,13 @@ void CarRayCast::buildVehiculo()
 //    CompoundCollisionShape* formaCompuesta = new CompoundCollisionShape();
 //    formaCompuesta->addChildShape(formaChasis,param.posShapeBullet); //Vector3(0,1,0)); // En la demo de OgreBullet (que ni compila :( ) desplaza la forma 1 unidad, a saber por qué???
     
-    _bodyWheeled = new OgreBulletDynamics::WheeledRigidBody(param.nombre + "_body",_world);
+    _bodyWheeled = new OgreBulletDynamics::WheeledRigidBody(param.nombre + "_body_" + to_string(_id),_world);
 //    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
-    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
+//    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,param.posicion,Quaternion::IDENTITY);
+    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,_posicion,Quaternion::IDENTITY);
     _bodyWheeled->setDamping(param.suspensionDamping,param.suspensionDamping); //YA VEREMOS SI HACE FALTA
     _bodyWheeled->disableDeactivation();
+    _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
     
     // Al parecer los flags de colisión no funcionan con VehicleRayCast "asínque".... (http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Vehicles)
 //    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION | COL_CHECK); // NI PUTO CASO OIGA :(
@@ -80,11 +85,6 @@ void CarRayCast::buildVehiculo()
     // Es decir, cada parámetro se corresponde con los ejes X,Y,Z y el valor establece el orden en el que se van a interpretar. */
     _vehiculo->setCoordinateSystem(0, 1, 2);
     
-//    Vector3Array vPosicionRuedas { Vector3(0.18,-0.12,0.21), Vector3(-0.18,-0.12,0.21), Vector3(-0.18,-0.12,-0.215), Vector3(0.18,-0.12,-0.215) }; // Para el kart
-//    Vector3Array vPosicionRuedas { Vector3(0.4,-0.10,0.69), Vector3(-0.4,-0.10,0.69), Vector3(-0.41,-0.10,-0.58), Vector3(0.41,-0.10,-0.58) }; // Para el farara
-//    Vector3Array vPosicionRuedas { Vector3(0.4,-0.10,0.65), Vector3(-0.4,-0.10,0.65), Vector3(-0.41,-0.10,-0.75), Vector3(0.41,-0.10,-0.75) }; // Para el formula
-    //HAY QUE PASAR UN FACTOR DE ESCALA, HAY COCHES QUE USAN RUEDAS TRASERAS MÁS ANCHAS
-    
     // Ahora le ponemos las rueditas :D
     for (size_t i=0; i<4; ++i) // Por ahora solo vehículos de 4 ruedas, las motos, camiones de 16 ruedas y esas cosas, otra día ya si eso.
         _ruedas.push_back(Rueda(param,              // parametros de configuracion de la rueda (friccion, influencia rodado, etc)
@@ -95,8 +95,10 @@ void CarRayCast::buildVehiculo()
                                                     // la suspensión. Son coordenadas locales del chasis. Aún tengo que ver que valores son los
                                                     // adecuados. Probablemente varíe bastante según el modelo de coche que se cargue.
                                 i,                  // Id de la rueda, me lo daría el vector, pero la clase rueda no sabe donde se aloja :D
-                                param.escala));
-    // TODO: ENLAZAR RUEDAS CON CHASIS (QUE FÁCIL ES DECIRLO :D)
+                                _id,                // id del coche (el cliente debe proporcionar un id válido, debe controlar su unicidad)
+                                param.escala));     // FACTOR DE ESCALA, HAY COCHES QUE USAN RUEDAS TRASERAS MÁS ANCHAS
+                                
+    // ENLAZAR RUEDAS CON CHASIS (QUE FÁCIL ES DECIRLO :D)
     int i = 0;
     for (auto it = _ruedas.begin(); it != _ruedas.end(); ++it)
     {
@@ -107,7 +109,7 @@ void CarRayCast::buildVehiculo()
     }
     
     _vehiculo->setWheelsAttached();
-
+    
 }
 
 void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
@@ -122,6 +124,20 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
     _vehiculo->applyEngineForce(fuerza,1);
 }
 
+// La cpu si endereza lo hace del tirón (por conveniencia);
+void CarRayCast::acelerarCPU(Real fuerza, bool endereza)
+{
+    if (endereza)
+    {
+        _valorGiro = 0;
+        _vehiculo->setSteeringValue(_valorGiro,0);
+        _vehiculo->setSteeringValue(_valorGiro,1);
+    }    
+    _vehiculo->applyEngineForce(fuerza,0);
+    _vehiculo->applyEngineForce(fuerza,1);
+}
+
+
 
 void CarRayCast::frenar()
 {
@@ -132,24 +148,52 @@ void CarRayCast::frenar()
 
 void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquierda, n negativo = derecha
 {
-    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < 0.6) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA
+    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
         _valorGiro += (_giro * n * factorVelocidadGiro);
         
     _vehiculo->setSteeringValue(_valorGiro,0);
     _vehiculo->setSteeringValue(_valorGiro,1);
     
     
-    cout << _valorGiro << endl;
+//    cout << _valorGiro << endl;
 }
 
-void CarRayCast::recolocar(Ogre::Vector3 donde)
+// Para coches controlados por la CPU, el valor del giro se deja que se calcule por la entidad pertinente.
+void CarRayCast::girarCPU(Real valorGiro) // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
+{
+    if (abs(_valorGiro) <= MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
+        _valorGiro = valorGiro;
+    else
+    {
+        cout << "GIRARCPU(" << valorGiro << ") VALOR GIRO DEMASIADO GRANDE, AJUSTANDO" << endl;
+        if (valorGiro == 0)
+            _valorGiro = 0; // "malditos decimales (léase con acento de Don Gato)
+        else if (valorGiro > 0)
+            _valorGiro = MAX_VALOR_GIRO_RUEDAS;
+        else if (valorGiro < 0)
+            _valorGiro = - MAX_VALOR_GIRO_RUEDAS;
+    }
+
+    //assert(!(_valorGiro > MAX_VALOR_GIRO_RUEDAS));   // Si salta este assert, podría indicar la señal de que el coche ha chocado y su angulo respecto a su destino es demasiado abierto
+ 
+//    if(_valorGiro > 0 ) cout << "girando a la izquierda" << endl;
+//    else if (_valorGiro < 0) cout << "girando a la derecha" << endl;
+       
+    _vehiculo->setSteeringValue(_valorGiro,0);
+    _vehiculo->setSteeringValue(_valorGiro,1);
+    
+    cout << "GIRARCPU(" << valorGiro << ")" << endl;
+    cout << "Giro finalmente aplicado " << _valorGiro << endl;
+}
+
+
+void CarRayCast::recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion)
 {
     // Reseteamos todo
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setIdentity();
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setOrigin(convert(donde));
-    
-//    getCarChassisPtr()->getBulletRigidBody ()->getWorldTransform().setIdentity();
-//    getCarChassisPtr()->getBulletRigidBody ()->getWorldTransform().setOrigin(btVector3(_x, _y, _z));
+    _bodyWheeled->getBulletRigidBody()->getWorldTransform().setRotation(convert(direccion));
+
 //    // Reiniciar fuerzas
 //    getCarChassisPtr()->getBulletRigidBody ()->clearForces();
 //    getCarChassisPtr()->getBulletRigidBody ()->setInterpolationLinearVelocity( btVector3( 0, 0, 0 ) );
@@ -163,3 +207,57 @@ void CarRayCast::recolocar(Ogre::Vector3 donde)
 //    _mVehicle->setSteeringValue ( _mSteering, 0 );
 //    _mVehicle->setSteeringValue ( _mSteering, 1 );
 }
+
+
+bool CarRayCast::ruedasEnContacto()
+{
+    for (int i = 0; i<_vehiculo->getBulletVehicle()->getNumWheels(); i++)
+    {
+        if (!_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_groundObject)
+        {
+            return false; //O está volando :D ó a volcado
+        }
+        else
+        {
+            return true;
+            
+//  NOTA: EL SIGUIENTE CÓDIGO COMENTADO NO FUNCIONA POR QUE LA "very special constraint that turn a rigidbody into a vehicle." (TAL Y COMO LA DESCRIBE EL AUTOR EN EL CÓDIGO :D)
+//  AL PARECER NO ESTÁ TERMINADA. EL AUTOR HA HECHO LA PARTE QUE DETERMINA SI LAS RUEDAS ESTÁN EN CONTACTO CON OTRO OBJETO PERO SIEMPRE ESTABLECE EL CONTACTO A UN S_FIXEDBODY. 
+//  O SEA QUE CUANDO HAY CONTACTO A LA VARIABLE MIEMBRO wheel.m_raycastInfo.m_groundObject LE ASIGNA UN btRigidBody CON SU ESTADO POR DEFECTO Y ALA, AHÍ LO LLEVAS :(
+//  Y CUANDO NO HAY CONTACTO LE CASCA UN 0. DE MODO QUE LA ÚNICA FORMA DE SABER CON QUÉ ESTÁN EN CONTACTO LAS RUEDAS, ES... NINGUNA. BUENO, PODEMOS LIARNOS A LANZAR RAYOS Y DETERMINAR
+//  CON RAYRESULTCALLBACKS QUÉ TIENEN DEBAJO LAS RUEDAS EN COMBINACIÓN CON LO HECHO POR EL AUTOR DE LA "very special constraint" :D, ES DECIR SI LE ASIGNA VALOR A m_groundObject QUIERE
+//  DECIR QUE HAY CONTACTO Y ENTONCES PODEMOS LANZAR EL RAYO NOSOTROS E INTENTAR AVERIGUAR QUIEN ES EL "CONTACTADO". 
+//  Y TRAS MUCHO INVESTIGAR AL PARECER LA GENTE QUE HA HECHO EL JUEGO SUPERTUXKART HACE EXACTAMENTE ESTO, "ASÍNQUE...."
+            
+//            btCollisionObject* auxCollisionObject = static_cast<btCollisionObject*>(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_groundObject);
+//            rigidBody_data* data = static_cast<rigidBody_data*>(auxCollisionObject->getUserPointer());
+//            if (!data) return false;  // si mi user pointer no está operativo en este objeto, ni idea de con que estamos en contacto, así que fuera de aquí.
+//            tipoRigidBody t = data->_tipo;
+//            switch (t)
+//            {
+//                case tipoRigidBody::CARRETERA: cout << "RUEDA " << i << " EN CONTACTO CON CARRETERA " << endl; return true;
+//                case tipoRigidBody::CIRCUITO:  cout << "RUEDA " << i << " EN CONTACTO CON CIRCUITO " << endl; return false;
+//                case tipoRigidBody::OBSTACULO: cout << "RUEDA " << i << " EN CONTACTO CON OBSTACULO " << endl; return false;
+//                case tipoRigidBody::COCHE:     cout << "RUEDA " << i << " EN CONTACTO CON COCHE " << endl; return false;
+//                default: cout << "RUEDA " << i << " EN CONTACTO CON.... EL ÉTER!!!!! " << endl; return false;
+//            }
+        }
+    }
+    
+    return true;
+}     
+
+
+
+
+
+/*  
+            cout << "*****************************************************************************************************************" << endl;
+            cout << "Rueda[" << i << "] en contacto?: " << _vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_isInContact << endl;
+            cout << "ContactNormalWS: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_contactNormalWS) << endl;
+            cout << "ContactPoints: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_contactPointWS) << endl;
+            cout << "GroundObject: " << _vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_groundObject << endl;
+            cout << "hardPointsWS: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_hardPointWS) << endl;
+            cout << "SuspensionLength: " << _vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_suspensionLength << endl;
+            cout << "wheelAxleWS: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_wheelAxleWS) << endl;
+            cout << "wheelDirectionWS: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_wheelDirectionWS) << endl; */

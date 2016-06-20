@@ -1,6 +1,7 @@
 #include "cpuPlayer.h"
 #include "iamanager.h"
 #include "CarRayCast.h"
+#include "bulletUtil.h"
 
 using namespace Ogre;
 
@@ -17,6 +18,7 @@ void cpuPlayer::build()
     btQuaternion quat;
     quat.setEuler(Radian(Ogre::Degree(-90)).valueRadians(),0,0);
     trans.setRotation(quat);
+    //_car->getSceneNode()->setOrientation(convert(quat));
     _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(trans);
     
 
@@ -25,89 +27,117 @@ void cpuPlayer::build()
 void cpuPlayer::update(Real deltaT)
 {
     Vector3 origen;
+    Vector3 origenActual;
     Vector3 destino;
-    static Vector3 destinoOld = Vector3::ZERO;
-    Vector3 direccion;
+    static Vector3 destinoOld = Vector3::ZERO; // Inicializar a Zero o a una posicion que no tenga sentido en el juego
+    Vector3 direccion = Vector3::ZERO;
+    Vector3 direccionActualCoche;
     btTransform btTrans;
     Real distancia;
     Quaternion quat;
+    //static Quaternion ultimaOrientacionBuena = Quaternion::IDENTITY;
+    static btQuaternion ultimaOrientacionBuena;
     
-
-//  INTENTANDO ORIENTAR EL CHASIS. DE MOMENTO SE ORIENTA PERO LA ROTACIÓN LA HACE AL CONTRARIO DE LO QUE DEBERÍA
-//    btTrans.setIdentity(); // Por si acaso, la matriz de transformación la dejamos Inmaculadita para empezar :D
-//    btTrans = _car->getVehiculo()->getBulletVehicle()->getChassisWorldTransform(); // Obtenemos la matriz de transformación del chasis
-//    destino = _iaMgr->vec(_iaMgr->follow(new iapoint())->base); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
-//    origen = convert(btTrans.getOrigin()); // Obtenemos la posición actual del chasis 
-//    origen.normalise();    // Normalizamos ambos vectores, de lo contrario los cálculos de ángulos y demás se vuelven locos.
-//    destino.normalise();
-//    destino.y = origen.y; // igualo la y para que no la tenga en cuenta al calcular el angulo de rotación entre origen y destino
-//    Quaternion orientacionActual = convert(btTrans.getRotation()); // Obtenemos el cuaternio con la rotación actual del chasis desde su matriz de transformacion.
-//    origen = orientacionActual * Vector3::UNIT_X; // Producto vectorial para deshacernos de las componentes que no nos interesan (X,Z)
-//    direccion = (destino - origen) *  -convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());// * Vector3::UNIT_X;
-//    //direccion.normalise();
-//    quat = origen.getRotationTo(direccion);
-//    cout << "yaw resultante " << quat.getYaw().valueAngleUnits() << endl;
-//    btTrans.setRotation(convert(quat));
-//    _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(btTrans);
-
-    btTrans.setIdentity(); // Por si acaso, la matriz de transformación la dejamos Inmaculadita para empezar :D
     btTrans = _car->getVehiculo()->getBulletVehicle()->getChassisWorldTransform(); // Obtenemos la matriz de transformación del chasis
     origen = convert(btTrans.getOrigin()); // Obtenemos la posición actual del chasis 
     
     compruebaCheckPoint();
 
-//    destino = _iaMgr->vec(_iaMgr->follow(new iapoint(origen.x,origen.y,origen.z))->derived); // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
-//    
-//    cout << "Destino actual " << destino << endl;
-//    if (destino != destinoOld)
-//    {
-//        cout << "Destino alcanzado, orientando a siguiente destino " << endl;
-//        destinoOld = destino;
-//        //origen.normalise();    // Normalizamos ambos vectores, de lo contrario los cálculos de ángulos y demás se vuelven locos.
-//        //destino.normalise();
-//        destino.y = origen.y; // igualo la y para que no la tenga en cuenta al calcular el angulo de rotación entre origen y destino
-//        Vector3 orientacionActual = convert(btTrans.getRotation()) * Vector3::UNIT_X; // Obtenemos la rotación actual del chasis desde su matriz de transformacion.
-//        //origen = orientacionActual * Vector3::UNIT_X; // Producto vectorial para deshacernos de las componentes que no nos interesan (X,Z)
-//        direccion = (destino - origen); //* -convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());// * Vector3::UNIT_X;
-//        direccion.normalise();
-//        quat = orientacionActual.getRotationTo(direccion); //origen.getRotationTo(direccion);
-//        cout << "yaw resultante " << quat.getYaw().valueAngleUnits() << endl;
-//        btTrans.setRotation(convert(quat));
-//        _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(btTrans);
-//    }
-
-
-    _car->acelerar(_car->getFuerzaMotor(),false,0.1);
-
-
-
-// OTRA APROXIMACIÓN PARA LA ORIENTACION, NO FUNCIONA. SE INTENTA GIRAR EL COCHE HASTA QUE SE ALINEE CON EL PUNTO DE LA MARCA
-// PERO COMIENZA A GIRAR EN ESPIRAL HASTA QUE LA FUERZA CENTRÍPETA HACE QUE EL COCHE VUELQUE, PA CORTARSE LAS VENAS YA :(
-//    Vector3 origen = _car->getPosicionActual();
-//    origen.y = destino.y;
-//    cout << "angulo entre ellos (angleBetween) = " << origen.angleBetween(destino).valueAngleUnits() << endl; // DEVUELVE VALORES SIN SIGNO, NO ME VALE
-//    cout << "angulo entre ellos (getRotationTo) = " << origen.getRotationTo(destino).getYaw().valueAngleUnits() << endl;
-//    Real anguloDelta = origen.getRotationTo(destino).getYaw().valueAngleUnits();
-//    if (anguloDelta > 0)
-//    {
-//        cout << "orientando a derecha" << endl;
-//        _car->girar(-1,0.1);
-//    }
-//    else if (anguloDelta < 0)
-//    {
-//        cout << "orientando a izquierda" << endl;
-//        _car->girar(1,0.1);
-//    }
+    // Obtenemos el punto destino al que nos dirigimos. Mientras no lo alcancemos siempre devolverá el mismo.
+    destino = _iaMgr->vec((_iaMgr->getPoint(_idCheck_destino))->base);
     
+    
+    if (!_car->ruedasEnContacto() && _timeStopped > MAX_TIME_STOPPED)
+    {
+        cout << "RECOLOCANDO POR RUEDASENCONTACTO FALSE" << endl;
+        _car->recolocar(_iaMgr->vec((_iaMgr->getPoint(_idCheck_destino-1))->base),convert(ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
+    }                                                       // AUMENTAR LA Y PARA QUE EL COCHE NO PUEDA QUEDARSE ESTANCADO.
+    else
+    {
+        cout << "BUENA EN RUEDASENCONTACTO TRUE" << endl;
+        ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
+    }
+    
+    if (_car->getVelocidadKmH() >= 1)
+    {
+        cout << "BUENA, VELOCIDAD > 1 " << endl;
+        _timeStopped = 0;
+        ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
+    }
+    else
+    {
+        if (_timeStopped > MAX_TIME_STOPPED)
+        {
+            cout << "RECOLOCANDO, PARADO MUCHO TIEMPO" << endl;
+            //_car->recolocar(origen,ultimaOrientacionBuena); // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
+            _car->recolocar(_iaMgr->vec((_iaMgr->getPoint(_idCheck_destino-1))->base),convert(ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
+        }
+        else
+        {
+            cout << "TIEMPO DE GRACIA AGOTÁNDOSE" << endl;
+            _timeStopped += deltaT;
+        }
+    }
+    
+    
+        
+    if (destinoOld != destino)
+    {
+        //dibujaLinea(origen,destino);
+        destinoOld = destino;
+        _onHisWay = false;
+        origen.y = destino.y;
+        cout << "\n\nPOSICION ACTUAL:" << origen << endl;
+        cout << "Destino al que me dirijo: " << destino << endl;
+        direccion = destino - origen;
+        cout << "Vector Dirección al destino desde el punto en el que se solicita: " << direccion << endl;
+        direccion.normalise();
+        cout << "Longitud direccion: " << direccion.length() << endl;
+        cout << "**********************************************************************************************************************************" << endl;
 
-//    ALTERNATIVA 2 PARA INTENTAR ORIENTAR EL VEHÍCULO    
-//    body.getWorldTransform().getRotation(mRotation);
-//    float roll = mRotation.getRoll();
-//    float angle = mRotation.getAngleAround(0, 0, 1);
-//    int gimbalPole = mRotation.getGimbalPole();
-//    float rotation = (gimbalPole == 0) ? roll : angle * gimbalPole;
+    }
+    
+    direccionActualCoche = convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());
 
-//    ALTERNATIVA 1 PARA INTENTAR ORIENTAR EL VEHÍCULO (NO FUNCIONA BIEN)
+    btTrans = _car->getVehiculo()->getBulletVehicle()->getChassisWorldTransform(); // Obtenemos la matriz de transformación del chasis
+    origen = convert(btTrans.getOrigin()); // Obtenemos la posición actual del chasis 
+    
+    origen.y = direccionActualCoche.y;
+    direccion = destino - origen ;
+
+    Real angulo = direccionActualCoche.getRotationTo(direccion).getYaw().valueRadians();
+    cout << "angulo entre ellos = " << angulo << endl; 
+    if (abs(angulo) > 0.04) // PRIMERO COMPROBAMOS QUE AL ANGULO ENTRE ELLOS ES TODAVÍA SUFICIENTEMENTE GRANDE PARA SEGUIR GIRANDO (0.02 radianes = 1º)
+    {
+        if (angulo > 0)    // MIRAMOS EL SIGNO PARA SABER A HACIA DONDE GIRAR.
+        {
+            cout << "orientando a izquierda" << endl;
+//            Real giro = abs((abs(angulo)/MAX_VALOR_GIRO_RUEDAS) - MAX_VALOR_GIRO_RUEDAS);
+//            cout << "giro calculado: (" << angulo << " / " << MAX_VALOR_GIRO_RUEDAS << ") - " << MAX_VALOR_GIRO_RUEDAS << " = " << giro << endl;
+//            _car->girarCPU( giro);
+            _car->girarCPU( angulo);
+        }
+        else if (angulo < 0)
+        {
+            cout << "orientando a derecha" << endl;
+//            Real giro = abs((abs(angulo)/MAX_VALOR_GIRO_RUEDAS) - MAX_VALOR_GIRO_RUEDAS);
+//            cout << "giro calculado: (" << angulo << " / " << MAX_VALOR_GIRO_RUEDAS << ") = " << giro << endl;
+//            _car->girarCPU( - giro);
+            _car->girarCPU( angulo);
+        }
+    }
+    else
+    {
+        //_onHisWay = true;
+        _car->girarCPU(0);
+        cout << "ON_HIS_WAY INTERNO: " << _onHisWay << endl;
+        //anguloDelta = 0;
+        angulo = 0;
+    }
+    
+    _car->acelerarCPU(_car->getFuerzaMotor(),false);
+
+
 //    Vector3 mDestination = mWalkList.front();                    // mDestination is the next location
 //    Vector3 mDirection = mDestination - mNode->getPosition();    // B-A = A->B (see vector questions above)
 //    Vector3 src = mNode->getOrientation() * Vector3::UNIT_X;     // see (1)
@@ -120,7 +150,7 @@ void cpuPlayer::update(Real deltaT)
 
 bool cpuPlayer::compruebaCheckPoint()
 {
-    static size_t i = 0;
+    //static size_t i = 0;
     //https://youtu.be/nyJa-WKmWqE GRACIAS A DIOS ENCONTRÉ A ESTE CRACK. Documentación Bullet = BigShit!
     
     Vector3 inicio =  _car->getPosicionActual();
@@ -138,12 +168,42 @@ bool cpuPlayer::compruebaCheckPoint()
             //rayCallback.m_collisionObjects[i]->getCollisionShape()
             if (rayCallback.m_collisionObjects[i]->getUserPointer())
             {
-                cout << "Datos varios NOMBRE: " << ((CheckPoint_data*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->_nombre << endl;
-                cout << "Datos varios ID: " << ((CheckPoint_data*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->_id << endl;
+                if (static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_tipo == tipoRigidBody::CHECK_POINT)
+                {
+    //                cout << "Datos varios NOMBRE: " << ((CheckPoint_data*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->_nombre << endl;
+    //                cout << "Posicion del checkpoint: " << ((CheckPoint_data*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->_worldPosition << endl;
+                    //size_t id = ((CheckPoint_data*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->_id;
+                    size_t id = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_id;
+    //                cout << "Datos varios ID: " << id << endl;
+                    if (_idCheck_origen > id) // Si el id del checkpoint por el que estoy pasando es menor que el _idCheck_origen, es que hemos avanzado hacia atrás: AVISAR Y PENALIZAR.
+                        _sentidoContrario = true;
+                    else if (_idCheck_destino == id) // Si el idcheck_destino es igual al checkpoint por el que estoy pasando, lo hemos alcanzado.
+                    {
+                        _idCheck_origen = _idCheck_destino; 
+                        _idCheck_destino++;
+                        if (_idCheck_destino * _laps == _idCheck_meta)
+                            _finish = true;
+                    }
+                }
             }
         }
         return true;
     }
     
     return false;
+}
+
+
+
+void cpuPlayer::dibujaLinea(Vector3 inicio, Vector3 fin)
+{
+    // DIBUJAMOS LINEA A MODO DE FARO PARA SABER A DONDE HA DE DIRIGIRSE EL COCHE
+        static int i = 0;
+        ManualObject* manual = _sceneMgr->createManualObject("rayo_" + to_string(i));
+        manual->begin("BaseWhiteNoLighting", RenderOperation::OT_LINE_LIST);
+            manual->position(inicio); //start
+            manual->position(fin);    //end
+        manual->end();
+        i++;
+        _sceneMgr->getRootSceneNode()->attachObject(manual);    
 }
