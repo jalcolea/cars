@@ -165,7 +165,7 @@ void CarRayCast::girarCPU(Real valorGiro) // valorGiro positivo = izquierda, val
         _valorGiro = valorGiro;
     else
     {
-        cout << "GIRARCPU(" << valorGiro << ") VALOR GIRO DEMASIADO GRANDE, AJUSTANDO" << endl;
+//        cout << "GIRARCPU(" << valorGiro << ") VALOR GIRO DEMASIADO GRANDE, AJUSTANDO" << endl;
         if (valorGiro == 0)
             _valorGiro = 0; // "malditos decimales (léase con acento de Don Gato)
         else if (valorGiro > 0)
@@ -182,8 +182,8 @@ void CarRayCast::girarCPU(Real valorGiro) // valorGiro positivo = izquierda, val
     _vehiculo->setSteeringValue(_valorGiro,0);
     _vehiculo->setSteeringValue(_valorGiro,1);
     
-    cout << "GIRARCPU(" << valorGiro << ")" << endl;
-    cout << "Giro finalmente aplicado " << _valorGiro << endl;
+//    cout << "GIRARCPU(" << valorGiro << ")" << endl;
+//    cout << "Giro finalmente aplicado " << _valorGiro << endl;
 }
 
 
@@ -261,3 +261,18 @@ bool CarRayCast::ruedasEnContacto()
             cout << "SuspensionLength: " << _vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_suspensionLength << endl;
             cout << "wheelAxleWS: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_wheelAxleWS) << endl;
             cout << "wheelDirectionWS: " << convert(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_wheelDirectionWS) << endl; */
+
+
+void CarRayCast::cambiarMaterialVehiculo(string& nombreMaterial)
+{
+    // NOTA: getSubEntity(0)  El índice de getSubEntity, en este caso 0, se establece cuando exportamos el modelo desde Blender, 
+    // el exportador establece el indice del submesh según el orden de los materiales que use el modelo en Blender. En esta parte del juego
+    // queremos cambiar el material del chasis del vehiculo. Es decir, de la parte del modelo más grande. Si esa parte del modelo en 
+    // blender usa un material cuyo índice no sea 0, es decir el primero, el exportador le asignará a esa parte del modelo (el submesh)
+    // el índice que tenga el material en Blender. Luego si hardcodeamos el índice del subEntity, como en este caso, tendremos que tener
+    // en cuenta este detalle, de lo contrario estaríamos intentando cambiar el material al subEntity (submesh) erróneo.
+    
+    static_cast<Entity *>(this->_nodoChasis->getAttachedObject(0))->getSubEntity(0)->setMaterialName(nombreMaterial);
+    
+
+}

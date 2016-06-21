@@ -100,6 +100,8 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
             inicializarEstadoRotacionSelector(1.0f/120, _nodoSelector->getOrientation(),60,Vector3::UNIT_Y,_sentidoGiro);
             _girandoRuleta = true;
         }
+        
+        sincronizarIdMaterialConVehiculoSeleccionado();
     }
 
     if ((e.key == OIS::KC_M)||(e.key == OIS::KC_C))
@@ -424,7 +426,7 @@ void carSelectorState::createScene()
     _bajando = false;
     _subiendo = false;
     _progresoBajada = MAX_ALTURA_SELECCIONADO;
-    _progresoBajada = MIN_ALTURA_SELECCIONADO;
+    //_progresoBajada = MIN_ALTURA_SELECCIONADO;
     _idMaterialActual = 0;
 
     
@@ -515,4 +517,16 @@ void carSelectorState::cambiarMaterialVehicSeleccionado()
 string carSelectorState::getNombreTipoCocheSeleccionado()
 {
     return _vEntCars[_cursorVehiculo]->getName().substr(0,_vEntCars[_cursorVehiculo]->getName().find("OneBlock"));
+}
+
+void carSelectorState::sincronizarIdMaterialConVehiculoSeleccionado()
+{
+    string aux = static_cast<Entity *>(_vCars[_cursorVehiculo]->getAttachedObject(0))->getSubEntity(0)->getMaterialName();
+    for (size_t i=0; i<_vMateriales.size(); i++)
+        if (_vMateriales[i] == aux)
+        {
+            _idMaterialActual = i;
+            break;
+        }
+    
 }

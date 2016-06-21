@@ -127,6 +127,7 @@ private:
     void bajarDeseleccionado();
     void subirSeleccionado();
     void cambiarMaterialVehicSeleccionado();
+    void sincronizarIdMaterialConVehiculoSeleccionado();
     std::vector<string> _vMateriales {"carmaterial_blue","carmaterial_citrus","carmaterial_green","carmaterial_orange","carmaterial_silver","carmaterial_violet","red.gloss"};
     std::vector<Entity*> _vEntCars;
     int _cursorVehiculo; 

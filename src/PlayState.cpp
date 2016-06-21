@@ -299,6 +299,7 @@ void PlayState::initBulletWorld(bool showDebug)
 
 void PlayState::createScene()
 {
+    _playSimulation = false;
   
     _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
     _sceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_MODULATIVE);
@@ -314,14 +315,6 @@ void PlayState::createScene()
     _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
     
-    createPlayersCPU();
-    
-
-    for (size_t j=0; j<_vCarsCpuPlayer.size(); j++)
-        _vCarsCpuPlayer.at(j)->start();
-    
-    
-    
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
     //createVallaVirtual();
 
@@ -335,6 +328,8 @@ void PlayState::createScene()
     
     nodoOgre_t _checkPointInfo = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("CheckPointPlane");
     
+    btCollisionObject* btobjAnterior; // para ir enlazando los user_data de cada btCollisionObject (puntero obtenible de cada rigidBody)
+    
     for (size_t i = 0; i < vpoints.size(); i++)
     {
         marquita marca;
@@ -345,7 +340,7 @@ void PlayState::createScene()
         marca._entMarca->setCastShadows(false);
         marca._entMarca->setQueryFlags(MASK_MARCA);
         marca._nodoMarca->attachObject(marca._entMarca);
-        marca._nodoMarca->setPosition(vpoints[i].p->x(),_planeRoadNode->getPosition().y + 1,vpoints[i].p->z());
+        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y + 1,vpoints[i].p.p.z);
         _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
         marca.rotacion = vpoints[i].quat;
         marca._nodoMarca->setOrientation(marca.rotacion);
@@ -361,27 +356,55 @@ void PlayState::createScene()
 //        bodyCheckPoint->setShape(marca._nodoMarca,tri,_checkPointInfo.bodyRestitutionBullet,_checkPointInfo.frictionBullet,_checkPointInfo.masaBullet,marca._nodoMarca->getPosition(),marca.rotacion);
         bodyCheckPoint->setShape(marca._nodoMarca,boxShape,_checkPointInfo.bodyRestitutionBullet,_checkPointInfo.frictionBullet,_checkPointInfo.masaBullet,marca._nodoMarca->getPosition(),marca.rotacion);
         cout << "marca creada en posicion: " << marca._nodoMarca->getPosition() << endl;        
-        bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName()));
+        //bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName()));
         
         // NOTA:
         // Por alguna razón que desconozco, aún habiendo indicado la posición inicial (bodyCheckPoint->setShape(SceneNode,shape,restitution,friction,masa,POSICION,rotacion))
         // OgreBullet (ó bullet) asignan la posicion (0,0,0) independientemente del valor que le pase. La rotación si que la establece bien al parecer.
         // Así pues, una vez configurado bullet para este CheckPoint, lo vuelvo a trasladar a su lugar correcto. Y así parece que funciona. 
-        marca._nodoMarca->setPosition(vpoints[i].p->x(),_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p->z());
+        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z);
         btTransform trans = bodyCheckPoint->getBulletRigidBody()->getWorldTransform();
-        trans.setOrigin(btVector3(vpoints[i].p->x(),_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p->z()));
+        trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z));
         bodyCheckPoint->getBulletRigidBody()->setWorldTransform(trans);
         //bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition()));
-        bodyCheckPoint->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CHECK_POINT,new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition())));
-
+        bodyCheckPoint->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CHECK_POINT,                            // establecemos el tipo de rigidbody para cuando se lanzan rayos
+                                                                             new CheckPoint_data(i,                                 // id del checkpoint
+                                                                                                 marca._nodoMarca->getName(),       // nombre del checkpoint
+                                                                                                 marca._nodoMarca->getPosition(),   // posicion respecto a su padre en el mundo (root en este caso)
+                                                                                                 nullptr)));               // puntero al SceneNode de Ogre siguiente a este
+                                                                                                 
+        // Me guardo este btCollisionObject para actualizar el campo ogreNode en la siguiente iteración del for
+        // Así vamos enlazando un btCollisionObject con otro a través de los sceneNodes de Ogre. Este dato será útil 
+        // a la hora de hacer puntos de destino aleatorios a un siguiente CheckPoint. Podremos transformar puntos del 
+        // espacio local del SceneNode al espacio Global una vez se calculen esos puntos aleatorios dentro del espacio
+        // local del SceneNode. Entonces tiene sentido que una vez alcanzado un Checkpoint, los puntos de destino aleatorios
+        // sean pertenecientes al espacio local del SIGUIENTE checkPoint. De este modo conseguimos que los puntos caigan dentro
+        // del espacio del circuito siempre, pues los checkpoints en toda su envergadura lo están.
+        if (i>0) // Si no es el primero, no tiene sentido que enlacen con él.
+        {
+            cout << "antes: " << static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(btobjAnterior->getUserPointer())->_data)->_ogreNode << endl;
+            static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(btobjAnterior->getUserPointer())->_data)->_ogreNode = marca._nodoMarca;
+            cout << "despues: " << static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(btobjAnterior->getUserPointer())->_data)->_ogreNode << endl;
+        }
+        btobjAnterior = bodyCheckPoint->getBulletObject();
 
 
         cout << "nombre nodo marca creado: " << marca._nodoMarca->getName() << endl;
         cout << "nombre entity marca creado: " << marca._entMarca->getName() << endl;
         cout << "posicion de la marca creada: " << marca._nodoMarca->getPosition() << endl;
         cout << "id de la marca creada:" << i << endl;
-    }    
+    }
 
+
+    createPlayersCPU();
+
+    for (size_t j=0; j<_vCarsCpuPlayer.size(); j++)
+    {
+        _vCarsCpuPlayer.at(j)->activarMaterial();
+        _vCarsCpuPlayer.at(j)->start();
+    }
+    
+    _playSimulation = true;
   
 }
 
@@ -403,44 +426,56 @@ void PlayState::createPlayersCPU()
 {
     _nombreTipoCoche = actualOptions::getSingletonPtr()->getNombreVehiculoXML();
     
-    auto & nombres = actualOptions::getSingletonPtr()->getNombresCPU();
-    auto & materials = actualOptions::getSingletonPtr()->getNombreMateriales();
+    auto nombres = actualOptions::getSingletonPtr()->getNombresCPU();
+    auto materials = actualOptions::getSingletonPtr()->getNombreMateriales();
     std::vector<string> vNombresCPU;
     std::vector<string> vMateriales;
-    string& nombreCPU = nombres[rand() % nombres.size()-1];
-    string& nombreMaterial = materials[rand() % materials.size()-1];
+    string nombreCPU;// = nombres[rand() % nombres.size()-1];
+    string nombreMaterial;// = materials[rand() % materials.size()-1];
     string auxNombreCPU = "";
-    string auxNombreMaterial = _nombreMaterial;
+    //string auxNombreMaterial = _nombreMaterial;
+    vMateriales.push_back(_nombreMaterial); // añadimos ya el material seleccionado por el usuario, así cuando lo encuentre lo descartará.
+
+    srand (time(NULL));
 
     for (size_t i = 0; i < CPU_PLAYERS; i++)
     {
-        while((nombreCPU == auxNombreCPU) && [&vNombresCPU,&nombreCPU]()->bool  // LAMBDA POWAH!!!!
-                                           {
-                                                auto it = std::find(vNombresCPU.begin(), vNombresCPU.end(),nombreCPU);
-                                                return (it == vNombresCPU.end()); 
-                                           }())
+        do
         {
             nombreCPU = nombres[rand() % nombres.size()];
-        }
+        }while((nombreCPU == auxNombreCPU) || [&vNombresCPU,&nombreCPU]()->bool  // LAMBDA POWAH!!!!
+                                              {
+                                                   auto it = std::find(vNombresCPU.begin(), vNombresCPU.end(),nombreCPU);
+                                                   return (it != vNombresCPU.end()); 
+                                              }());
         auxNombreCPU = nombreCPU;
         vNombresCPU.push_back(nombreCPU);
         
-        while(nombreMaterial == _nombreMaterial && nombreMaterial == auxNombreMaterial && [&vMateriales,&nombreMaterial]()->bool  // LAMBDA POWAH!!!!
-                                                                                          {
-                                                                                            auto it = std::find(vMateriales.begin(), vMateriales.end(),nombreMaterial);
-                                                                                            return (it == vMateriales.end()); 
-                                                                                          }())
+        do
         {
-            nombreMaterial = materials[rand() % materials.size()-1];
-        }
-        auxNombreMaterial = nombreMaterial;
+            size_t auxIdxMaterial = rand() % materials.size();
+            cout << auxIdxMaterial << endl;
+            nombreMaterial = materials[auxIdxMaterial];
+        }while(nombreMaterial == _nombreMaterial ||  [&vMateriales,&nombreMaterial]()->bool  // LAMBDA POWAH!!!!
+                                                     {
+                                                         auto it = std::find(vMateriales.begin(), vMateriales.end(),nombreMaterial);
+                                                         return (it != vMateriales.end()); 
+                                                     }());
+
+        
+        //auxNombreMaterial = nombreMaterial;
         vMateriales.push_back(nombreMaterial);
         
-        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),3,nullptr,i)));
+        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),1,nullptr,i)));
         _vCarsCpuPlayer.back()->build();
 
     }
     
+    for (size_t j=0; j<vNombresCPU.size(); j++)
+    {
+        cout << "Nombre: " << vNombresCPU.at(j) << endl;
+        cout << "Material: " << vMateriales.at(j) << endl;
+    }    
 
     _cursorVehiculo = 0;
 

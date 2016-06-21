@@ -64,4 +64,5 @@ void Carrusel::go()
   pthread_t thread1, thread2;
   int  iret1;
   iret1 = pthread_create( &thread1, NULL, Carrusel::run, this);
+  (void)iret1;
 }

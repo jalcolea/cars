@@ -4,7 +4,8 @@
 #include "Ogre.h"
 #include "OgreBullet/Dynamics/OgreBulletDynamicsWorld.h"
 #include "CarRayCast.h"
-#include "iamanager.h"
+//#include "iamanager.h"
+#include "puntoManager.h"
 #include "IAPointsDeserializer.h"
 
 using namespace Ogre;
@@ -28,18 +29,26 @@ public:
             _iapd = unique_ptr<IAPointsDeserializer>(new IAPointsDeserializer());
             _iapd->cargarFichero(_ficheroRutasIA);
             
-            _iaMgr = unique_ptr<iamanager>(new iamanager(_laps,&_iapd->getPointsPtr(),0,1));
+            //_iaMgr = unique_ptr<iamanager>(new iamanager(_laps,&_iapd->getPointsPtr(),0,1));
+            _iaMgr = unique_ptr<puntoManager>(new puntoManager());
             
-            _iaMgr->print_points();
+            auto puntos = _iapd->getPoints();
+            for (size_t i=0; i<puntos.size(); i++)
+                _iaMgr->addPunto(puntos.at(i));
+
+            
+            _iaMgr->derivaPuntos(8,3,true,Vector3::UNIT_X,1);
             
             _idCheck_destino = 0;
             _idCheck_origen = 0;
-            _idCheck_meta = (_iaMgr->getVectorPtrPoints()->size() * _laps) - 1;
+            _idCheck_meta = (_iaMgr->getPuntos().size() * _laps);
             _finish = false;
             _sentidoContrario = false;
             _onHisWay = false;
             _timeStopped = 0;
             _timeWrongWay = 0;
+            
+            _nodoCheckPointSiguiente = nullptr;
             
             
     };
@@ -48,8 +57,11 @@ public:
 
     void update(Real deltaT);
     void build();
+    inline void activarMaterial(){ _car->cambiarMaterialVehiculo(_nombreMaterial); };
     inline void start() { _onHisWay = true; };
-    inline void stop() { _onHisWay = false; };
+    inline void stop() { _onHisWay = false; _car->acelerar(0.0); };
+    inline string& getNombreMaterial(){ return _nombreMaterial; };
+    inline void setNombreMaterial(const string& nombreMaterial){ _nombreMaterial = nombreMaterial; };
     
     inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
     inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
@@ -64,9 +76,11 @@ private:
     string _ficheroRutasIA;
     Vector3 _posicionSalida;
     unique_ptr<CarRayCast> _car;
-    unique_ptr<iamanager> _iaMgr;
+    //unique_ptr<iamanager> _iaMgr;
+    unique_ptr<puntoManager> _iaMgr;
     unique_ptr<IAPointsDeserializer> _iapd;
     SceneManager* _sceneMgr;
+    SceneNode* _nodoCheckPointSiguiente;
     OgreBulletDynamics::DynamicsWorld* _world;
     size_t _laps;
     void * _groundObject;
@@ -81,6 +95,7 @@ private:
     size_t _id;
 
     void dibujaLinea(Vector3 inicio, Vector3 fin);
+    Ogre::Vector3 getPuntoAleatorioEnWS();
 
 
 };

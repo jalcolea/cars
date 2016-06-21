@@ -108,11 +108,16 @@ void pathDrawerState::guardarRuta()
     iaps.nuevoXMLIAPoints();
     for (size_t i = 0; i < vMarcas.size(); i++)
     {
-        iapoint p;
-        p.x(vMarcas[i]._nodoMarca->getPosition().x);
-        p.y(vMarcas[i]._nodoMarca->getPosition().y);
-        p.z(vMarcas[i]._nodoMarca->getPosition().z);
-        iaps.addNodoXMLIAPoints(i,p,vMarcas[i]._nodoMarca->getOrientation());
+//        iapoint p;
+//        p.x(vMarcas[i]._nodoMarca->getPosition().x);
+//        p.y(vMarcas[i]._nodoMarca->getPosition().y);
+//        p.z(vMarcas[i]._nodoMarca->getPosition().z);
+        punto point;
+        point.p.x = vMarcas[i]._nodoMarca->getPosition().x;
+        point.p.y = vMarcas[i]._nodoMarca->getPosition().y;
+        point.p.z = vMarcas[i]._nodoMarca->getPosition().z;
+
+        iaps.addNodoXMLIAPoints(i,point,vMarcas[i]._nodoMarca->getOrientation());
     }    
     
     iaps.guardarXMLIAPoints("rutasIA.xml");
@@ -125,11 +130,13 @@ void pathDrawerState::cargarRuta(string fichero)
     
     IAPointsDeserializer iapd;
     iapd.cargarFichero(fichero);
-    std::vector<iapoint> vpoints = iapd.getPoints();
+//    std::vector<iapoint> vpoints = iapd.getPoints();
+    std::vector<punto> vpoints = iapd.getPoints();
     
     for (size_t i = 0; i < vpoints.size(); i++)
     {
-        Vector3 pos(vpoints[i].x(),vpoints[i].y(),vpoints[i].z());
+        //Vector3 pos(vpoints[i].x(),vpoints[i].y(),vpoints[i].z());
+        Vector3 pos(vpoints[i].p); 
         addMarca(pos);
     }    
     
@@ -145,7 +152,7 @@ void pathDrawerState::cargarRutaCheckPoint(string fichero)
     
     for (size_t i = 0; i < vpoints.size(); i++)
     {
-        Vector3 pos(vpoints[i].p->x(),vpoints[i].p->y(),vpoints[i].p->z());
+        Vector3 pos(vpoints[i].p.p.x,vpoints[i].p.p.y,vpoints[i].p.p.z);
         Quaternion q = vpoints[i].quat;
         addCheckPoint(pos,q);
     }    

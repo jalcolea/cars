@@ -9,9 +9,10 @@ iamanager::iamanager(int laps, vector <iapoint*> * path, int offset, float min_d
 {
   iacomplexpoint * p;
   _fixed_x=false;
-  _fixed_y=false;
+  _fixed_y=true;
   _fixed_z=false;
 
+  srand(time(NULL));
   points = new vector <iacomplexpoint*>();
   int range=(offset*2)-1;
   for (int a=0;a<_laps;a++)

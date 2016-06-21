@@ -18,4 +18,15 @@ struct rigidBody_data
     void* _data;
 };
 
+// PARA EL USERPOINTER DE btCollisionObject*, HAY QUE VER DONDE IRÍA MEJOR ESTO O SI SE PUEDE APROVECHAR OTRA ESTRUCTURA
+struct CheckPoint_data
+{
+    CheckPoint_data(size_t id, string nombre, Ogre::Vector3 posicion = Ogre::Vector3::ZERO, Ogre::SceneNode* ogreNode = nullptr):_id(id),_nombre(nombre),_worldPosition(posicion),_ogreNode(ogreNode){}
+    size_t _id;
+    string _nombre;
+    Ogre::Vector3 _worldPosition;
+    Ogre::SceneNode* _ogreNode;
+};
+
+
 #endif

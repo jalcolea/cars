@@ -7,14 +7,23 @@
 #include <Ogre.h>
 #include <vector>
 #include <mxml.h>
-#include "iapoint.h"
+//#include "iapoint.h"
+#include "puntoIA.h"
 
+using namespace std;
+
+//struct CheckPoint
+//{
+//  iapoint* p;
+//  Ogre::Quaternion quat;  
+//};
 
 struct CheckPoint
 {
-  iapoint* p;
+  punto p;
   Ogre::Quaternion quat;  
 };
+
 
 class IAPointsDeserializer
 {
@@ -22,12 +31,12 @@ class IAPointsDeserializer
         IAPointsDeserializer();
         virtual ~IAPointsDeserializer();
 
-        bool cargarFichero(string fichero = "");
-        bool cargarFicheroCheckPoint(string fichero = "");
+        bool cargarFichero(std::string fichero = "");
+        bool cargarFicheroCheckPoint(std::string fichero = "");
 
-        string getFichero(){ return _fichero; };
-        std::vector<iapoint>& getPoints(){ return _vPoints;};
-        std::vector<iapoint*>& getPointsPtr(){ return _vPointsPtr;};
+        std::string getFichero(){ return _fichero; };
+        std::vector<punto>& getPoints(){ return _vPoints;};
+        //std::vector<iapoint*>& getPointsPtr(){ return _vPointsPtr;};
         std::vector<CheckPoint>& getCheckPoints() { return _vCheckPoints; };
 
     protected:
@@ -35,10 +44,10 @@ class IAPointsDeserializer
     private:
         void nuevoIAPoint(mxml_node_t* node);
         void nuevoCheckPoint(mxml_node_t* node);
-        std::vector<iapoint> _vPoints;
-        std::vector<iapoint*> _vPointsPtr;
+        std::vector<punto> _vPoints;
+        //std::vector<iapoint*> _vPointsPtr;
         std::vector<CheckPoint> _vCheckPoints;
-        string _fichero;
+        std::string _fichero;
 };
 
 #endif // IAPOINTSDESERIALIZER_H
