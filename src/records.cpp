@@ -8,7 +8,8 @@ records::records()
 
 bool records::sort_records(records_entry pre, records_entry next)
 {
-  return pre.points > next.points;
+  return pre.points < next.points;
+  //return pre.points > next.points;
 }
 
 int records::loadFile(string path)
@@ -56,7 +57,9 @@ const vector <records_entry> records::getList (int amount )
 
 int records::add_record (string name, int points)
 {
-  records_entry entry (name,points);
+  char tmp [64];
+  sprintf(tmp,"%d:%d",points/60,points%60);
+  records_entry entry (name,points,string(tmp));
   records_vector.push_back (entry);
   std::sort(records_vector.begin(),records_vector.end(),records::sort_records);
   return 0;
@@ -71,7 +74,7 @@ void records::print()
   cout << "END LIST" << endl;
 }
 
-int records::getNext (string &name, int &points, bool begin)
+int records::getNext (string &name, int &points, string &timestamp, bool begin)
 {
   static unsigned int cont = 0;
   if (begin) cont=0;
@@ -80,6 +83,7 @@ int records::getNext (string &name, int &points, bool begin)
   {
     name=this->records_vector[cont].name;
     points=this->records_vector[cont].points;
+    timestamp=this->records_vector[cont].timestamp;
     cont++;
     return 0;
   } 

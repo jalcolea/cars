@@ -30,11 +30,12 @@ void RecordsState::loadRecords()
           int cont=0;
           string name;
           int points;
+          string timestamp;
           string tmp_users="";
           string tmp_points="";
           char tmp_char [64];
           int max_records = MAX_RECORDS;
-          result = records::getInstance()->getNext(name,points,true);
+          result = records::getInstance()->getNext(name,points,timestamp,true);
           cont++;
           while (result == 0)
           {
@@ -43,11 +44,12 @@ void RecordsState::loadRecords()
             {
               sprintf(tmp_char,"\%s\n",name.c_str());
               tmp_users += string(tmp_char);
-              sprintf(tmp_char,"\%d\n",points);
-              tmp_points += string(tmp_char);
+              //sprintf(tmp_char,"\%d\n",points);
+              //tmp_points += string(tmp_char);
+              tmp_points += timestamp + "\n";
             }
             if (max_records!=0 && cont >= max_records) break;
-            result = records::getInstance()->getNext(name,points);
+            result = records::getInstance()->getNext(name,points,timestamp);
             cont++;
           }
           score_names_txt->setCaption(tmp_users);

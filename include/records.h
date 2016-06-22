@@ -17,7 +17,8 @@ typedef struct records_entry
 {
   string name;
   int points;
-  records_entry(string n,int p){name=n;points=p;};
+  string timestamp;
+  records_entry(string n,int p, string t){name=n;points=p;timestamp=t;};
 } records_entry;
 
 class records
@@ -34,7 +35,7 @@ class records
     const std::vector <records_entry> getList (int amount =10);
     int add_record (string name, int points);
     void print ();
-    int getNext (string & name,int & points, bool begin=false);
+    int getNext (string & name,int & points, string & timestamp, bool begin=false);
     static records * getInstance();
     void getBest (string & name,int & points);
 };
