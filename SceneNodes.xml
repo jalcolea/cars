@@ -277,12 +277,12 @@
         <radioRuedas>1.0</radioRuedas>
         <anchoRuedas>0.5</anchoRuedas>
         <friccionRueda>1e30f</friccionRueda>
-        <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
+        <influenciaRodado>0.0</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.0205</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <posicion x="-4" y="2.1" z="-22"></posicion>
         <!--<posicion x="8" y="1.2" z="-12"></posicion> -->
         <velocidadGiro>0.002</velocidadGiro> <!-- parece un valor adecuado para el kart -->
-        <aceleracion>2000</aceleracion>
+        <aceleracion>3000</aceleracion>
         <frenada>1500</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>3000</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
@@ -292,7 +292,7 @@
         <maxSuspensionForce>150</maxSuspensionForce> <!-- 150 al inicio, 1500 hace que levante el morro al acelerar, 200 hace que el muelle 
                                                           de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
                                                           150 parece un valor adecuado :D -->
-        <frictionSlip>5000</frictionSlip> <!-- empezamos con 10000 (valor bueno en principio), 10 parece igual, 100000 inestable, 5000 parece buen valor también -->
+        <frictionSlip>100</frictionSlip> <!-- empezamos con 10000 (valor bueno en principio), 10 parece igual, 100000 inestable, 5000 parece buen valor también -->
         <posRueda0 x="0.18" y="-0.12" z="0.205" ></posRueda0>
         <posRueda1 x="-0.18" y="-0.12" z="0.205"></posRueda1>
         <posRueda2 x="-0.18" y="-0.12" z="-0.215"></posRueda2>

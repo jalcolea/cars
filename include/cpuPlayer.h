@@ -14,44 +14,24 @@ using namespace OgreBulletCollisions;
 using namespace OgreBulletDynamics;
 
 #define MAX_TIME_STOPPED 1.5 // segundos
+#define MAX_MARCHA 5
+#define MAX_TIME_MARCHA 1
+
+enum class estadoManiobra
+{
+    ENRUTA,
+    COCHE_DELANTE_CERCA,
+    COCHE_A_IZQUIERDA_CERCA,
+    COCHE_A_DERECHA_CERCA,
+    COCHE_ATRAS_CERCA,
+    BORDILLO_CERCA
+};
 
 class cpuPlayer
 {
 public:
     cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, string ficheroRutasIA, Vector3 posicionSalida, 
-              SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, void* groundObject = nullptr, size_t id = 0)
-             : _nombreEnPantalla(nombreEnPantalla), _nombreVehiculo(nombreVehiculo), _nombreMaterial(nombreMaterial), _ficheroRutasIA(ficheroRutasIA), _posicionSalida(posicionSalida),
-               _sceneMgr(sceneMgr), _world(world), _laps(laps), _groundObject(groundObject), _id(id)
-    {
-            cout << "possalida cpuplayer: " << _posicionSalida << endl;
-            _car = unique_ptr<CarRayCast>(new CarRayCast(_nombreVehiculo,_posicionSalida,_sceneMgr,_world,nullptr,_id));
-            
-            _iapd = unique_ptr<IAPointsDeserializer>(new IAPointsDeserializer());
-            _iapd->cargarFichero(_ficheroRutasIA);
-            
-            //_iaMgr = unique_ptr<iamanager>(new iamanager(_laps,&_iapd->getPointsPtr(),0,1));
-            _iaMgr = unique_ptr<puntoManager>(new puntoManager());
-            
-            auto puntos = _iapd->getPoints();
-            for (size_t i=0; i<puntos.size(); i++)
-                _iaMgr->addPunto(puntos.at(i));
-
-            
-            _iaMgr->derivaPuntos(8,3,true,Vector3::UNIT_X,1);
-            
-            _idCheck_destino = 0;
-            _idCheck_origen = 0;
-            _idCheck_meta = (_iaMgr->getPuntos().size() * _laps);
-            _finish = false;
-            _sentidoContrario = false;
-            _onHisWay = false;
-            _timeStopped = 0;
-            _timeWrongWay = 0;
-            
-            _nodoCheckPointSiguiente = nullptr;
-            
-            
-    };
+              SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, void* groundObject = nullptr, size_t id = 0);
     
     virtual ~cpuPlayer();
 
@@ -59,9 +39,10 @@ public:
     void build();
     inline void activarMaterial(){ _car->cambiarMaterialVehiculo(_nombreMaterial); };
     inline void start() { _onHisWay = true; };
-    inline void stop() { _onHisWay = false; _car->acelerar(0.0); };
+    void stop();
     inline string& getNombreMaterial(){ return _nombreMaterial; };
     inline void setNombreMaterial(const string& nombreMaterial){ _nombreMaterial = nombreMaterial; };
+    inline string& getNombreEnPantalla(){ return _nombreEnPantalla; };
     
     inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
     inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
@@ -87,15 +68,33 @@ private:
     size_t _idCheck_destino;
     size_t _idCheck_origen;
     size_t _idCheck_meta;
+    size_t _idxPuntoAleatorioActual;
     bool _finish;
     bool _sentidoContrario;
     bool _onHisWay;
     Ogre::Real _timeStopped; // Si el valor es mayor que uno dado, consideraremos que el coche se ha quedado atascado y forzaremos un respawn
     Ogre::Real _timeWrongWay; // Daremos un tiempo para que la CPU se recupere si por azar (choques, etc) acaba yendo contra sentido. Si supera el tiempo dado forzamos un respawn
+    Ogre::Real _deltaT;
     size_t _id;
+    btQuaternion _ultimaOrientacionBuena;
 
-    void dibujaLinea(Vector3 inicio, Vector3 fin);
+    void dibujaLinea(Vector3 inicio, Vector3 fin, bool consoleOut = false);
+    void compruebaRecolocar();
+    void setListaPuntosAleatorios(); // establece el indice para obtener un punto aleatorio para un Checkpoint.
+    void compruebaManiobra();
+    void rayoAlFrente();
+    void cambiaMarcha();
     Ogre::Vector3 getPuntoAleatorioEnWS();
+    Ogre::Vector3 obtenerDestino();
+    estadoManiobra _maniobra;
+    size_t _marchaActual;
+    Ogre::Real _incrementoMarcha;
+    Ogre::Real _timeMarcha;
+    Ogre::Real _aceleracion;
+    
+    
+    
+    
 
 
 };

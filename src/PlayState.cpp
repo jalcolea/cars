@@ -466,7 +466,7 @@ void PlayState::createPlayersCPU()
         //auxNombreMaterial = nombreMaterial;
         vMateriales.push_back(nombreMaterial);
         
-        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),1,nullptr,i)));
+        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),2,nullptr,i)));
         _vCarsCpuPlayer.back()->build();
 
     }

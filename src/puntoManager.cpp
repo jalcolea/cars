@@ -59,18 +59,22 @@ void puntoManager::derivaPuntos(Ogre::Real magnitud, size_t cuantos, bool distri
 
 // Si aleatorio = true, "i_derivado" será ignorado y se dará uno cualquiera de la lista de derivados para el punto "i"
 // NO_SANITY_CHECK!!!!! si el usuario quiere uno en concreto tendrá que ser válido, de lo contrario "CORE DUMP" muyyyyy probable.
-// Por supuesto lo mismo ocurrirá si no se han generado derivados para este punto.
+// Si un punto no tiene derivados se devolverá ese mismo punto.
 Ogre::Vector3 puntoManager::getPuntoDerivado(size_t i_punto,size_t i_derivado, bool aleatorio)
 {
     Ogre::Vector3 aux;
 
-    if (aleatorio)
+    if (_puntos.at(i_punto).derivados.size())
     {
-        srand(time(nullptr));
-        aux = _puntos.at(i_punto).derivados.at(rand()%_puntos.at(i_punto).derivados.size());
+        if (aleatorio)
+        {
+            srand(time(nullptr));
+            aux = _puntos.at(i_punto).derivados.at(rand()%_puntos.at(i_punto).derivados.size());
+        }
+        else
+            aux = _puntos.at(i_punto).derivados.at(i_derivado);
     }
-    else
-        aux = _puntos.at(i_punto).derivados.at(i_derivado);
+    else aux = _puntos.at(i_punto).p;
 
     return aux;
 }

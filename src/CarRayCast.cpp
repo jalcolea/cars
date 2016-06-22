@@ -276,3 +276,14 @@ void CarRayCast::cambiarMaterialVehiculo(string& nombreMaterial)
     
 
 }
+
+void CarRayCast::stop()
+{
+    _bodyWheeled->getBulletRigidBody ()->clearForces();
+    _bodyWheeled->getBulletRigidBody ()->setInterpolationLinearVelocity( btVector3( 0, 0, 0 ) );
+    _bodyWheeled->getBulletRigidBody ()->setInterpolationAngularVelocity( btVector3( 0, 0, 0 ) );
+    _bodyWheeled->getBulletRigidBody ()->setLinearVelocity(btVector3( 0, 0, 0 ));
+    _bodyWheeled->getBulletRigidBody ()->setAngularVelocity(btVector3( 0, 0, 0 ));
+    _vehiculo->getBulletVehicle ()->resetSuspension();
+
+}

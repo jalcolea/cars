@@ -170,6 +170,7 @@ public:
     void acelerar(Real fuerza, bool endereza = false, Real factorEnderezamiento = 1.5 ); // obvio no?
     void acelerarCPU(Real fuerza, bool endereza); // La cpu si endereza, lo hace del tirón (por conveniencia).
     void frenar();
+    void stop();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
     void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
     void girarCPU(Real valorGiro); // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 

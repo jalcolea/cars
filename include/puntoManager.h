@@ -20,7 +20,7 @@ class puntoManager
 
         // Si aleatorio = true, "i_derivado" será ignorado y se dará uno cualquiera de la lista de derivados para el punto "i"
         // NO_SANITY_CHECK!!!!! si el usuario quiere uno en concreto tendrá que ser válido, de lo contrario "CORE DUMP" muyyyyy probable.
-        // Por supuesto lo mismo ocurrirá si no se han generado derivados para este punto.
+        // Si un punto no tiene derivados se devolverá ese mismo punto.
         Ogre::Vector3 getPuntoDerivado(size_t i_punto,size_t i_derivado, bool aleatorio = false);
 
         // Calcula una desviacion en un punto sobre uno de sus ejes. El parámetro "magnitud" establece el ancho
