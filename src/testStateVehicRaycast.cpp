@@ -476,21 +476,38 @@ void testStateVehicRayCast::createFloor()
 
 void testStateVehicRayCast::createPlaneRoad()
 {
+//    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
+//    SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
+//    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
+//    planeRoadEnt->setCastShadows(true);
+//    planeRoadNode->attachObject(planeRoadEnt);
+//    _sceneMgr->getRootSceneNode()->addChild(planeRoadNode);
+//    
+//   OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
+//   OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
+//   OgreBulletDynamics::RigidBody *planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
+//   planeRoadBody->setShape(planeRoadNode, roadTrimesh, nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
+
     nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
-    SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
-    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
-    planeRoadEnt->setCastShadows(true);
-    planeRoadNode->attachObject(planeRoadEnt);
-    _sceneMgr->getRootSceneNode()->addChild(planeRoadNode);
+    SceneNode* _planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
     
-   OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
-   OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
-   OgreBulletDynamics::RigidBody *planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
-   //planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
-   planeRoadBody->setShape(planeRoadNode, roadTrimesh, nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
-
-
-   // PlaneRoadNode->setPosition(Vector3(0, 0, 0));
+    Plane planeRoad;
+    planeRoad.normal = Vector3(0, 1, 0);
+    planeRoad.d = 2;
+    MeshManager::getSingleton().createPlane("PlaneRoad", 
+                                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                          planeRoad, 300, 400, 20, 20, true, 1, 500, 500, Vector3::UNIT_X);
+    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,"PlaneRoad");
+    planeRoadEnt->setCastShadows(true);
+    planeRoadEnt->setMaterialName("Asfalto");
+    _planeRoadNode->attachObject(planeRoadEnt);
+    _sceneMgr->getRootSceneNode()->addChild(_planeRoadNode);
+    CollisionShape* planeRoadShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
+    OgreBulletDynamics::RigidBody *_planeRoadBody = new RigidBody(nodoXML.nombreNodo, _world.get());
+    _planeRoadBody->setStaticShape(planeRoadShape, nodoXML.bodyRestitutionBullet,nodoXML.frictionBullet,Vector3(0, 2., 0));//nodoXML.posInicial);
+    _planeRoadNode->setPosition(Vector3(0, 3.99, 0));
+    _planeRoadBody->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CARRETERA,_planeRoadBody));
+    
 }
 
 void testStateVehicRayCast::createScene()
@@ -511,13 +528,13 @@ void testStateVehicRayCast::createScene()
     createPlaneRoad();
     _car = unique_ptr<car>(new car("carGroupC1",_world.get(),SceneNodeConfig::getSingleton().getInfoNodoOgre("carGroupC1").posInicial,_sceneMgr,"",nullptr));
     
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("formula",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
-    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(0,0,0),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("kart",Vector3(-4,2.1,-22),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("farara-sport",Vector3(-2,2.1,-22),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("formula",Vector3(-6,2.1,-22),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC1",Vector3(0,2.1,-22),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("groupC2",Vector3(2,2.1,-22),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("lamba-sport",Vector3(4,2.1,-22),_sceneMgr,_world.get())));
+    _vCarsRayCast.push_back(unique_ptr<CarRayCast>(new CarRayCast("parsche-sport",Vector3(6,2.1,-22),_sceneMgr,_world.get())));
     
     for (auto it = _vCarsRayCast.begin(); it != _vCarsRayCast.end(); ++it)
         (*it)->buildVehiculo();
@@ -705,8 +722,9 @@ bool testStateVehicRayCast::compruebaCheckPoint()
         {
             if (rayCallback.m_collisionObjects[i]->getUserPointer())
             {
-                cout << "Datos varios NOMBRE: " << ((datosVarios*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->nombre << endl;
-                cout << "Datos varios ID: " << ((datosVarios*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->id << endl;
+                //cout << "Datos varios NOMBRE: " << ((datosVarios*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->nombre << endl;
+                //cout << "Datos varios ID: " << ((datosVarios*)(rayCallback.m_collisionObjects[i]->getUserPointer()))->id << endl;
+                cout << "rayo" << endl;
             }
         }
         return true;

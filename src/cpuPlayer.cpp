@@ -1,7 +1,8 @@
 #include "cpuPlayer.h"
 #include "iamanager.h"
 #include "CarRayCast.h"
-#include "bulletUtil.h"
+//#include "bulletUtil.h"
+#include "puntoManager.h"
 
 using namespace Ogre;
 
@@ -22,7 +23,12 @@ cpuPlayer::cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nomb
         // Le damos los puntos al puntoManager para gestionarlos
         auto puntos = _iapd->getPoints();
         for (size_t i=0; i<puntos.size(); i++)
+        {
             _iaMgr->addPunto(puntos.at(i));
+            if (i>0) dibujaLinea(puntos[i-1].p,puntos[i].p);
+            dibujaLinea(puntos[i].p,Vector3(puntos[i].p.x,puntos[i].p.y+5,puntos[i].p.z));
+
+        }
 
         // Le pedimos al puntoManager que nos calcule puntos aleatorios para cada Checkpoint dado.
         // Cada instancia de esta clase manejará su lista de puntos aleatorios para cada Checkpoint
@@ -30,11 +36,22 @@ cpuPlayer::cpuPlayer(string nombreEnPantalla, string nombreVehiculo, string nomb
         // Se pueden calcular varios puntos aleatorios para un mismo Checkpoint. Útil si se usa puntoManager
         // como un Singleton, de este modo cada coche podría elegir un punto aleatorio aún compartiendo la misma instancia
         // de puntoManager.
-        _iaMgr->derivaPuntos(5,                  // Ancho de un checkpoint, le pasamos un ancho menor del real para que no de puntos muy cercanos a los bordes de la pista.
+        _iaMgr->derivaPuntos(8,                   // Ancho de un checkpoint, le pasamos un ancho menor del real para que no de puntos muy cercanos a los bordes de la pista.
                              3,                   // Cuantos puntos aleatorios calcular. Para darle mayor aleatoriedad.
-                             true,                // Distribuir los puntos en tantos rangos como puntos a calcular.
+                             false,                // Distribuir los puntos en tantos rangos como puntos a calcular.
                              Vector3::UNIT_X,     // Sobre que eje estamos calculando los puntos aleatorios
-                             0.0);                // Margen entre los rangos en los que se calculan los puntos aleatorios. 
+                             1);                // Margen entre los rangos en los que se calculan los puntos aleatorios. 
+        
+//        for (size_t i=0; i < _iaMgr->getPuntos().size(); i++)
+//        {
+//            for (size_t j=0; j<_iaMgr->getPunto(i).derivados.size(); j++)
+//            {
+//                Vector3 auxFin = _sceneMgr->getSceneNode("CheckPointPlane_"+to_string(i))->convertLocalToWorldPosition(_iaMgr->getPunto(i).derivados[j]);
+//                Vector3 auxInicio = auxFin;
+//                auxFin.y +=10;
+//                dibujaLinea(auxInicio,auxFin);
+//            }
+//        }
         
         
         
@@ -60,7 +77,8 @@ void cpuPlayer::build()
     // Todos estos estados tiene sentido que inicialicen una se ha llamado a CarRayCast::buildVehiculo();
     _idCheck_destino = 0;
     _idCheck_origen = 0;
-    _idCheck_meta = ((_iaMgr->getPuntos().size() - 1) * _laps);
+    _totalCheckPoints = 0;
+    _idCheck_meta = (_iaMgr->getPuntos().size()  * _laps);
     _finish = false;
     _sentidoContrario = false;
     _onHisWay = false;
@@ -107,12 +125,14 @@ void cpuPlayer::update(Real deltaT)
         
         if (destinoOld != destino)
         {
-            //dibujaLinea(origen,destino);
             destinoOld = destino;
             _onHisWay = false;
-            origen.y = destino.y;
+            //origen.y = destino.y;
+            destino.y = origen.y;
             direccion = destino - origen;
             direccion.normalise();
+            //dibujaLinea(origen,destino);
+            //dibujaLinea(destino,Vector3(destino.x,destino.y+10,destino.z));
         }
         
         direccionActualCoche = convert(_car->getVehiculo()->getBulletVehicle()->getForwardVector());
@@ -124,17 +144,21 @@ void cpuPlayer::update(Real deltaT)
         direccion = destino - origen ;
 
         Real angulo = direccionActualCoche.getRotationTo(direccion).getYaw().valueRadians();
-        cout << "angulo entre ellos = " << angulo << endl; 
+//        cout << "angulo entre ellos = " << angulo << endl; 
         if (abs(angulo) > 0.04) // PRIMERO COMPROBAMOS QUE AL ANGULO ENTRE ELLOS ES TODAVÍA SUFICIENTEMENTE GRANDE PARA SEGUIR GIRANDO (0.02 radianes = 1º)
         {
-            if (angulo > 0)    // MIRAMOS EL SIGNO PARA SABER A HACIA DONDE GIRAR.
-            {
+//            if (abs(angulo) >= Math::HALF_PI)// || _maniobra == estadoManiobra::BORDILLO_CERCA)
+//                _maniobra = estadoManiobra::MANIOBRANDO_MARCHA_ATRAS;
+//            else if (_maniobra == estadoManiobra::MANIOBRANDO_MARCHA_ATRAS && angulo <= MAX_VALOR_GIRO_RUEDAS)
+//                _maniobra = estadoManiobra::ENRUTA; 
+//
+//            if (_maniobra == estadoManiobra::MANIOBRANDO_MARCHA_ATRAS)
+//            {
+//                _aceleracion = abs(_aceleracion) * -1;
+//                angulo *= -1;
+//            }    
+            
                 _car->girarCPU( angulo);
-            }
-            else if (angulo < 0)
-            {
-                _car->girarCPU( angulo);
-            }
         }
         else
         {
@@ -147,19 +171,17 @@ void cpuPlayer::update(Real deltaT)
     }
     else _car->acelerarCPU(0,false);
 
-    
 }
 
 
 bool cpuPlayer::compruebaCheckPoint()
 {
-    //static size_t i = 0;
     //https://youtu.be/nyJa-WKmWqE GRACIAS A DIOS ENCONTRÉ A ESTE CRACK. Documentación Bullet = BigShit!
-    
     Vector3 inicio =  _car->getPosicionActual();
     Vector3 fin = inicio;
-    fin.y += -2;
-
+    fin.y += -5;  // Alargar el rayo lo suficiente para alcanzar los checkpoints que hay por debajo del circuito.
+    
+    //dibujaLinea(inicio,fin);
     btCollisionWorld::AllHitsRayResultCallback rayCallback(convert(inicio),convert(fin));
                                                            
     _world->getBulletDynamicsWorld()->rayTest(convert(inicio),convert(fin), rayCallback);
@@ -170,26 +192,39 @@ bool cpuPlayer::compruebaCheckPoint()
         {
             if (rayCallback.m_collisionObjects[i]->getUserPointer())
             {
+                coutTipoCollisionObject(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_tipo);
                 if (static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_tipo == tipoRigidBody::CHECK_POINT)
-                {
+                {   
                     size_t id = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_id;
                     _nodoCheckPointSiguiente = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_ogreNode;
-                    cout << _nodoCheckPointSiguiente << endl;
-                    if (_nodoCheckPointSiguiente) 
-                        cout << "Nombre del sceneNode del siguiente Checkpoint" << _nodoCheckPointSiguiente->getName() << endl;
-                    if (_idCheck_origen > id) // Si el id del checkpoint por el que estoy pasando es menor que el _idCheck_origen, es que hemos avanzado hacia atrás: AVISAR Y PENALIZAR.
+//                    cout << _nodoCheckPointSiguiente << endl;
+//                    if (_nodoCheckPointSiguiente) 
+//                        cout << "Nombre del sceneNode del siguiente Checkpoint" << _nodoCheckPointSiguiente->getName() << endl;
+                    cout << "id del checkpoint que estoy pisando: " << id << " y me dirijo al checkpoint " << _idCheck_destino << endl;
+                    if (_idCheck_destino < id) // Si el id del checkpoint por el que estoy pasando es mayor que el de destino, es que hemos avanzado hacia atrás: AVISAR Y PENALIZAR.
+                    {
                         _sentidoContrario = true;
+                        cout << "NOS HEMOS PASADO :/ " << endl;
+                    }
                     else if (_idCheck_destino == id) // Si el idcheck_destino es igual al checkpoint por el que estoy pasando, lo hemos alcanzado.
                     {
+                        cout << "ID CHECK_DESTINO ALCANZADO, OBTENIENDO NUEVO DESTINO ***********************************************************************" << _idCheck_destino << endl;
                         _idCheck_origen = _idCheck_destino; 
-                        if (_idCheck_destino == _idCheck_meta && !_finish)
+                        //if (_idCheck_destino == _idCheck_meta && !_finish)
+                        if (_totalCheckPoints == _idCheck_meta && !_finish)
                         {
                             _finish = true;
                             //stop();
                         }
                         _idCheck_destino++;
                         _idCheck_destino = _idCheck_destino % _iaMgr->getPuntos().size();
+                        cout << "NUEVO DESTINO **************************************************************************************************************" << _idCheck_destino << endl;
+                        //if (_idCheck_destino > 0) _totalCheckPoints++;
+                        _totalCheckPoints++;
+                        cout << _nombreEnPantalla << " " << _idCheck_destino; for(size_t k=0; k<_totalCheckPoints;k++) cout <<"*"; cout << _totalCheckPoints << endl;
                     }
+                    
+                    break;
                 }
             }
         }
@@ -238,46 +273,50 @@ Ogre::Vector3 cpuPlayer::getPuntoAleatorioEnWS() // EnWS = En World Space
 {
     Vector3 aux = _iaMgr->getPuntoDerivado(_idCheck_destino,_idxPuntoAleatorioActual);
     aux = _nodoCheckPointSiguiente->convertLocalToWorldPosition(aux);
-//    cout << "punto aleatorio obtenido " << aux << endl;
+    cout << "punto aleatorio obtenido " << aux << endl;
     return aux; 
 }
 
 Ogre::Vector3 cpuPlayer::obtenerDestino()
 {
-    if (!_nodoCheckPointSiguiente) // Si no conocemos el puntero al SceneNode del checkpoint siguiente, manejamos el punto sin derivar.
-        return (_iaMgr->getPunto(_idCheck_destino)).p;
-    else
-        if (_maniobra == estadoManiobra::COCHE_DELANTE_CERCA)
-        {
-            //_maniobra = estadoManiobra::ENRUTA;
-            return getPuntoAleatorioEnWS(); // Sacar un punto aleatorio y convertirlo a coordenadas Globales 
-        }
-        else
-        {
+//    if (!_nodoCheckPointSiguiente) // Si no conocemos el puntero al SceneNode del checkpoint siguiente, manejamos el punto sin derivar.
+//        return (_iaMgr->getPunto(_idCheck_destino)).p;
+//    else
+//        if (_maniobra == estadoManiobra::COCHE_DELANTE_CERCA)
+//        {
+//            //_maniobra = estadoManiobra::ENRUTA;
+//            return getPuntoAleatorioEnWS(); // Sacar un punto aleatorio y convertirlo a coordenadas Globales 
+//        }
+//        else
+//        {
             //_maniobra = estadoManiobra::ENRUTA;
             return _iaMgr->getPunto(_idCheck_destino).p;
-        }
+//        }
 
             
 }
 
 void cpuPlayer::compruebaRecolocar()
 {
-     if (!_car->ruedasEnContacto() && _timeStopped > MAX_TIME_STOPPED)
+     if (!_car->ruedasEnContacto())
     {
-        //Vector3 aux = _iaMgr->getPunto(_idCheck_destino-1).p; aux.y += 0.1;
-        Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.1;
-        _car->recolocar(aux,convert(_ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
-        _maniobra = estadoManiobra::ENRUTA;
+        if (_timeStopped > MAX_TIME_STOPPED)
+        {
+            //Vector3 aux = _iaMgr->getPunto(_idCheck_destino-1).p; aux.y += 0.1;// AUMENTAR LA Y PARA QUE EL COCHE NO PUEDA QUEDARSE ESTANCADO.
+            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.2;
+            //Vector3 aux = _iaMgr->getPunto(_totalCheckPoints % _iaMgr->getPuntos().size()).p;
+            cout << "RUEDAS NO EN CONTACTO: \n " << aux << "\n" << _totalCheckPoints % _iaMgr->getPuntos().size() << endl;
+            _car->recolocar(aux,convert(_ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
+            _maniobra = estadoManiobra::ENRUTA;
+        }
         if (_marchaActual) _marchaActual = 0;
-
-    }                                                           // AUMENTAR LA Y PARA QUE EL COCHE NO PUEDA QUEDARSE ESTANCADO.
+    }                                                           
     else
     {
         _ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
     }
     
-    if (_car->getVelocidadKmH() >= 1)
+    if (_car->getVelocidadKmH() >= 2)
     {
         _timeStopped = 0;
         _ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
@@ -286,7 +325,10 @@ void cpuPlayer::compruebaRecolocar()
     {
         if (_timeStopped > MAX_TIME_STOPPED)
         {
-            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.1;
+            //Vector3 aux = (_iaMgr->getPunto(_idCheck_destino-1)).p; aux.y += 0.1;
+            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.2;
+            //Vector3 aux = _iaMgr->getPunto(_totalCheckPoints % _iaMgr->getPuntos().size()).p;
+            cout << "PARADO MUCHO TIEMPO: \n " << aux << "\n" << _totalCheckPoints % _iaMgr->getPuntos().size() << endl;
             _car->recolocar(aux,convert(_ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
             _maniobra = estadoManiobra::ENRUTA;
             if (_marchaActual) _marchaActual = 0;
@@ -326,19 +368,19 @@ void cpuPlayer::rayoAlFrente()
         tipoRigidBody t = static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_tipo;
         switch(t)
         {
-            case tipoRigidBody::COCHE:          cout << "Rayo impacta en coche " << endl;
+            case tipoRigidBody::COCHE:          //cout << "Rayo impacta en coche " << endl;
                                                 if (rayCallback.m_closestHitFraction <= 0.2)
                                                 {
-                                                    cout << "coche delante muy cerca" << endl; 
+                                                    //cout << "coche delante muy cerca" << endl; 
                                                     _maniobra = estadoManiobra::COCHE_DELANTE_CERCA;
                                                 }
                                                 break;
             
-            case tipoRigidBody::CIRCUITO:       cout << "Rayo impacta en bordillo" << endl;
+            case tipoRigidBody::CIRCUITO:       //cout << "Rayo impacta en bordillo" << endl;
                                                 if (rayCallback.m_closestHitFraction <= 0.1)
                                                 { 
-                                                    cout << "bordillo delante muy cerca" << endl;
-                                                    _maniobra = estadoManiobra::BORDILLO_CERCA;
+                                                    //cout << "bordillo delante muy cerca" << endl;
+                                                    //_maniobra = estadoManiobra::BORDILLO_CERCA;
                                                 }
                                                 break;
                                                 
@@ -370,7 +412,7 @@ void cpuPlayer::cambiaMarcha()
         _timeMarcha = 0;                    // Reseteamos tiempo para empezar a contar tiempo hasta el siguiente cambio de marcha.
         _aceleracion = 0;                   // Reseteamos aceleracion. Estamos arrancando.
         _marchaActual ++;                   // Ponemos primera.
-        _aceleracion = _car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA);  // Incrementamos aceleración.
+        _aceleracion = (_car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA)) * 2;  // Incrementamos aceleración.
 
     }
     else if (_timeMarcha > MAX_TIME_MARCHA)     // Si entramos aquí es que por lo menos íbamos en primera y el tiempo ha alcanzado el máximo 
@@ -384,4 +426,21 @@ void cpuPlayer::cambiaMarcha()
     }
     
     _timeMarcha += _deltaT;
+}
+
+void cpuPlayer::coutTipoCollisionObject(tipoRigidBody t)
+{
+    string aux;
+    switch (t)
+    {
+        case tipoRigidBody::CARRETERA: aux = "CARRETERA";   break;
+        case tipoRigidBody::CHECK_POINT: aux = "CHECKPOINT"; break;
+        case tipoRigidBody::CIRCUITO: aux = "CIRCUITO"; break;
+        case tipoRigidBody::COCHE: aux = "COCHE"; break;
+        case tipoRigidBody::OBSTACULO: aux = "OBSTACULO"; break;
+        default: aux = "NI PUTA IDEA!";
+    }
+    
+    //cout << "tipo collisionobject: " << aux << endl;
+    
 }

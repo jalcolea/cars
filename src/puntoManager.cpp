@@ -49,7 +49,7 @@ void puntoManager::derivaPuntos(Ogre::Real magnitud, size_t cuantos, bool distri
         {
             for (size_t i = 1; i<= cuantos; i++)
             {
-                Ogre::Vector3 aux = (deriva(minimoTotal+margen,maximoTotal-margen) + Ogre::Vector3::ZERO) * eje;
+                Ogre::Vector3 aux = (deriva(minimoTotal,maximoTotal) + Ogre::Vector3::ZERO) * eje;
                 _puntos.at(j).derivados.push_back(aux);
             }
         }

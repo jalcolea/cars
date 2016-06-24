@@ -3,11 +3,11 @@
 
 enum class tipoRigidBody
 {
-    CIRCUITO,
-    CARRETERA,
-    COCHE,
-    OBSTACULO,
-    CHECK_POINT,
+    CIRCUITO = 0,
+    CARRETERA = 1,
+    COCHE = 2,
+    OBSTACULO = 3,
+    CHECK_POINT = 4,
     TOTAL_COUNT
 };
 

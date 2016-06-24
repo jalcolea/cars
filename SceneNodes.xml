@@ -83,7 +83,8 @@
         <nombreEntidad>PlaneRoadBigent</nombreEntidad>
         <nombreMalla>PlaneRoadBig.mesh</nombreMalla>
         <nombreMaterial>track1matBI.material</nombreMaterial>
-        <posInicial x="0" y="1.007" z="0"></posInicial>
+        <!--<posInicial x="0" y="1.007" z="0"></posInicial>-->
+        <posInicial x="0" y="0.9" z="0"></posInicial>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
         <masaBullet>0.0</masaBullet>
@@ -345,7 +346,7 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>900</masaBullet>
+        <masaBullet>700</masaBullet>
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
@@ -357,8 +358,8 @@
         <!--<posicion x="4" y="1.2" z="-12"></posicion>-->
         <posicion x="-2.02" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- por ver -->
-        <aceleracion>10000</aceleracion>
-        <frenada>8000</frenada>
+        <aceleracion>8000</aceleracion>
+        <frenada>6000</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>2000</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
         <suspensionCompresion>0.2</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->

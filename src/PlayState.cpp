@@ -82,7 +82,7 @@ void PlayState::enter()
     configurarCamaraPrincipal();
 
     // Activar Bullet
-    initBulletWorld(true);
+    initBulletWorld(false);
 
     //Preparar escena
     createScene();
@@ -151,7 +151,8 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
     if (!_freeCamera)
         _camera->setPosition(_vCarsCpuPlayer[0]->getPosicionActual().x,
                              _vCarsCpuPlayer[0]->getPosicionActual().y +10 ,
-                             _vCarsCpuPlayer[0]->getPosicionActual().z + 30);
+                             //_vCarsCpuPlayer[0]->getPosicionActual().z + 30);
+                             _vCarsCpuPlayer[0]->getPosicionActual().z + 40);
                              
     _play->speed((int)_vCarsCpuPlayer[0]->getVelocidadActual());
 
@@ -295,6 +296,8 @@ void PlayState::initBulletWorld(bool showDebug)
     _world = shared_ptr<OgreBulletDynamics::DynamicsWorld>(new DynamicsWorld(_sceneMgr, boundBox, Vector3(0, -9.8, 0))); //, true, true, 15000));
     _world.get()->setDebugDrawer(_debugDrawer);
     _world.get()->setShowDebugShapes(showDebug);
+    
+ 
 }
 
 void PlayState::createScene()
@@ -340,33 +343,28 @@ void PlayState::createScene()
         marca._entMarca->setCastShadows(false);
         marca._entMarca->setQueryFlags(MASK_MARCA);
         marca._nodoMarca->attachObject(marca._entMarca);
-        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y + 1,vpoints[i].p.p.z);
         _sceneMgr->getRootSceneNode()->addChild(marca._nodoMarca);
         marca.rotacion = vpoints[i].quat;
         marca._nodoMarca->setOrientation(marca.rotacion);
         marca._id = i;
         vMarcas.push_back(marca);
-//        if (marca._id > 0) dibujaLinea(marca._id -1, marca._id);
 
-//        OgreBulletCollisions::StaticMeshToShapeConverter* trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(marca._entMarca);
-//        OgreBulletCollisions::TriangleMeshCollisionShape* tri = trimeshConverter->createTrimesh();
         OgreBulletCollisions::BoxCollisionShape* boxShape = new BoxCollisionShape(marca._entMarca->getBoundingBox().getHalfSize());
         cout << "marca._entMarca->getBoundingBox().getHalfSize(): " << marca._entMarca->getBoundingBox().getHalfSize() << endl;
         RigidBody* bodyCheckPoint = new OgreBulletDynamics::RigidBody(marca._nombreNodo, _world.get());
-//        bodyCheckPoint->setShape(marca._nodoMarca,tri,_checkPointInfo.bodyRestitutionBullet,_checkPointInfo.frictionBullet,_checkPointInfo.masaBullet,marca._nodoMarca->getPosition(),marca.rotacion);
         bodyCheckPoint->setShape(marca._nodoMarca,boxShape,_checkPointInfo.bodyRestitutionBullet,_checkPointInfo.frictionBullet,_checkPointInfo.masaBullet,marca._nodoMarca->getPosition(),marca.rotacion);
         cout << "marca creada en posicion: " << marca._nodoMarca->getPosition() << endl;        
-        //bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName()));
         
         // NOTA:
         // Por alguna razón que desconozco, aún habiendo indicado la posición inicial (bodyCheckPoint->setShape(SceneNode,shape,restitution,friction,masa,POSICION,rotacion))
         // OgreBullet (ó bullet) asignan la posicion (0,0,0) independientemente del valor que le pase. La rotación si que la establece bien al parecer.
         // Así pues, una vez configurado bullet para este CheckPoint, lo vuelvo a trasladar a su lugar correcto. Y así parece que funciona. 
-        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z);
+//OLD   marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z);
+        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 5.5 ,vpoints[i].p.p.z);
         btTransform trans = bodyCheckPoint->getBulletRigidBody()->getWorldTransform();
-        trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z));
+//OLD   trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z));
+        trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 5.5 ,vpoints[i].p.p.z));
         bodyCheckPoint->getBulletRigidBody()->setWorldTransform(trans);
-        //bodyCheckPoint->getBulletObject()->setUserPointer(new CheckPoint_data(i,marca._nodoMarca->getName(),marca._nodoMarca->getPosition()));
         bodyCheckPoint->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CHECK_POINT,                            // establecemos el tipo de rigidbody para cuando se lanzan rayos
                                                                              new CheckPoint_data(i,                                 // id del checkpoint
                                                                                                  marca._nodoMarca->getName(),       // nombre del checkpoint
@@ -380,12 +378,9 @@ void PlayState::createScene()
         // local del SceneNode. Entonces tiene sentido que una vez alcanzado un Checkpoint, los puntos de destino aleatorios
         // sean pertenecientes al espacio local del SIGUIENTE checkPoint. De este modo conseguimos que los puntos caigan dentro
         // del espacio del circuito siempre, pues los checkpoints en toda su envergadura lo están.
-        if (i>0) // Si no es el primero, no tiene sentido que enlacen con él.
-        {
-            cout << "antes: " << static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(btobjAnterior->getUserPointer())->_data)->_ogreNode << endl;
+        if (i>0) // El primero, no tiene sentido que enlacen con él.
             static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(btobjAnterior->getUserPointer())->_data)->_ogreNode = marca._nodoMarca;
-            cout << "despues: " << static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(btobjAnterior->getUserPointer())->_data)->_ogreNode << endl;
-        }
+
         btobjAnterior = bodyCheckPoint->getBulletObject();
 
 
@@ -438,7 +433,8 @@ void PlayState::createPlayersCPU()
 
     srand (time(NULL));
 
-    for (size_t i = 0; i < CPU_PLAYERS; i++)
+    //for (size_t i = 0; i < CPU_PLAYERS; i++)
+    for (size_t i = 0; i < 4; i++)
     {
         do
         {
@@ -466,7 +462,7 @@ void PlayState::createPlayersCPU()
         //auxNombreMaterial = nombreMaterial;
         vMateriales.push_back(nombreMaterial);
         
-        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),2,nullptr,i)));
+        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),5,nullptr,i)));
         _vCarsCpuPlayer.back()->build();
 
     }
@@ -525,19 +521,37 @@ void PlayState::createFloor()
 
 void PlayState::createPlaneRoad()
 {
+//    nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
+//    _planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
+//    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
+//    planeRoadEnt->setCastShadows(true);
+//    _planeRoadNode->attachObject(planeRoadEnt);
+//    _sceneMgr->getRootSceneNode()->addChild(_planeRoadNode);
+//    
+//    OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
+//    OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
+//    _planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
+//    _planeRoadBody->setShape(_planeRoadNode, roadTrimesh,nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
+//    _planeRoadBody->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CARRETERA,_planeRoadBody));
+    
     nodoOgre_t nodoXML = SceneNodeConfig::getSingleton().getInfoNodoOgre("PlaneRoadBig");
-    //SceneNode* planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
     _planeRoadNode = _sceneMgr->createSceneNode(nodoXML.nombreNodo);
-    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,nodoXML.nombreMalla);
+    
+    Plane planeRoad;
+    planeRoad.normal = Vector3(0, 1, 0);
+    planeRoad.d = 2;
+    MeshManager::getSingleton().createPlane("PlaneRoad", 
+                                          ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
+                                          planeRoad, 200, 300, 20, 20, true, 1, 500, 500, Vector3::UNIT_X);
+    Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,"PlaneRoad");
     planeRoadEnt->setCastShadows(true);
+    planeRoadEnt->setMaterialName("Asfalto");
     _planeRoadNode->attachObject(planeRoadEnt);
     _sceneMgr->getRootSceneNode()->addChild(_planeRoadNode);
-    
-    OgreBulletCollisions::StaticMeshToShapeConverter *trimeshConverter = new OgreBulletCollisions::StaticMeshToShapeConverter(planeRoadEnt);
-    OgreBulletCollisions::TriangleMeshCollisionShape *roadTrimesh = trimeshConverter->createTrimesh();
-    _planeRoadBody = new OgreBulletDynamics::RigidBody(nodoXML.nombreNodo, _world.get());
-    //planeRoadBody->setShape(planeRoadNode, roadTrimesh, 0.8, 0.95, 0, Vector3(0,0.001,0));
-    _planeRoadBody->setShape(_planeRoadNode, roadTrimesh,nodoXML.frictionBullet, nodoXML.bodyRestitutionBullet, nodoXML.masaBullet, nodoXML.posInicial);
+    CollisionShape* planeRoadShape = new StaticPlaneCollisionShape(Ogre::Vector3(0, 1, 0), 0);
+    _planeRoadBody = new RigidBody(nodoXML.nombreNodo, _world.get());
+    _planeRoadBody->setStaticShape(planeRoadShape, nodoXML.bodyRestitutionBullet,nodoXML.frictionBullet,Vector3(0, 2., 0));//nodoXML.posInicial);
+    _planeRoadNode->setPosition(Vector3(0, 3.99, 0));
     _planeRoadBody->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CARRETERA,_planeRoadBody));
     
      

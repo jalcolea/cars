@@ -66,7 +66,7 @@ void CarRayCast::buildVehiculo()
     _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
     
     // Al parecer los flags de colisión no funcionan con VehicleRayCast "asínque".... (http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Vehicles)
-//    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION | COL_CHECK); // NI PUTO CASO OIGA :(
+//    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION | COL_CHECK); // NI CASO OIGA :(
 //    cout << "flags" << _bodyWheeled->getBulletRigidBody()->getFlags() << endl;
     
     _tuneo = new OgreBulletDynamics::VehicleTuning(param.suspensionStiffness,  // suspensionStiffness: dureza de la suspensión
@@ -159,22 +159,24 @@ void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquie
 }
 
 // Para coches controlados por la CPU, el valor del giro se deja que se calcule por la entidad pertinente.
-void CarRayCast::girarCPU(Real valorGiro) // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
+void CarRayCast::girarCPU(Real valor) // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
 {
-    if (abs(_valorGiro) <= MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
-        _valorGiro = valorGiro;
+    //cout << "Valor giro en GIRARCPU ANTES DE COMPROBAR: " << _valorGiro << endl;
+    if (abs(valor) < MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
+        _valorGiro = valor;
     else
     {
 //        cout << "GIRARCPU(" << valorGiro << ") VALOR GIRO DEMASIADO GRANDE, AJUSTANDO" << endl;
-        if (valorGiro == 0)
+        if (abs(valor) == 0)
             _valorGiro = 0; // "malditos decimales (léase con acento de Don Gato)
-        else if (valorGiro > 0)
-            _valorGiro = MAX_VALOR_GIRO_RUEDAS;
-        else if (valorGiro < 0)
-            _valorGiro = - MAX_VALOR_GIRO_RUEDAS;
+        else if (valor > 0)
+            _valorGiro = MAX_VALOR_GIRO_RUEDAS - 0.02;
+        else if (valor < 0)
+            _valorGiro = - MAX_VALOR_GIRO_RUEDAS + 0.02;
     }
 
-    //assert(!(_valorGiro > MAX_VALOR_GIRO_RUEDAS));   // Si salta este assert, podría indicar la señal de que el coche ha chocado y su angulo respecto a su destino es demasiado abierto
+//    cout << "Valor giro en GIRARCPU: " << _valorGiro << endl;
+//    assert(!(_valorGiro > MAX_VALOR_GIRO_RUEDAS));   // Si salta este assert, podría indicar la señal de que el coche ha chocado y su angulo respecto a su destino es demasiado abierto
  
 //    if(_valorGiro > 0 ) cout << "girando a la izquierda" << endl;
 //    else if (_valorGiro < 0) cout << "girando a la derecha" << endl;
@@ -194,18 +196,10 @@ void CarRayCast::recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion)
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setOrigin(convert(donde));
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setRotation(convert(direccion));
 
-//    // Reiniciar fuerzas
-//    getCarChassisPtr()->getBulletRigidBody ()->clearForces();
-//    getCarChassisPtr()->getBulletRigidBody ()->setInterpolationLinearVelocity( btVector3( 0, 0, 0 ) );
-//    getCarChassisPtr()->getBulletRigidBody ()->setInterpolationAngularVelocity( btVector3( 0, 0, 0 ) );
-//    getCarChassisPtr()->getBulletRigidBody ()->setLinearVelocity(btVector3( 0, 0, 0 ));
-//    getCarChassisPtr()->getBulletRigidBody ()->setAngularVelocity(btVector3( 0, 0, 0 ));
-//    _mVehicle->getBulletVehicle ()->resetSuspension();
-//
-//    // Colocar ruedas
-//    _mSteering = 0.0;
-//    _mVehicle->setSteeringValue ( _mSteering, 0 );
-//    _mVehicle->setSteeringValue ( _mSteering, 1 );
+    // Colocar ruedas
+//    _valorGiro = 0.0;
+//    _vehiculo->setSteeringValue(_valorGiro, 0 );
+//    _vehiculo->setSteeringValue(_valorGiro, 1 );
 }
 
 
@@ -279,11 +273,11 @@ void CarRayCast::cambiarMaterialVehiculo(string& nombreMaterial)
 
 void CarRayCast::stop()
 {
-    _bodyWheeled->getBulletRigidBody ()->clearForces();
-    _bodyWheeled->getBulletRigidBody ()->setInterpolationLinearVelocity( btVector3( 0, 0, 0 ) );
-    _bodyWheeled->getBulletRigidBody ()->setInterpolationAngularVelocity( btVector3( 0, 0, 0 ) );
-    _bodyWheeled->getBulletRigidBody ()->setLinearVelocity(btVector3( 0, 0, 0 ));
-    _bodyWheeled->getBulletRigidBody ()->setAngularVelocity(btVector3( 0, 0, 0 ));
-    _vehiculo->getBulletVehicle ()->resetSuspension();
+    _bodyWheeled->getBulletRigidBody()->clearForces();
+    _bodyWheeled->getBulletRigidBody()->setInterpolationLinearVelocity( btVector3( 0, 0, 0 ) );
+    _bodyWheeled->getBulletRigidBody()->setInterpolationAngularVelocity( btVector3( 0, 0, 0 ) );
+    _bodyWheeled->getBulletRigidBody()->setLinearVelocity(btVector3( 0, 0, 0 ));
+    _bodyWheeled->getBulletRigidBody()->setAngularVelocity(btVector3( 0, 0, 0 ));
+    _vehiculo->getBulletVehicle()->resetSuspension();
 
 }

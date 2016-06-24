@@ -7,6 +7,7 @@
 //#include "iamanager.h"
 #include "puntoManager.h"
 #include "IAPointsDeserializer.h"
+#include "bulletUtil.h"
 
 using namespace Ogre;
 using namespace std;
@@ -24,7 +25,8 @@ enum class estadoManiobra
     COCHE_A_IZQUIERDA_CERCA,
     COCHE_A_DERECHA_CERCA,
     COCHE_ATRAS_CERCA,
-    BORDILLO_CERCA
+    BORDILLO_CERCA,
+    MANIOBRANDO_MARCHA_ATRAS
 };
 
 class cpuPlayer
@@ -69,6 +71,7 @@ private:
     size_t _idCheck_origen;
     size_t _idCheck_meta;
     size_t _idxPuntoAleatorioActual;
+    size_t _totalCheckPoints;
     bool _finish;
     bool _sentidoContrario;
     bool _onHisWay;
@@ -92,7 +95,7 @@ private:
     Ogre::Real _timeMarcha;
     Ogre::Real _aceleracion;
     
-    
+    void coutTipoCollisionObject(tipoRigidBody t);
     
     
 
