@@ -29,7 +29,8 @@ enum class keyPressed_flags
     NUMPAD1 =   1 << 8,
     NUMPAD2 =   1 << 9,
     NUMPAD3 =   1 << 10,
-    NUMPAD5 =   1 << 11
+    NUMPAD5 =   1 << 11,
+    RECOLOCAR = 1 << 12
 };
 
 enum class camara_view : int

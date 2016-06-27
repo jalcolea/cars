@@ -102,3 +102,13 @@ void puntoManager::clearDerivados()
             
 }
 
+Ogre::Vector3 puntoManager::conviertePuntoAWS(Ogre::SceneNode* nodoOgre,const Ogre::Vector3& punto, const Ogre::Vector3& trasladaAlBorde)
+{
+    return nodoOgre->convertLocalToWorldPosition(punto + trasladaAlBorde);
+}
+
+Ogre::Vector3 puntoManager::trasladaAlBorde(Ogre::SceneNode* nodoOgre, const Ogre::Vector3& punto, const Ogre::Vector3& borde)
+{
+    return conviertePuntoAWS(nodoOgre,nodoOgre->convertWorldToLocalPosition(punto),borde);
+}
+

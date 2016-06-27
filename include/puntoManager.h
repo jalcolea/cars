@@ -36,6 +36,11 @@ class puntoManager
         void derivaPuntos(Ogre::Real magnitud, size_t cuantos, bool distribuir, Ogre::Vector3 eje, Ogre::Real margen = 0);
         
         void clearDerivados();
+        
+        // Dado un SceneNode convierte un punto local a global
+        Ogre::Vector3 conviertePuntoAWS(Ogre::SceneNode* nodoOgre,const Ogre::Vector3& punto, const Ogre::Vector3& trasladaAlBorde = Ogre::Vector3::ZERO);
+        
+        Ogre::Vector3 trasladaAlBorde(Ogre::SceneNode* nodoOgre,  const Ogre::Vector3& punto, const Ogre::Vector3& borde);
 
 
     private:
