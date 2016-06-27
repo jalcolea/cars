@@ -63,7 +63,8 @@ void CarRayCast::buildVehiculo()
     _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,_posicion,Quaternion::IDENTITY);
     _bodyWheeled->setDamping(param.suspensionDamping,param.suspensionDamping); //YA VEREMOS SI HACE FALTA
     _bodyWheeled->disableDeactivation();
-    _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
+    //_bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
+    _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,_bodyWheeled->getBulletObject()));
     
     // Al parecer los flags de colisión no funcionan con VehicleRayCast "asínque".... (http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Vehicles)
 //    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION | COL_CHECK); // NI CASO OIGA :(
@@ -117,8 +118,12 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
     if (endereza && _valorGiro != 0.0) // Si queremos enderezar y además _valorGiro es distinto de cero
     {
         cout << "enderezando" << endl;
-        if (_valorGiro > 0) girar(-1,factorEnderezamiento); // factorEnderezamiento = 1.5 por defecto
-        else  girar(1,factorEnderezamiento);
+//        if (_valorGiro > 0) girar(-1,factorEnderezamiento); // factorEnderezamiento = 1.5 por defecto
+//        else  girar(1,factorEnderezamiento);
+        _valorGiro = 0;
+        _vehiculo->setSteeringValue(_valorGiro,0);
+        _vehiculo->setSteeringValue(_valorGiro,1);
+
     }    
     _vehiculo->applyEngineForce(fuerza,0);
     _vehiculo->applyEngineForce(fuerza,1);
@@ -139,10 +144,12 @@ void CarRayCast::acelerarCPU(Real fuerza, bool endereza)
 
 
 
-void CarRayCast::frenar()
+void CarRayCast::frenar(bool endereza)
 {
-    _vehiculo->applyEngineForce(-_frenada,0);
-    _vehiculo->applyEngineForce(-_frenada,1);
+//    _vehiculo->applyEngineForce(-_frenada,0);
+//    _vehiculo->applyEngineForce(-_frenada,1);
+    
+    acelerarCPU(-_frenada,endereza);
 }
 
 

@@ -20,7 +20,7 @@ CC=g++
 CFLAGS=-c  -Wall -Wno-deprecated-declarations -Wno-unused-variable -I$(DIRHEA)  -I$(DIRLIBWIIMOTE) -I$(DIROGREBULLET_DIN) -I$(DIROGREBULLET_COL) -I$(DIROGREBULLET_DIN2) -I$(DIROGREBULLET_COL2) `pkg-config --cflags OGRE OGRE-Overlay MYGUI mxml bullet `  `sdl-config --cflags` --std=c++11
 CPP_FILES := $(wildcard ./src/*.cpp)
 OBJ_FILES := $(addprefix ./obj/,$(notdir $(CPP_FILES:.cpp=.o)))
-LDLIBS= `pkg-config --libs-only-l OGRE OGRE-Overlay MYGUI mxml bullet` `sdl-config --libs` -lOgreBulletCollisions -lOgreBulletDynamics -lSDL_mixer -lboost_system -lboost_graph -lOIS -lGL -lstdc++   -lMyGUI.OgrePlatform -lbluetooth -lcwiimote -lOgreOverlay
+LDLIBS= `pkg-config --libs-only-l OGRE OGRE-Overlay MYGUI mxml bullet` `sdl-config --libs` -lOgreBulletCollisions -lOgreBulletDynamics -lSDL_mixer -lboost_system -lOIS -lGL -lstdc++   -lMyGUI.OgrePlatform -lbluetooth -lcwiimote -lOgreOverlay
 
 
 # Modo de compilación (-mode=release -mode=debug) --------------------
