@@ -100,7 +100,7 @@ bool IntroState::keyPressed(const OIS::KeyEvent &e)
 
     // Transición al siguiente estado.
     // Espacio --> PlayState
-    if (e.key == OIS::KC_SPACE)
+    if (e.key == OIS::KC_SPACE || e.key == OIS::KC_RETURN)
     {
         changeState(MenuState::getSingletonPtr());
         sounds::getInstance()->play_effect("push");
@@ -110,15 +110,10 @@ bool IntroState::keyPressed(const OIS::KeyEvent &e)
         changeState(testStateVehicRayCast::getSingletonPtr());
         
     }
-    else if (e.key == OIS::KC_S)
-    {
-        changeState(carSelectorState::getSingletonPtr());
-    }
     else if (e.key == OIS::KC_I)
     {
         changeState(pathDrawerState::getSingletonPtr());
     }
-    
     
     return true;
 

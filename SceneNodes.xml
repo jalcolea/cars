@@ -309,7 +309,7 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>1500</masaBullet>
+        <masaBullet>700</masaBullet>
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
@@ -320,8 +320,8 @@
         <!--<posicion x="3" y="1.2" z="-12"></posicion>-->
         <posicion x="-6.20" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
-        <aceleracion>10000</aceleracion>
-        <frenada>7500</frenada>
+        <aceleracion>8000</aceleracion>
+        <frenada>7000</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>1500</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
         <suspensionCompresion>0.1</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
@@ -357,7 +357,7 @@
                                                                              0.13 parece un valor adecuado para el formula-->
         <!--<posicion x="4" y="1.2" z="-12"></posicion>-->
         <posicion x="-2.02" y="2.1" z="-22"></posicion>
-        <velocidadGiro>0.0018</velocidadGiro> <!-- por ver -->
+        <velocidadGiro>0.002</velocidadGiro> <!-- por ver -->
         <aceleracion>8000</aceleracion>
         <frenada>6000</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
@@ -384,7 +384,7 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>200</masaBullet>
+        <masaBullet>500</masaBullet>
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
@@ -395,8 +395,8 @@
         <!--<posicion x="5" y="1.2" z="-12"></posicion>-->
         <posicion x="2.08" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
-        <aceleracion>1000</aceleracion>
-        <frenada>600</frenada>
+        <aceleracion>4750</aceleracion>
+        <frenada>2400</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>2000</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
         <suspensionCompresion>0.1</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
@@ -458,7 +458,7 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>200</masaBullet>
+        <masaBullet>450</masaBullet>
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
@@ -468,9 +468,9 @@
         <indiceRestitucionSuspension>0.1</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="-2.32" y="1.2" z="-22"></posicion>-->
         <posicion x="10" y="2.1" z="-22"></posicion>
-        <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
-        <aceleracion>1000</aceleracion>
-        <frenada>600</frenada>
+        <velocidadGiro>0.015</velocidadGiro> <!-- parece un valor adecuado para el kart -->
+        <aceleracion>4700</aceleracion>
+        <frenada>2000</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>2000</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
         <suspensionCompresion>0.1</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
@@ -495,7 +495,7 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>200</masaBullet>
+        <masaBullet>500</masaBullet>
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
@@ -505,8 +505,8 @@
         <indiceRestitucionSuspension>0.03</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <posicion x="14.10" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0018</velocidadGiro> <!-- parece un valor adecuado para el kart -->
-        <aceleracion>1000</aceleracion>
-        <frenada>600</frenada>
+        <aceleracion>5500</aceleracion>
+        <frenada>1500</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>2000</suspensionStiffness> <!-- un valor de 200 parece muy poco, con 2000 parece estable -->
         <suspensionCompresion>0.1</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->

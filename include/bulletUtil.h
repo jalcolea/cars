@@ -8,6 +8,7 @@ enum class tipoRigidBody
     COCHE = 2,
     OBSTACULO = 3,
     CHECK_POINT = 4,
+    UNKNOWN = 5,
     TOTAL_COUNT
 };
 

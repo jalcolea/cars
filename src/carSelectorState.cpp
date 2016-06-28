@@ -65,11 +65,15 @@ void carSelectorState::enter()
 
 void carSelectorState::exit()
 {
+
   destroyMyGui();
   // Preparar bundle con las opciones seleccionadas.
   actualOptions::getSingletonPtr()->setDificultad(difficult);
   actualOptions::getSingletonPtr()->setIdNombreVehiculoXML(getNombreTipoCocheSeleccionado());
   actualOptions::getSingletonPtr()->setIdMaterialActual(_idMaterialActual);
+  
+  _sceneMgr->clearScene();
+
   
 }
 
@@ -104,7 +108,7 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
         sincronizarIdMaterialConVehiculoSeleccionado();
     }
 
-    if ((e.key == OIS::KC_M)||(e.key == OIS::KC_C))
+    if (e.key == OIS::KC_C)
     {
         sounds::getInstance()->play_effect("push");
         cambiarMaterialVehicSeleccionado();
@@ -116,9 +120,10 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
         changeState(PlayState::getSingletonPtr());
     }
     else if (e.key == OIS::KC_E || e.key == OIS::KC_ESCAPE)
-        _exitGame = true;
+         popState();
 
-//        popState();
+//        _exitGame = true;
+
     
     return true;
 }
@@ -330,7 +335,7 @@ void carSelectorState::createLight()
     //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
     _sceneMgr->setShadowTextureCount(2);
     _sceneMgr->setShadowTextureSize(512);
-    Light *light = _sceneMgr->createLight("Light1");
+    Light *light = _sceneMgr->createLight("LightCarSelector");
     light->setPosition(30, 30, 0);
     light->setType(Light::LT_SPOTLIGHT);
     light->setDirection(Vector3(-1, -1, 0));
@@ -375,7 +380,7 @@ void carSelectorState::createScene()
     createFloor();
     createMyGui();
     
-    nodoOgre_t info =  SceneNodeConfig::getSingleton().getInfoNodoOgre("track1bis");
+    nodoOgre_t info =  SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("track1bis");
     Entity* entTrack = _sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla);
     _track = _sceneMgr->createSceneNode(info.nombreNodo);
     _track->attachObject(entTrack);
@@ -388,26 +393,30 @@ void carSelectorState::createScene()
     _sceneMgr->getRootSceneNode()->addChild(_nodoSelector);
     _nodoSelector->scale(3.5,3.5,3.5);
     _nodoSelector->setPosition(0,12,20);
-    //_nodoSelector->yaw(Ogre::Degree(-90));
-    //_nodoSelector->roll(Ogre::Degree(10));
     
 
-    info = SceneNodeConfig::getSingleton().getInfoNodoOgre("kartOneBlock");
+    // Ojo con esto, hay que limpiar los vectores para que no queden posibles referencias colgando.
+    // Pues al salir y volver a entrar en este estado podrían estar activas todavía.
+    _vEntCars.clear();
+    _vCars.clear();
+    
+    info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("kartOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
-    info = SceneNodeConfig::getSingleton().getInfoNodoOgre("farara-sportOneBlock");
+    info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("farara-sportOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
-    info = SceneNodeConfig::getSingleton().getInfoNodoOgre("formulaOneBlock");
+    info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("formulaOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
-    info = SceneNodeConfig::getSingleton().getInfoNodoOgre("groupC1OneBlock");
+    info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("groupC1OneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
-    info = SceneNodeConfig::getSingleton().getInfoNodoOgre("lamba-sportOneBlock");
+    info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("lamba-sportOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
-    info = SceneNodeConfig::getSingleton().getInfoNodoOgre("parsche-sportOneBlock");
+    info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("parsche-sportOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
 
     SceneNode* aux;
     for (size_t i = 0; i != _vEntCars.size(); ++i)
     {
+        cout << _vEntCars[i] << endl;
         int anguloOffset = 90; // desplazamos 90 grados para que el primer coche lo ponga justo en (0,-1,0), o sea, que quede en frente nuestra y seleccionado.
         int angulo = i * 60; // En realidad hay 7 coches distintos pero 2 de ellos son prácticamente iguales así que nos quedamos con 6
         aux = _nodoSelector->createChildSceneNode("nodoCar"+i,Vector3(Ogre::Math::Cos(Ogre::Degree(angulo + anguloOffset)), 0, Ogre::Math::Sin(Ogre::Degree(angulo+anguloOffset))));
@@ -447,14 +456,14 @@ void carSelectorState::inicializarEstadoRotacionSelector(Real factorRot, Quatern
 
 void carSelectorState::createFloor()
 {
-    SceneNode *floorNode = _sceneMgr->createSceneNode("floor");
+    SceneNode *floorNode = _sceneMgr->createSceneNode("floorCarSelector");
     Plane planeFloor;
     planeFloor.normal = Vector3(0, 1, 0);
     planeFloor.d = 2;
     MeshManager::getSingleton().createPlane("FloorPlane", 
                                           ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
                                           planeFloor, 200000, 200000, 20, 20, true, 1, 9000, 9000, Vector3::UNIT_Z);
-    Entity *entFloor = _sceneMgr->createEntity("floor", "FloorPlane");
+    Entity *entFloor = _sceneMgr->createEntity("floorCarSelector", "FloorPlane");
     entFloor->setCastShadows(true);
     entFloor->setMaterialName("floor");
     floorNode->attachObject(entFloor);

@@ -78,9 +78,9 @@ protected:
     Ogre::Viewport *_viewport;
     Ogre::Camera *_camera;
 
-  bool _exitGame;
- Ogre::Real _deltaT;
-MyGUI::VectorWidgetPtr layout;
+    bool _exitGame;
+    Ogre::Real _deltaT;
+    MyGUI::VectorWidgetPtr layout;
 
 private:
     bool _deIda;

@@ -1,30 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <mesh>
     <sharedgeometry vertexcount="4">
-        <vertexbuffer texture_coords="0" positions="true" normals="true" colours_diffuse="False">
+        <vertexbuffer colours_diffuse="False" texture_coords="1" normals="true" positions="true">
             <vertex>
-                <position y="0.000000" z="1.000000" x="-6.945714"/>
-                <normal y="1.000000" z="-0.000000" x="0.000000"/>
+                <position y="0.000000" x="-5.917956" z="2.078169"/>
+                <normal y="1.000000" x="0.000000" z="-0.000000"/>
+                <texcoord u="0.352623" v="0.566368"/>
             </vertex>
             <vertex>
-                <position y="0.000000" z="1.000000" x="6.945714"/>
-                <normal y="1.000000" z="-0.000000" x="0.000000"/>
+                <position y="0.000000" x="5.917956" z="2.078169"/>
+                <normal y="1.000000" x="0.000000" z="-0.000000"/>
+                <texcoord u="0.647377" v="0.566368"/>
             </vertex>
             <vertex>
-                <position y="0.000000" z="-1.000000" x="6.945714"/>
-                <normal y="1.000000" z="-0.000000" x="0.000000"/>
+                <position y="0.000000" x="5.917956" z="-2.078169"/>
+                <normal y="1.000000" x="0.000000" z="-0.000000"/>
+                <texcoord u="0.647377" v="0.422405"/>
             </vertex>
             <vertex>
-                <position y="0.000000" z="-1.000000" x="-6.945714"/>
-                <normal y="1.000000" z="-0.000000" x="0.000000"/>
+                <position y="0.000000" x="-5.917956" z="-2.078169"/>
+                <normal y="1.000000" x="0.000000" z="-0.000000"/>
+                <texcoord u="0.352623" v="0.422405"/>
             </vertex>
         </vertexbuffer>
     </sharedgeometry>
     <submeshes>
-        <submesh material="MaterialRosita" use32bitindexes="False" usesharedvertices="true" operationtype="triangle_list">
+        <submesh material="MaterialRosita" operationtype="triangle_list" use32bitindexes="False" usesharedvertices="true">
             <faces count="2">
-                <face v3="2" v2="1" v1="0"/>
-                <face v3="3" v2="2" v1="0"/>
+                <face v1="0" v3="2" v2="1"/>
+                <face v1="0" v3="3" v2="2"/>
             </faces>
         </submesh>
     </submeshes>

@@ -40,6 +40,7 @@
 #include "IAPointsDeserializer.h"
 #include "pathDrawerState.h"
 #include "cpuPlayer.h"
+#include "humanPlayer.h"
 #include "PlayWidget.h"
 
 
@@ -49,118 +50,123 @@ using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
 
 #define CPU_PLAYERS 3
-
+#define LAPS 2
+#define Z_CAMARA_SEMICENITAL 30
+#define MAX_TIME_CARRERA_ACABADA 2
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
     public:
-    PlayState () {}
-    ~PlayState();
+        PlayState () {}
+        ~PlayState();
 
-    void enter ();
-    void exit();
-    void pause ();
-    void resume ();
+        void enter ();
+        void exit();
+        void pause ();
+        void resume ();
 
-    bool keyPressed (const OIS::KeyEvent &e);
-    bool keyReleased (const OIS::KeyEvent &e);
+        bool keyPressed (const OIS::KeyEvent &e);
+        bool keyReleased (const OIS::KeyEvent &e);
 
-    bool mouseMoved (const OIS::MouseEvent &e);
-    bool mousePressed (const OIS::MouseEvent &e, OIS::MouseButtonID id);
-    bool mouseReleased (const OIS::MouseEvent &e, OIS::MouseButtonID id);
+        bool mouseMoved (const OIS::MouseEvent &e);
+        bool mousePressed (const OIS::MouseEvent &e, OIS::MouseButtonID id);
+        bool mouseReleased (const OIS::MouseEvent &e, OIS::MouseButtonID id);
 
-    bool frameStarted (const Ogre::FrameEvent& evt);
-    bool frameEnded (const Ogre::FrameEvent& evt);
-  
-/* WIIMOTE *********************************************************************/  
-    bool WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e);
-    bool WiimoteButtonUp(const wiimWrapper::WiimoteEvent &e);
-    bool WiimoteIRMove(const wiimWrapper::WiimoteEvent &e);
-/*******************************************************************************/  
-  
+        bool frameStarted (const Ogre::FrameEvent& evt);
+        bool frameEnded (const Ogre::FrameEvent& evt);
+      
+    /* WIIMOTE *********************************************************************/  
+        bool WiimoteButtonDown(const wiimWrapper::WiimoteEvent &e);
+        bool WiimoteButtonUp(const wiimWrapper::WiimoteEvent &e);
+        bool WiimoteIRMove(const wiimWrapper::WiimoteEvent &e);
+    /*******************************************************************************/  
+      
 
-    // Heredados de Ogre::Singleton.
-    static PlayState& getSingleton ();
-    static PlayState* getSingletonPtr ();
-    
-    std::vector<Vector3> posSalida { Vector3(-4,2.1,-22), Vector3(-4,2.1,-24), Vector3(-2,2.1,-22), Vector3(-2,2.1,-24) };
-    
-    void set_lives (int lives);
-    int  get_lives ();
+        // Heredados de Ogre::Singleton.
+        static PlayState& getSingleton ();
+        static PlayState* getSingletonPtr ();
+        
+        std::vector<Vector3> posSalida { Vector3(-4,2.1,-22), Vector3(-4,2.1,-24), Vector3(-2,2.1,-22), Vector3(-2,2.1,-24) };
+        
+        void set_lives (int lives);
+        int  get_lives ();
 
-    void set_score (int score);
-    int  get_score ();
+        void set_score (int score);
+        int  get_score ();
 
-    void  game_over ();
-    void  win ();
-    
-    PlayWidget* _play;
+        void  game_over ();
+        void  win ();
+        
+        PlayWidget* _play;
 
     protected:
-    Ogre::Root *_root;
-    Ogre::SceneManager *_sceneMgr;
-    Ogre::Viewport *_viewport;
-    Ogre::Camera *_camera;
-    //SceneNodeConfig _scn;
-    unique_ptr<track> _track;
-    unique_ptr<CarRayCast> _carRayCast;
-    shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
-    //std::vector< unique_ptr<CarRayCast> > _vCarsRayCast;
-    std::vector< unique_ptr<cpuPlayer> > _vCarsCpuPlayer;
-    //unique_ptr<cpuPlayer> _cpuPlayer;
-    CollisionShape* _floorShape;
-    RigidBody* _floorBody;
-    bool _freeCamera = false;
-    bool _playSimulation = true;
-    SceneNode* _nodoVista;
-    SceneNode* _planeRoadNode;
-    OgreBulletDynamics::RigidBody* _planeRoadBody;
+        Ogre::Root *_root;
+        Ogre::SceneManager *_sceneMgr;
+        Ogre::Viewport *_viewport;
+        Ogre::Camera *_camera;
+        unique_ptr<track> _track;
+        shared_ptr<OgreBulletDynamics::DynamicsWorld> _world;
+        std::vector< unique_ptr<cpuPlayer> > _vCarsCpuPlayer;
+        unique_ptr<humanPlayer> _humanPlayer;
+        CollisionShape* _floorShape;
+        RigidBody* _floorBody;
+        bool _freeCamera = false;
+        bool _playSimulation = true;
+        bool _travellingCamara = true;
+        SceneNode* _nodoVista;
+        SceneNode* _planeRoadNode;
+        OgreBulletDynamics::RigidBody* _planeRoadBody;
 
 
-    bool _exitGame;
-    Ogre::Real _deltaT;
-    MyGUI::VectorWidgetPtr layout;
-    camara_view _vista = camara_view::SEMICENITAL;
- 
+        bool _exitGame;
+        Ogre::Real _deltaT;
+        MyGUI::VectorWidgetPtr layout;
+        camara_view _vista = camara_view::SEMICENITAL;
+     
 
-    int lives;
-    int score;
-    bool paused;
+        int lives;
+        int score;
+        bool paused;
 
     private:
-    void createLight();
-    void createMyGui();
-    void destroyMyGui();
-    void createScene();
-    void createFloor();
-    void cargarParametros(string archivo, bool consoleOut);
-    void configurarCamaraPrincipal();
-    void colocaCamara(); // Para cambiar los tipos de vista de la cámara.
-    void reposicionaCamara(); // moverá la cámara en función del tipo de vista actual.
-    void createPlaneRoad();
-    void initBulletWorld(bool showDebug);    
-    void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
-    void createPlayersCPU();
-    void createHumanPlayer();
-    void createVallaVirtual();
-    //void createOverlay();
-    void pintaOverlayInfo();
-    void flagKeys(bool flag);
-    void updateCPU();
-    Ogre::OverlayManager* _overlayManager;
-    Ogre::Vector3 _vt;
-    Ogre::Real _r;
-    size_t _velocidad;
-    size_t _fps;
-    size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
-    DebugDrawer* _debugDrawer;
-    size_t _cursorVehiculo; // veremos si hace falta
-    string _nombreTipoCoche; // para cargar la info del xml este nombre debe coincidir con la definición de uno definido en dicho xml
-    string _nombreMaterial; // nombre del material que ha elegido el usuario en el selector de coches.
-    
-    
-    void dibujaLinea(size_t idFrom, size_t idTo); // SOLO PARA COMPROBAR FUNCIONAMIENTO IA, QUITAR LUEGO
-    std::vector<marquita> vMarcas;
+        void createLight();
+        void createMyGui();
+        void destroyMyGui();
+        void createScene();
+        void createFloor();
+        void cargarParametros(string archivo, bool consoleOut);
+        void configurarCamaraPrincipal();
+        void colocaCamara(); // Para cambiar los tipos de vista de la cámara.
+        void reposicionaCamara(); // moverá la cámara en función del tipo de vista actual.
+        void createPlaneRoad();
+        void initBulletWorld(bool showDebug);    
+        void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
+        void createPlayersCPU();
+        void createHumanPlayer();
+        void createVallaVirtual();
+        //void createOverlay();
+        void pintaOverlayInfo();
+        void flagKeys(bool flag);
+        void updateCPU();
+        void travellingCamara();
+        void controlDeCarrera();
+        Ogre::OverlayManager* _overlayManager;
+        Ogre::Vector3 _vt;
+        Ogre::Real _r;
+        size_t _velocidad;
+        size_t _fps;
+        size_t _keys = static_cast<size_t>(keyPressed_flags::NONE);
+        DebugDrawer* _debugDrawer;
+        size_t _cursorVehiculo; // veremos si hace falta
+        string _nombreTipoCoche; // para cargar la info del xml este nombre debe coincidir con la definición de uno definido en dicho xml
+        string _nombreMaterial; // nombre del material que ha elegido el usuario en el selector de coches.
+        bool _finalCarrera = false;
+        size_t _posicionAlFinalCarrera = 0;
+        Ogre::Real _timeCarreraAcabada = 0;
+        
+        void dibujaLinea(size_t idFrom, size_t idTo); // SOLO PARA COMPROBAR FUNCIONAMIENTO IA, QUITAR LUEGO
+        std::vector<marquita> vMarcas;
+        std::vector<size_t> _vranking;
 
 
 };

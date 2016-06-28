@@ -169,7 +169,7 @@ public:
     void buildVehiculo();
     void acelerar(Real fuerza, bool endereza = false, Real factorEnderezamiento = 1.5 ); // obvio no?
     void acelerarCPU(Real fuerza, bool endereza); // La cpu si endereza, lo hace del tirón (por conveniencia).
-    void frenar();
+    void frenar(bool endereza = false);
     void stop();
     void marchaAtras(bool endereza = false ); // o lo que es lo mismo, frenamos????
     void girar(short n, Real factorVelocidadGiro = 1.0); // el ángulo de giro lo determinará el tipo de coche, vendrá configurado
@@ -180,6 +180,7 @@ public:
     inline std::vector<Rueda> & getRuedas() { return _ruedas; };
     inline ruedasContactInfo_t& getContactInfoRuedas(){ return _ruedasContactInfo; };
     void cambiarMaterialVehiculo(string& nombreMaterial);
+    void enderezar();
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };

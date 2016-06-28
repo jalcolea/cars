@@ -16,7 +16,8 @@ using namespace OgreBulletDynamics;
 
 #define MAX_TIME_STOPPED 1.5 // segundos
 #define MAX_MARCHA 5
-#define MAX_TIME_MARCHA 1
+#define MAX_TIME_MARCHA 2
+#define MAX_TIME_HANDICAP 3 // segundos
 
 enum class estadoManiobra
 {
@@ -42,9 +43,11 @@ public:
     inline void activarMaterial(){ _car->cambiarMaterialVehiculo(_nombreMaterial); };
     inline void start() { _onHisWay = true; };
     void stop();
+    inline bool finished(){ return _finish; };
     inline string& getNombreMaterial(){ return _nombreMaterial; };
     inline void setNombreMaterial(const string& nombreMaterial){ _nombreMaterial = nombreMaterial; };
     inline string& getNombreEnPantalla(){ return _nombreEnPantalla; };
+    inline size_t getTotalCheckPoints(){ return _totalCheckPoints; };
     
     inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
     inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
@@ -87,13 +90,19 @@ private:
     void compruebaManiobra();
     void rayoAlFrente();
     void cambiaMarcha();
+    void aplicarHandicap();
     Ogre::Vector3 getPuntoAleatorioEnWS();
     Ogre::Vector3 obtenerDestino();
     estadoManiobra _maniobra;
     size_t _marchaActual;
     Ogre::Real _incrementoMarcha;
     Ogre::Real _timeMarcha;
+    Ogre::Real _timeHandicap;
+    Ogre::Real _handicap;
     Ogre::Real _aceleracion;
+    size_t _puntosAleatoriosPasados; // Cuando alternemos la ruta para pasar por puntos aleatorios de los checkPoints, cada N puntos alcanzados
+                                     // retomaremos la ruta principal.
+    bool _rutaPuntosAleatorios;
     
     void coutTipoCollisionObject(tipoRigidBody t);
     

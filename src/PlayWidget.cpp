@@ -15,6 +15,8 @@ using namespace std;
 using namespace Ogre;
 using namespace std;
 
+pthread_t PlayWidget::thread = 0;
+
 PlayWidget::PlayWidget()
 {
   cout << __FUNCTION__ << endl;
@@ -29,6 +31,9 @@ PlayWidget::PlayWidget()
 
 PlayWidget::~PlayWidget()
 {
+//  pthread_join(PlayWidget::thread,NULL);
+  pthread_cancel(PlayWidget::thread);
+//  pthread_exit(NULL);
   MyGUI::LayoutManager::getInstance().unloadLayout(layout);
 }
 
@@ -72,9 +77,11 @@ void * PlayWidget::timer(void * data)
 
 void PlayWidget::startTime ()
 {
-  pthread_t thread;
+//  pthread_t thread;
   start_thread=true;
-  int ret=pthread_create(&thread,NULL,PlayWidget::timer,this); 
+//  int ret=pthread_create(&thread,NULL,PlayWidget::timer,this); 
+  int ret=pthread_create(&PlayWidget::thread,NULL,PlayWidget::timer,this); 
+//  PlayWidget::thread = thread;
 }
 
 void PlayWidget::stopTime ()

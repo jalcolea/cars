@@ -52,6 +52,7 @@
     <File Name="src/cpuPlayer.cpp"/>
     <File Name="src/actualOptions.cpp"/>
     <File Name="src/puntoManager.cpp"/>
+    <File Name="src/humanPlayer.cpp"/>
   </VirtualDirectory>
   <VirtualDirectory Name="include">
     <File Name="include/Bluez_Util.h"/>
@@ -92,6 +93,7 @@
     <File Name="include/actualOptions.h"/>
     <File Name="include/puntoIA.h"/>
     <File Name="include/puntoManager.h"/>
+    <File Name="include/humanPlayer.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

@@ -63,7 +63,8 @@ void CarRayCast::buildVehiculo()
     _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,_posicion,Quaternion::IDENTITY);
     _bodyWheeled->setDamping(param.suspensionDamping,param.suspensionDamping); //YA VEREMOS SI HACE FALTA
     _bodyWheeled->disableDeactivation();
-    _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
+    //_bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,nullptr));
+    _bodyWheeled->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::COCHE,_bodyWheeled->getBulletObject()));
     
     // Al parecer los flags de colisión no funcionan con VehicleRayCast "asínque".... (http://www.bulletphysics.org/mediawiki-1.5.8/index.php/Vehicles)
 //    _bodyWheeled->getBulletRigidBody()->setFlags(COL_CAR | COL_FLOOR | COL_TRACK | COL_TRACK_COLISION | COL_CHECK); // NI CASO OIGA :(
@@ -117,8 +118,12 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
     if (endereza && _valorGiro != 0.0) // Si queremos enderezar y además _valorGiro es distinto de cero
     {
         cout << "enderezando" << endl;
-        if (_valorGiro > 0) girar(-1,factorEnderezamiento); // factorEnderezamiento = 1.5 por defecto
-        else  girar(1,factorEnderezamiento);
+//        if (_valorGiro > 0) girar(-1,factorEnderezamiento); // factorEnderezamiento = 1.5 por defecto
+//        else  girar(1,factorEnderezamiento);
+        _valorGiro = 0;
+        _vehiculo->setSteeringValue(_valorGiro,0);
+        _vehiculo->setSteeringValue(_valorGiro,1);
+
     }    
     _vehiculo->applyEngineForce(fuerza,0);
     _vehiculo->applyEngineForce(fuerza,1);
@@ -139,10 +144,12 @@ void CarRayCast::acelerarCPU(Real fuerza, bool endereza)
 
 
 
-void CarRayCast::frenar()
+void CarRayCast::frenar(bool endereza)
 {
-    _vehiculo->applyEngineForce(-_frenada,0);
-    _vehiculo->applyEngineForce(-_frenada,1);
+//    _vehiculo->applyEngineForce(-_frenada,0);
+//    _vehiculo->applyEngineForce(-_frenada,1);
+    
+    acelerarCPU(-_frenada,endereza);
 }
 
 
@@ -188,6 +195,12 @@ void CarRayCast::girarCPU(Real valor) // valorGiro positivo = izquierda, valorGi
 //    cout << "Giro finalmente aplicado " << _valorGiro << endl;
 }
 
+void CarRayCast::enderezar()
+{
+    _vehiculo->setSteeringValue(0,0);
+    _vehiculo->setSteeringValue(0,1);
+}
+
 
 void CarRayCast::recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion)
 {
@@ -221,7 +234,6 @@ bool CarRayCast::ruedasEnContacto()
 //  Y CUANDO NO HAY CONTACTO LE CASCA UN 0. DE MODO QUE LA ÚNICA FORMA DE SABER CON QUÉ ESTÁN EN CONTACTO LAS RUEDAS, ES... NINGUNA. BUENO, PODEMOS LIARNOS A LANZAR RAYOS Y DETERMINAR
 //  CON RAYRESULTCALLBACKS QUÉ TIENEN DEBAJO LAS RUEDAS EN COMBINACIÓN CON LO HECHO POR EL AUTOR DE LA "very special constraint" :D, ES DECIR SI LE ASIGNA VALOR A m_groundObject QUIERE
 //  DECIR QUE HAY CONTACTO Y ENTONCES PODEMOS LANZAR EL RAYO NOSOTROS E INTENTAR AVERIGUAR QUIEN ES EL "CONTACTADO". 
-//  Y TRAS MUCHO INVESTIGAR AL PARECER LA GENTE QUE HA HECHO EL JUEGO SUPERTUXKART HACE EXACTAMENTE ESTO, "ASÍNQUE...."
             
 //            btCollisionObject* auxCollisionObject = static_cast<btCollisionObject*>(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_groundObject);
 //            rigidBody_data* data = static_cast<rigidBody_data*>(auxCollisionObject->getUserPointer());

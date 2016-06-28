@@ -17,6 +17,9 @@
 #include "carSelectorState.h"
 #include "bulletUtil.h"
 #include "actualOptions.h"
+#include "WinState.h"
+#include "LooseState.h"
+
 
 #define CAMSPEED 20
 #define CAMROTATESPEED 0.1
@@ -64,17 +67,6 @@ void PlayState::enter()
     paused = false;
     _deltaT = 0;
 
-    // Recuperar esta información antes de llamar a clearScene(), de lo contrario no existirá.
-    //_nombreTipoCoche = carSelectorState::getSingletonPtr()->getNombreTipoCocheSeleccionado();
-    _nombreMaterial = carSelectorState::getSingletonPtr()->getNombreMaterialSeleccionado();
-    cout << "tipo coche seleccionado: " << _nombreTipoCoche << endl;
-    cout << "material seleccionado: " << _nombreMaterial << endl;
-    
-    _sceneMgr->clearScene();
-  
-    //Color de fondo inicial
-    //_viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
-
     // Cargar los parámetros para construir elementos del juego (coches, circuitos, camaras, etc)
     cargarParametros("SceneNodes.xml",true);
     
@@ -88,7 +80,15 @@ void PlayState::enter()
     createScene();
 }
 
-void PlayState::exit() { destroyMyGui(); }
+void PlayState::exit() 
+{ 
+    _play->stopTime();
+    delete _play;
+    destroyMyGui(); 
+    // Ojo: Si no limpiamos el vector al salir, al volver a entrar a este estado siguen existiendo los objetos que contenía.
+    _vCarsCpuPlayer.clear();  
+    _sceneMgr->clearScene();
+}
 
 void PlayState::pause() { paused = true; }
 
@@ -100,83 +100,160 @@ void PlayState::resume()
 bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
 
     _deltaT = evt.timeSinceLastFrame;
-    if (_playSimulation) _world.get()->stepSimulation(_deltaT);
-    static Ogre::Real speed = 10.0;
-    _fps = 1.0 / _deltaT;
-    _r = 0;
-    Real rr = 0;
-    Real rSteer = 0;
-    Real sCar = 0;
-    static Real sBrake = 10;
-    _vt = Ogre::Vector3::ZERO;
+//    if (!_travellingCamara)
+//    {
+        if (_playSimulation) _world.get()->stepSimulation(_deltaT);
+        static Ogre::Real speed = 10.0;
+        _fps = 1.0 / _deltaT;
+        _r = 0;
+        Real rr = 0;
+        Real rSteer = 0;
+        Real sCar = 0;
+        static Real sBrake = 10;
+        _vt = Ogre::Vector3::ZERO;
 
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_P)) _playSimulation = !_playSimulation;
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_P)) _playSimulation = !_playSimulation;
 
-    if (_keys & static_cast<size_t>(keyPressed_flags::LEFT))  _vt.x += -1;
-    if (_keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _vt.x += 1;
-    if (_keys & static_cast<size_t>(keyPressed_flags::UP))    _vt.y += 1;
-    if (_keys & static_cast<size_t>(keyPressed_flags::DOWN))  _vt.y += -1;
-    if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
-    if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
-    
-    
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
-
-    _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);-l
-    if (_camera->getPosition().length() < 2.0) 
-        _camera->moveRelative(-_vt * _deltaT * speed);//10.0 /*tSpeed*/);
+        if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD1))  _vt.x += -1;
+        if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD3)) _vt.x += 1;
+        if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD5))    _vt.y += 1;
+        if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD2))  _vt.y += -1;
+        if (_keys & static_cast<size_t>(keyPressed_flags::INS))   _vt.z += 1;
+        if (_keys & static_cast<size_t>(keyPressed_flags::DEL))   _vt.z += -1;
         
-    if (_keys & static_cast<size_t>(keyPressed_flags::PGUP)) _r += 180;
-    if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
         
-    _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
-    
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_8)) rr+=180;
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_9)) rr-=180;
-    _camera->yaw(Ogre::Radian(rr * _deltaT * 0.005));
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
 
-    if (!_freeCamera)
-        reposicionaCamara();
-
-    //updateCPU();
+        _camera->moveRelative(_vt * _deltaT * speed);//10.0 /*tSpeed*/);-l
+        if (_camera->getPosition().length() < 2.0) 
+            _camera->moveRelative(-_vt * _deltaT * speed);//10.0 /*tSpeed*/);
+            
+        if (_keys & static_cast<size_t>(keyPressed_flags::PGUP)) _r += 180;
+        if (_keys & static_cast<size_t>(keyPressed_flags::PGDOWN)) _r += -180;
+            
+        _camera->pitch(Ogre::Radian(_r * _deltaT * 0.005));
         
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_SPACE)) _playSimulation = !_playSimulation;
-    if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_L)) _freeCamera = !_freeCamera;
-    
-    if (_playSimulation)
-        updateCPU();
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_8)) rr+=180;
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_9)) rr-=180;
+        _camera->yaw(Ogre::Radian(rr * _deltaT * 0.005));
 
-    
-    if (!_freeCamera)
-        _camera->setPosition(_vCarsCpuPlayer[0]->getPosicionActual().x,
-                             _vCarsCpuPlayer[0]->getPosicionActual().y +10 ,
-                             //_vCarsCpuPlayer[0]->getPosicionActual().z + 30);
-                             _vCarsCpuPlayer[0]->getPosicionActual().z + 40);
-                             
-    _play->speed((int)_vCarsCpuPlayer[0]->getVelocidadActual());
+        if (!_freeCamera)
+            reposicionaCamara();
 
-  return !_exitGame;
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_SPACE)) _playSimulation = !_playSimulation;
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_L)) _freeCamera = !_freeCamera;
+        
+        if (_playSimulation)
+        {
+            updateCPU();
+            _humanPlayer->update(_deltaT,_keys);
+        }
+        
+        if (!_freeCamera)
+                _camera->setPosition(_humanPlayer->getPosicionActual().x,
+                                     _humanPlayer->getPosicionActual().y +10 ,
+                                     _humanPlayer->getPosicionActual().z + 30);
+                                     
+        controlDeCarrera();
+
+
+//        // Actualizar GUI
+//        _play->lap(_humanPlayer->getLap(),LAPS);
+//        _play->speed((int)_humanPlayer->getVelocidadActual());
+//        size_t posicionEnCarrera;
+//        for(posicionEnCarrera=0; posicionEnCarrera<_vranking.size(); posicionEnCarrera++)
+//            if (_vranking[posicionEnCarrera] < _humanPlayer->getTotalCheckPoints())
+//                break;
+//        _play->position(posicionEnCarrera+1,4);
+//        
+//        
+//        if (_humanPlayer->finished() && !_finalCarrera)
+//        {
+//            _posicionAlFinalCarrera = posicionEnCarrera;
+//            _finalCarrera = true;
+//        }
+//        
+//        _finalCarrera ? _timeCarreraAcabada += _deltaT : _timeCarreraAcabada = 0;
+//        
+//        if (_timeCarreraAcabada > MAX_TIME_CARRERA_ACABADA) 
+        
+//    }
+//    else
+//    {
+//        travellingCamara();
+//    }
+    
+    return !_exitGame;
+}
+
+void PlayState::controlDeCarrera()
+{
+        // Actualizar GUI
+        _play->lap(_humanPlayer->getLap(),LAPS);
+        _play->speed((int)_humanPlayer->getVelocidadActual());
+        size_t posicionEnCarrera;
+        for(posicionEnCarrera=0; posicionEnCarrera<_vranking.size(); posicionEnCarrera++)
+            if (_vranking[posicionEnCarrera] < _humanPlayer->getTotalCheckPoints())
+                break;
+        _play->position(posicionEnCarrera+1,4);
+        
+        
+        if (_humanPlayer->finished() && !_finalCarrera)
+        {
+            _posicionAlFinalCarrera = posicionEnCarrera;
+            _finalCarrera = true;
+        }
+        
+        _finalCarrera ? _timeCarreraAcabada += _deltaT : _timeCarreraAcabada = 0;
+        
+        if (_timeCarreraAcabada >= MAX_TIME_CARRERA_ACABADA) 
+        {
+            if (!_posicionAlFinalCarrera)
+                changeState(WinState::getSingletonPtr());
+            else
+                changeState(LooseState::getSingletonPtr());
+        }    
+    
+}
+
+void PlayState::travellingCamara()
+{
+    _camera->lookAt(_humanPlayer->getPosicionActual());
+    if (_camera->getPosition().z >= _humanPlayer->getPosicionActual().z + 30)
+        _camera->moveRelative(Vector3(0,0,(-1 * _deltaT * CAMSPEED)));
+    else
+        _travellingCamara = false;
+
 }
 
 void PlayState::updateCPU()
 {
+    _vranking.clear();
+    
     for (size_t i=0; i<_vCarsCpuPlayer.size(); i++)
+    {
         _vCarsCpuPlayer[i]->update(_deltaT);
+        cout << _vCarsCpuPlayer[i]->getNombreEnPantalla() << " lleva " << _vCarsCpuPlayer[i]->getTotalCheckPoints() << " checkpoints pasados" << endl;
+        _vranking.push_back(_vCarsCpuPlayer[i]->getTotalCheckPoints());
+    }
+    std::sort(_vranking.begin(),_vranking.end());
+    
+    for (size_t i=0; i < _vranking.size(); i++)
+        cout << _vranking[i] << endl;
+        
+    cout << "human player lleva " << _humanPlayer->getTotalCheckPoints() << " checkpoints pasados" << endl;
 
 }
 
 bool PlayState::frameEnded(const Ogre::FrameEvent &evt) 
 { 
-//    if (_playSimulation)
-//        updateCPU();
-    
     return true; 
 }
 
 bool PlayState::keyPressed(const OIS::KeyEvent &e) 
 {
-      if (e.key == OIS::KC_L)
+    if (e.key == OIS::KC_L)
     {    _freeCamera = !_freeCamera; cout << "Camara libre: " << _freeCamera << endl; }
     
     if (e.key == OIS::KC_C)
@@ -186,17 +263,14 @@ bool PlayState::keyPressed(const OIS::KeyEvent &e)
         _vista = static_cast<camara_view>(static_cast<int>(_vista) % static_cast<int>(camara_view::TOTAL_COUNT));
         colocaCamara();
     }    
-    
-//    if (e.key == OIS::KC_V)
-//    {
-//        _cursorVehiculo += 1;
-//        _cursorVehiculo %= _vCarsRayCast.size();
-//    }    
-//    
-//    if (e.key == OIS::KC_R)
-//        _vCarsRayCast[_cursorVehiculo]->recolocar(_vCarsRayCast[_cursorVehiculo]->getPosicionActual());
 
     flagKeys(true);
+    
+    if (e.key == OIS::KC_P)
+        pushState(PauseState::getSingletonPtr());
+
+    if (e.key == OIS::KC_ESCAPE)
+        changeState(MenuState::getSingletonPtr());
        
     return true;
 }
@@ -204,9 +278,6 @@ bool PlayState::keyPressed(const OIS::KeyEvent &e)
 bool PlayState::keyReleased(const OIS::KeyEvent &e) 
 { 
     flagKeys(false);
-
-    if (e.key == OIS::KC_ESCAPE)
-        _exitGame = true;
     
     return true; 
 }
@@ -216,7 +287,7 @@ void PlayState::createLight()
     //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
     _sceneMgr->setShadowTextureCount(2);
     _sceneMgr->setShadowTextureSize(512);
-    Light *light = _sceneMgr->createLight("Light1");
+    Light *light = _sceneMgr->createLight("LightPlayState1");
     light->setPosition(30, 30, 0);
     light->setType(Light::LT_SPOTLIGHT);
     light->setDirection(Vector3(-1, -1, 0));
@@ -291,7 +362,6 @@ void PlayState::initBulletWorld(bool showDebug)
     SceneNode *node = _sceneMgr->getRootSceneNode()->createChildSceneNode("debugNode", Vector3::ZERO);
     node->attachObject(static_cast<SimpleRenderable *>(_debugDrawer));
     
-//    AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-10000, -10000, -10000),Ogre::Vector3(10000, 10000, 10000));
     AxisAlignedBox boundBox = AxisAlignedBox(Ogre::Vector3(-100, -100, -100),Ogre::Vector3(100, 100, 100));
     _world = shared_ptr<OgreBulletDynamics::DynamicsWorld>(new DynamicsWorld(_sceneMgr, boundBox, Vector3(0, -9.8, 0))); //, true, true, 15000));
     _world.get()->setDebugDrawer(_debugDrawer);
@@ -323,7 +393,6 @@ void PlayState::createScene()
 
 
 //******************************************************************************************************************
-//**SOLO PARA VER SI LA IA FUNCIONA QUITAR DESPUÉS DE QUE FUNCIONE**************************************************
  
     IAPointsDeserializer iapd;
     iapd.cargarFicheroCheckPoint("rutasIA.xml");
@@ -359,11 +428,9 @@ void PlayState::createScene()
         // Por alguna razón que desconozco, aún habiendo indicado la posición inicial (bodyCheckPoint->setShape(SceneNode,shape,restitution,friction,masa,POSICION,rotacion))
         // OgreBullet (ó bullet) asignan la posicion (0,0,0) independientemente del valor que le pase. La rotación si que la establece bien al parecer.
         // Así pues, una vez configurado bullet para este CheckPoint, lo vuelvo a trasladar a su lugar correcto. Y así parece que funciona. 
-//OLD   marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z);
-        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 5.5 ,vpoints[i].p.p.z);
+        marca._nodoMarca->setPosition(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 2.1 ,vpoints[i].p.p.z);
         btTransform trans = bodyCheckPoint->getBulletRigidBody()->getWorldTransform();
-//OLD   trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 0.5 ,vpoints[i].p.p.z));
-        trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 5.5 ,vpoints[i].p.p.z));
+        trans.setOrigin(btVector3(vpoints[i].p.p.x,_planeRoadNode->getPosition().y - 2.1 ,vpoints[i].p.p.z));
         bodyCheckPoint->getBulletRigidBody()->setWorldTransform(trans);
         bodyCheckPoint->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CHECK_POINT,                            // establecemos el tipo de rigidbody para cuando se lanzan rayos
                                                                              new CheckPoint_data(i,                                 // id del checkpoint
@@ -390,6 +457,8 @@ void PlayState::createScene()
         cout << "id de la marca creada:" << i << endl;
     }
 
+    _nombreTipoCoche = actualOptions::getSingletonPtr()->getNombreVehiculoXML();
+    _nombreMaterial = actualOptions::getSingletonPtr()->getNombreMaterial(actualOptions::getSingletonPtr()->getIdMaterial());
 
     createPlayersCPU();
 
@@ -399,7 +468,16 @@ void PlayState::createScene()
         _vCarsCpuPlayer.at(j)->start();
     }
     
+    _humanPlayer = unique_ptr<humanPlayer>(new humanPlayer("Player",_nombreTipoCoche,_nombreMaterial,posSalida.at(posSalida.size()-1),_sceneMgr,_world.get(),LAPS,vpoints.size(),nullptr,99,true));
+    _humanPlayer->start();
+    
     _playSimulation = true;
+    
+    _travellingCamara = true;
+    _camera->setPosition(_humanPlayer->getPosicionActual().x,
+                         _humanPlayer->getPosicionActual().y +10 ,
+                         _humanPlayer->getPosicionActual().z + 100);
+    //_camera->lookAt(_humanPlayer->getPosicionActual());
   
 }
 
@@ -419,7 +497,6 @@ void PlayState::createVallaVirtual()
 
 void PlayState::createPlayersCPU()
 {
-    _nombreTipoCoche = actualOptions::getSingletonPtr()->getNombreVehiculoXML();
     
     auto nombres = actualOptions::getSingletonPtr()->getNombresCPU();
     auto materials = actualOptions::getSingletonPtr()->getNombreMateriales();
@@ -434,7 +511,7 @@ void PlayState::createPlayersCPU()
     srand (time(NULL));
 
     //for (size_t i = 0; i < CPU_PLAYERS; i++)
-    for (size_t i = 0; i < 4; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         do
         {
@@ -462,7 +539,7 @@ void PlayState::createPlayersCPU()
         //auxNombreMaterial = nombreMaterial;
         vMateriales.push_back(nombreMaterial);
         
-        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),5,nullptr,i)));
+        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),LAPS,nullptr,i)));
         _vCarsCpuPlayer.back()->build();
 
     }
@@ -585,6 +662,9 @@ void PlayState::flagKeys(bool flag)
             _keys |= static_cast<size_t>(keyPressed_flags::NUMPAD3);
         if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD5))
             _keys |= static_cast<size_t>(keyPressed_flags::NUMPAD5);
+        if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_R))
+            _keys |= static_cast<size_t>(keyPressed_flags::RECOLOCAR);
+            
     }
     else
     {
@@ -612,6 +692,8 @@ void PlayState::flagKeys(bool flag)
             _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::NUMPAD3));
         if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_NUMPAD5))
             _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::NUMPAD5));
+        if (!InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_R))
+            _keys = ~(~(_keys) | static_cast<size_t>(keyPressed_flags::RECOLOCAR));
             
     }
 }
@@ -674,8 +756,8 @@ void PlayState::createMyGui()
 {
   //PlayWidget * play = new PlayWidget();
   _play = new PlayWidget();
-  _play->lap (1,3);
-  _play->position (1,4);
+  _play->lap (1,LAPS);
+  _play->position (4,4);
   _play->speed(0);
   _play->circuit("JEREZ");
   _play->startTime();
