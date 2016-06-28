@@ -20,8 +20,8 @@ void PauseState::enter ()
 
 void PauseState::exit()
 {
- _root->getAutoCreatedWindow()->removeAllViewports();
-  destroyMyGui();
+//  _root->getAutoCreatedWindow()->removeAllViewports();
+//  destroyMyGui();
 }
 
 void PauseState::pause()
@@ -45,11 +45,12 @@ bool PauseState::frameEnded(const Ogre::FrameEvent& evt)
 
 bool PauseState::keyPressed(const OIS::KeyEvent &e) 
 {
-  // Tecla p --> Estado anterior.
-      if (e.key == OIS::KC_P)  // Con  P otra vez reanudamos el PlayState
-      {
+
+    if (e.key == OIS::KC_ESCAPE)
+    {
+        MyGUI::LayoutManager::getInstance().unloadLayout(layout);
         popState();
-      }
+    }
   
   return true;
 }

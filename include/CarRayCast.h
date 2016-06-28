@@ -180,6 +180,7 @@ public:
     inline std::vector<Rueda> & getRuedas() { return _ruedas; };
     inline ruedasContactInfo_t& getContactInfoRuedas(){ return _ruedasContactInfo; };
     void cambiarMaterialVehiculo(string& nombreMaterial);
+    void enderezar();
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };

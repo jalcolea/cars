@@ -89,7 +89,7 @@ bool MenuState::frameEnded(const Ogre::FrameEvent& evt)
 bool MenuState::keyPressed(const OIS::KeyEvent &e)
 {
     // CUANDO TODO EL FLUJO DE ESTADOS FUNCIONE BIEN, HAY QUE HACER UN CLEAN UP DE TODO ESTO
-  if (e.key == OIS::KC_SPACE || e.key==OIS::KC_P) // PLAY
+  if (e.key == OIS::KC_SPACE || e.key==OIS::KC_P || e.key==OIS::KC_RETURN) // PLAY
   {
       sounds::getInstance()->play_effect("push");
       MyGUI::LayoutManager::getInstance().unloadLayout(layout);

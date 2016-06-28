@@ -30,6 +30,9 @@ class PlayWidget
   void stopTime ();
   static void * timer ( void * data);
   bool start_thread;
+  
+  static pthread_t thread;
+  
   protected:
    
   private:
@@ -40,7 +43,8 @@ class PlayWidget
   MyGUI::TextBox * race_time;
   MyGUI::TextBox * race_circuit;
 
-  static pthread_t thread;
+  
+  
 };
 
 #endif

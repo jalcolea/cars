@@ -51,7 +51,8 @@ using namespace OgreBulletCollisions;
 
 #define CPU_PLAYERS 3
 #define LAPS 2
-
+#define Z_CAMARA_SEMICENITAL 30
+#define MAX_TIME_CARRERA_ACABADA 2
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
@@ -111,6 +112,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         RigidBody* _floorBody;
         bool _freeCamera = false;
         bool _playSimulation = true;
+        bool _travellingCamara = true;
         SceneNode* _nodoVista;
         SceneNode* _planeRoadNode;
         OgreBulletDynamics::RigidBody* _planeRoadBody;
@@ -146,6 +148,8 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         void pintaOverlayInfo();
         void flagKeys(bool flag);
         void updateCPU();
+        void travellingCamara();
+        void controlDeCarrera();
         Ogre::OverlayManager* _overlayManager;
         Ogre::Vector3 _vt;
         Ogre::Real _r;
@@ -156,7 +160,9 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         size_t _cursorVehiculo; // veremos si hace falta
         string _nombreTipoCoche; // para cargar la info del xml este nombre debe coincidir con la definición de uno definido en dicho xml
         string _nombreMaterial; // nombre del material que ha elegido el usuario en el selector de coches.
-        
+        bool _finalCarrera = false;
+        size_t _posicionAlFinalCarrera = 0;
+        Ogre::Real _timeCarreraAcabada = 0;
         
         void dibujaLinea(size_t idFrom, size_t idTo); // SOLO PARA COMPROBAR FUNCIONAMIENTO IA, QUITAR LUEGO
         std::vector<marquita> vMarcas;

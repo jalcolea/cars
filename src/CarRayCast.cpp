@@ -195,6 +195,12 @@ void CarRayCast::girarCPU(Real valor) // valorGiro positivo = izquierda, valorGi
 //    cout << "Giro finalmente aplicado " << _valorGiro << endl;
 }
 
+void CarRayCast::enderezar()
+{
+    _vehiculo->setSteeringValue(0,0);
+    _vehiculo->setSteeringValue(0,1);
+}
+
 
 void CarRayCast::recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion)
 {
@@ -228,7 +234,6 @@ bool CarRayCast::ruedasEnContacto()
 //  Y CUANDO NO HAY CONTACTO LE CASCA UN 0. DE MODO QUE LA ÚNICA FORMA DE SABER CON QUÉ ESTÁN EN CONTACTO LAS RUEDAS, ES... NINGUNA. BUENO, PODEMOS LIARNOS A LANZAR RAYOS Y DETERMINAR
 //  CON RAYRESULTCALLBACKS QUÉ TIENEN DEBAJO LAS RUEDAS EN COMBINACIÓN CON LO HECHO POR EL AUTOR DE LA "very special constraint" :D, ES DECIR SI LE ASIGNA VALOR A m_groundObject QUIERE
 //  DECIR QUE HAY CONTACTO Y ENTONCES PODEMOS LANZAR EL RAYO NOSOTROS E INTENTAR AVERIGUAR QUIEN ES EL "CONTACTADO". 
-//  Y TRAS MUCHO INVESTIGAR AL PARECER LA GENTE QUE HA HECHO EL JUEGO SUPERTUXKART HACE EXACTAMENTE ESTO, "ASÍNQUE...."
             
 //            btCollisionObject* auxCollisionObject = static_cast<btCollisionObject*>(_vehiculo->getBulletVehicle()->getWheelInfo(i).m_raycastInfo.m_groundObject);
 //            rigidBody_data* data = static_cast<rigidBody_data*>(auxCollisionObject->getUserPointer());

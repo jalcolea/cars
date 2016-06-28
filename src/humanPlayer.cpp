@@ -91,7 +91,10 @@ void humanPlayer::update(Real deltaT, size_t keys)
             
         }
         if (keys & static_cast<size_t>(keyPressed_flags::LEFT)) _car->girar(1);
+        else if (!(keys & static_cast<size_t>(keyPressed_flags::RIGHT))) _car->enderezar();
+        
         if (keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _car->girar(-1);
+        else if (!(keys & static_cast<size_t>(keyPressed_flags::LEFT))) _car->enderezar();
     
         compruebaCheckPoint();
         compruebaSuelo();
