@@ -4,7 +4,7 @@
         <Property key="ImageTexture" value="records.png"/>
     </Widget>
     <Widget type="Button" skin="ButtonImage" position="820 680 60 90" align="Default" layer="Main" name="btn_back"/>
-    <Widget type="TextBox" skin="TextBox" position="110 265 355 420" layer="Main" name="score_names">
+    <Widget type="TextBox" skin="TextBox" position_real="0.17 0.37 0.34668 0.5" layer="Main" name="score_names">
         <Property key="Visible" value="true"/>
         <Property key="FontName" value="race"/>
         <Property key="FontHeight" value="60"/>
@@ -13,7 +13,7 @@
         <Property key="TextShadow" value="true"/>
         <Property key="Caption" value="AAA\nBBB\nCCC"/>
     </Widget>
-    <Widget type="TextBox" skin="TextBox" position="670 265 290 420" layer="Main" name="score_points">
+    <Widget type="TextBox" skin="TextBox" position_real="0.654297 0.37 0.283203 0.5" layer="Main" name="score_points">
         <Property key="Visible" value="true"/>
         <Property key="FontName" value="racenumeric"/>
         <Property key="FontHeight" value="60"/>

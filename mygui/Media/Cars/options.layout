@@ -3,18 +3,17 @@
     <Widget type="ImageBox" skin="ImageBox" position_real="0.00390625 0 1 1" align="Stretch" layer="Wallpaper" name="start">
         <Property key="ImageTexture" value="options5.png"/>
     </Widget>
-    <Widget type="Button" skin="ButtonImage" position="70 135 120 50" align="Default" layer="Main" name="btn_left"/>
-    <Widget type="Button" skin="ButtonImage" position="840 135 120 50" align="Default" layer="Main" name="btn_right"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.067 0.17 0.12 0.07" align="Default" layer="Main" name="btn_left"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.82 0.17 0.12 0.07" align="Default" layer="Main" name="btn_right"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.82 0.89 0.05 0.08" align="Default" layer="Main" name="btn_back"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.62 0.89 0.05 0.08" align="Default" layer="Main" name="btn_play"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.325 0.89 0.05 0.08" align="Default" layer="Main" name="btn_mat"/>
 
-    <Widget type="Button" skin="ButtonImage" position="830 675 65 70" align="Default" layer="Main" name="btn_back"/> 
-    <Widget type="Button" skin="ButtonImage" position="630 675 65 70" align="Default" layer="Main" name="btn_play"/>
-    <Widget type="Button" skin="ButtonImage" position="330 675 65 70" align="Default" layer="Main" name="btn_mat"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.075 0.89 0.03 0.05" align="Default" layer="Main" name="btn_d1"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.124 0.89 0.03 0.05" align="Default" layer="Main" name="btn_d2"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.177 0.882 0.04 0.07" align="Default" layer="Main" name="btn_d3"/>
 
-    <Widget type="Button" skin="ButtonImage" position="75 675 25 50" align="Default" layer="Main" name="btn_d1"/>
-    <Widget type="Button" skin="ButtonImage" position="125 675 30 50" align="Default" layer="Main" name="btn_d2"/>
-    <Widget type="Button" skin="ButtonImage" position="180 675 35 50" align="Default" layer="Main" name="btn_d3"/>
-
-   <Widget type="EditBox" skin="WordWrapEmpty" position="200 600 200 200" name="edt_diff" layer="Main">
+    <Widget type="EditBox" skin="WordWrapEmpty" position="200 600 200 200" layer="Main" name="edt_diff">
         <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
         <Property key="Colour" value="1 0 0"/>
@@ -23,20 +22,18 @@
         <Property key="Caption" value=""/>
         <Property key="InheritsAlpha" value="true"/>
     </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="215 650 100 120" align="Stretch" layer="Wallpaper" name="img_d1">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0.209961 0.86 0.0976562 0.117188" align="Stretch" layer="Wallpaper" name="img_d1">
         <Property key="ImageTexture" value="d1.png"/>
         <Property key="Visible" value="true"/>
     </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="215 650 100 120" align="Stretch" layer="Wallpaper" name="img_d2">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0.209961 0.86 0.0976562 0.117188" align="Stretch" layer="Wallpaper" name="img_d2">
         <Property key="ImageTexture" value="d2.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
-    <Widget type="ImageBox" skin="ImageBox" position="215 650 100 120" align="Stretch" layer="Wallpaper" name="img_d3">
+    <Widget type="ImageBox" skin="ImageBox" position_real="0.209961 0.86 0.0976562 0.117188" align="Stretch" layer="Wallpaper" name="img_d3">
         <Property key="ImageTexture" value="d3.png"/>
         <Property key="Visible" value="false"/>
     </Widget>
-
-
     <Widget type="EditBox" skin="WordWrapEmpty" position="60 480 820 180" layer="Main" name="text">
         <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
