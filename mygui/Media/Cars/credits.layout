@@ -3,7 +3,7 @@
     <Widget type="ImageBox" skin="ImageBox" position_real="0 0 1 1" align="Stretch" layer="Wallpaper" name="start">
         <Property key="ImageTexture" value="credits2.png"/>
     </Widget>
-    <Widget type="Button" skin="ButtonImage" position="20 640 100 130" align="Default" layer="Main" name="btn_back"/>
+    <Widget type="Button" skin="ButtonImage" position_real="0.8 0.88 0.06 0.1" align="Default" layer="Main" name="btn_back"/>
     <Widget type="EditBox" skin="WordWrapEmpty" position="525 665 580 120" layer="Main" name="edt_high">
         <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Left"/>
