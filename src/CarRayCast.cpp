@@ -168,12 +168,10 @@ void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquie
 // Para coches controlados por la CPU, el valor del giro se deja que se calcule por la entidad pertinente.
 void CarRayCast::girarCPU(Real valor) // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
 {
-    //cout << "Valor giro en GIRARCPU ANTES DE COMPROBAR: " << _valorGiro << endl;
     if (abs(valor) < MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
         _valorGiro = valor;
     else
     {
-//        cout << "GIRARCPU(" << valorGiro << ") VALOR GIRO DEMASIADO GRANDE, AJUSTANDO" << endl;
         if (abs(valor) == 0)
             _valorGiro = 0; // "malditos decimales (léase con acento de Don Gato)
         else if (valor > 0)

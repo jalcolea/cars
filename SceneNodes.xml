@@ -468,7 +468,7 @@
         <indiceRestitucionSuspension>0.1</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="-2.32" y="1.2" z="-22"></posicion>-->
         <posicion x="10" y="2.1" z="-22"></posicion>
-        <velocidadGiro>0.015</velocidadGiro> <!-- parece un valor adecuado para el kart -->
+        <velocidadGiro>0.001</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>4700</aceleracion>
         <frenada>2000</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
