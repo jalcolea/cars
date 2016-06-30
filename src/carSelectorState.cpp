@@ -121,6 +121,10 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
     }
     else if (e.key == OIS::KC_E || e.key == OIS::KC_ESCAPE)
          popState();
+    else if (e.key==OIS::KC_0) setDifficult (0);
+    else if (e.key==OIS::KC_1) setDifficult (1);
+    else if (e.key==OIS::KC_2) setDifficult (2);
+
 
 //        _exitGame = true;
 
@@ -169,6 +173,7 @@ bool carSelectorState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID
     OIS::KeyEvent e(NULL,OIS::KC_RETURN,0);
     carSelectorState::keyPressed(e);
   }
+/*
   else if (btn_d1->_checkPoint(x,y))
   {
     difficult = 1;
@@ -190,7 +195,7 @@ bool carSelectorState::mousePressed(const OIS::MouseEvent& e, OIS::MouseButtonID
     for (int a=0;a<3;a++) img[a]->setVisible(false);
     img[difficult-1]->setVisible(true);
   }
-
+*/
         return true;
 }
 
@@ -353,13 +358,14 @@ void carSelectorState::createMyGui()
   btn_right = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_right");
   btn_play = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_play");
   btn_mat = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_mat");
-  btn_d1 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d1");
-  btn_d2 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d2");
-  btn_d3 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d3");
+  //btn_d1 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d1");
+  //btn_d2 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d2");
+  //btn_d3 = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_d3");
   text = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("text");
-  img[0] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d1");
-  img[1] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d2");
-  img[2] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d3");
+  edt_diff = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("edt_diff");
+  //img[0] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d1");
+  //img[1] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d2");
+  //img[2] = MyGUI::Gui::getInstance().findWidget<MyGUI::ImageBox>("img_d3");
 }
 
 void carSelectorState::destroyMyGui()
@@ -538,4 +544,11 @@ void carSelectorState::sincronizarIdMaterialConVehiculoSeleccionado()
             break;
         }
     
+}
+
+void carSelectorState::setDifficult (int level)
+{
+cout << "SET DIFF " << level <<endl;
+cout << "SET DIFF " << level << " " << msg_diff[level]<<endl;
+  edt_diff->setCaption(msg_diff[level]);
 }

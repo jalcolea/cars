@@ -86,6 +86,7 @@ public:
     string getNombreTipoCocheSeleccionado();
     inline string getNombreMaterialSeleccionado(){ return _vMateriales[_idMaterialActual]; };
     inline std::vector<string>& getMateriales() { return _vMateriales; }
+    void setDifficult(int level);
 
 protected:
     Ogre::Root *_root;
@@ -106,12 +107,14 @@ protected:
     MyGUI::Button* btn_right;
     MyGUI::Button* btn_play;
     MyGUI::Button* btn_mat;
-    MyGUI::Button* btn_d1;
-    MyGUI::Button* btn_d2;
-    MyGUI::Button* btn_d3;
+//    MyGUI::Button* btn_d1;
+//    MyGUI::Button* btn_d2;
+//    MyGUI::Button* btn_d3;
     MyGUI::EditBox* text;
+    MyGUI::EditBox* edt_diff;
     MyGUI::EditBox* edt_high;
-    MyGUI::ImageBox* img[3];
+    //MyGUI::ImageBox* img[3];
+    string msg_diff [3]={"LOW","MED","HIGH"};
 
 private:
 
