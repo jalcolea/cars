@@ -4,7 +4,7 @@
         <Property key="ImageTexture" value="loose.png"/>
     </Widget>
  <Widget type="Button" skin="ButtonImage" position="550 570 200 55"  name="btn_resume" layer="Main"/>
-
+<!--
     <Widget type="EditBox" skin="WordWrapEmpty" position="300 456 420 100" name="user_name" layer="Main">
         <Property key="FontName" value="race"/>
         <Property key="TextAlign" value="Center"/>
@@ -13,5 +13,6 @@
         <Property key="TextColour" value="1 0 0"/>
         <Property key="Caption" value=""/>
     </Widget>
+-->
     <CodeGeneratorSettings/>
 </MyGUI>

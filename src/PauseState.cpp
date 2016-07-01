@@ -46,7 +46,7 @@ bool PauseState::frameEnded(const Ogre::FrameEvent& evt)
 bool PauseState::keyPressed(const OIS::KeyEvent &e) 
 {
 
-    if (e.key == OIS::KC_ESCAPE)
+    if ((e.key == OIS::KC_ESCAPE) || (e.key == OIS::KC_RETURN) || (e.key == OIS::KC_R))
     {
         MyGUI::LayoutManager::getInstance().unloadLayout(layout);
         popState();

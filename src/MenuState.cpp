@@ -123,9 +123,9 @@ bool MenuState::keyPressed(const OIS::KeyEvent &e)
 //    pushState(OptionsState::getSingletonPtr());
 //  }
 
-  else if (e.key == OIS::KC_P) {                                // DEMO PAUSA
+  else if (e.key == OIS::KC_O) {                                // DEMO PAUSA
     sounds::getInstance()->play_effect("push");
-    MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+    //MyGUI::LayoutManager::getInstance().unloadLayout(layout);
     pushState(PauseState::getSingletonPtr());
   }
   else if (e.key == OIS::KC_W) {				// DEMO WIN

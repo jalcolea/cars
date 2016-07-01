@@ -75,7 +75,7 @@ bool WinState::keyPressed(const OIS::KeyEvent &e)
       }
     }
     user_name_txt->setCaption(txt);
-    if (e.key==OIS::KC_RETURN)
+    if ((e.key == OIS::KC_ESCAPE) || (e.key == OIS::KC_RETURN) || (e.key == OIS::KC_R))
     {
         cout << "NEW RECORD TO SAVE" << endl;
         save_record();

@@ -74,7 +74,7 @@ class LooseState : public Ogre::Singleton<LooseState>, public GameState
 
   MyGUI::VectorWidgetPtr layout;
   MyGUI::Button* btn_resume;
-  MyGUI::EditBox* user_name_txt;
+  //MyGUI::EditBox* user_name_txt;
 
   bool _exitGame;
   int points;

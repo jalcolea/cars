@@ -48,15 +48,13 @@ bool LooseState::frameEnded(const Ogre::FrameEvent& evt)
 
 void LooseState::save_record()
 {
-        //records::getInstance()->add_record(user_name_txt->getCaption(),get_score());
-        records::getInstance()->add_record(user_name_txt->getCaption(),points);
-        records::getInstance()->saveFile(NULL);
-        //sounds::getInstance()->play_effect("eat_ghost");
-        //user_name_txt->setVisible(false);
+        //records::getInstance()->add_record(user_name_txt->getCaption(),points);
+        //records::getInstance()->saveFile(NULL);
 }
 
 bool LooseState::keyPressed(const OIS::KeyEvent &e) 
 {
+/*
     MyGUI::UString txt = user_name_txt->getCaption();
     if ((int)e.key==14 && txt.size()>0)
     {
@@ -70,10 +68,10 @@ bool LooseState::keyPressed(const OIS::KeyEvent &e)
       }
     }
     user_name_txt->setCaption(txt);
-    if (e.key==OIS::KC_RETURN)
+*/
+    if ((e.key == OIS::KC_ESCAPE) || (e.key == OIS::KC_RETURN) || (e.key == OIS::KC_R))
     {
-        cout << "NEW RECORD TO SAVE" << endl;
-        save_record();
+        //save_record();
         popState();
     }
 
@@ -130,7 +128,7 @@ void LooseState::createMyGui()
 {
   layout = MyGUI::LayoutManager::getInstance().loadLayout(LAYOUT_LOOSE);
   btn_resume = MyGUI::Gui::getInstance().findWidget<MyGUI::Button>("btn_resume");
-  user_name_txt = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("user_name");
+  //user_name_txt = MyGUI::Gui::getInstance().findWidget<MyGUI::EditBox>("user_name");
 
 }
 
