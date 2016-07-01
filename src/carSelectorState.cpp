@@ -44,7 +44,6 @@ void carSelectorState::enter()
         _viewport = _root->getAutoCreatedWindow()->getViewport(0);
     }
 
-
     //Color de fondo inicial
     _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 1.0, 0.0));
 

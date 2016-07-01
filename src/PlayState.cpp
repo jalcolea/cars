@@ -88,13 +88,22 @@ void PlayState::exit()
     // Ojo: Si no limpiamos el vector al salir, al volver a entrar a este estado siguen existiendo los objetos que contenía.
     _vCarsCpuPlayer.clear();  
     _sceneMgr->clearScene();
+    cout << "exit playstate" << endl;
 }
 
-void PlayState::pause() { paused = true; }
+void PlayState::pause()
+{ 
+    paused = true; 
+    _play->pauseTimer();
+}
 
 void PlayState::resume()
 { 
     paused = false; 
+    _play->resumeTimer();
+    
+    if (_finalCarrera)
+        changeState(MenuState::getSingletonPtr());
 }
 
 bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
@@ -156,27 +165,6 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
                                      _humanPlayer->getPosicionActual().z + 30);
                                      
         controlDeCarrera();
-
-
-//        // Actualizar GUI
-//        _play->lap(_humanPlayer->getLap(),LAPS);
-//        _play->speed((int)_humanPlayer->getVelocidadActual());
-//        size_t posicionEnCarrera;
-//        for(posicionEnCarrera=0; posicionEnCarrera<_vranking.size(); posicionEnCarrera++)
-//            if (_vranking[posicionEnCarrera] < _humanPlayer->getTotalCheckPoints())
-//                break;
-//        _play->position(posicionEnCarrera+1,4);
-//        
-//        
-//        if (_humanPlayer->finished() && !_finalCarrera)
-//        {
-//            _posicionAlFinalCarrera = posicionEnCarrera;
-//            _finalCarrera = true;
-//        }
-//        
-//        _finalCarrera ? _timeCarreraAcabada += _deltaT : _timeCarreraAcabada = 0;
-//        
-//        if (_timeCarreraAcabada > MAX_TIME_CARRERA_ACABADA) 
         
 //    }
 //    else
@@ -189,31 +177,43 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
 
 void PlayState::controlDeCarrera()
 {
-        // Actualizar GUI
-        _play->lap(_humanPlayer->getLap(),LAPS);
-        _play->speed((int)_humanPlayer->getVelocidadActual());
-        size_t posicionEnCarrera;
+    size_t posicionEnCarrera;
+
+    // Actualizar GUI
+    if (!_finalCarrera)
+    {
+        std::sort(_vranking.begin(),_vranking.end());
         for(posicionEnCarrera=0; posicionEnCarrera<_vranking.size(); posicionEnCarrera++)
-            if (_vranking[posicionEnCarrera] < _humanPlayer->getTotalCheckPoints())
+            if (_vranking[posicionEnCarrera] > _humanPlayer->getTotalCheckPoints())
                 break;
-        _play->position(posicionEnCarrera+1,4);
+                
+//        for(size_t j=0; j<_vranking.size();j++)
+//            cout << _vranking[j] << endl;
+//        cout << "humano lleva" << _humanPlayer->getTotalCheckPoints() << endl;
+            
+        _play->lap(_humanPlayer->getLap(),LAPS);
+        _play->position(4-posicionEnCarrera,4);
         
-        
-        if (_humanPlayer->finished() && !_finalCarrera)
+        if (_humanPlayer->finished() /*&& !_finalCarrera*/)
         {
-            _posicionAlFinalCarrera = posicionEnCarrera;
+            _play->stopTime();
+            _tiempoCarreraJugador = _play->getTime();
+            _posicionAlFinalCarrera = 4-posicionEnCarrera;
             _finalCarrera = true;
         }
-        
-        _finalCarrera ? _timeCarreraAcabada += _deltaT : _timeCarreraAcabada = 0;
-        
-        if (_timeCarreraAcabada >= MAX_TIME_CARRERA_ACABADA) 
-        {
-            if (!_posicionAlFinalCarrera)
-                changeState(WinState::getSingletonPtr());
-            else
-                changeState(LooseState::getSingletonPtr());
-        }    
+    }
+    
+    _play->speed((int)_humanPlayer->getVelocidadActual());
+    
+    _finalCarrera ? _timeCarreraAcabada += _deltaT : _timeCarreraAcabada = 0;
+    
+    if (_timeCarreraAcabada >= MAX_TIME_CARRERA_ACABADA) 
+    {
+        if (_posicionAlFinalCarrera == 1)
+            pushState(WinState::getSingletonPtr());
+        else
+            pushState(LooseState::getSingletonPtr());
+    }    
     
 }
 
@@ -234,16 +234,9 @@ void PlayState::updateCPU()
     for (size_t i=0; i<_vCarsCpuPlayer.size(); i++)
     {
         _vCarsCpuPlayer[i]->update(_deltaT);
-        cout << _vCarsCpuPlayer[i]->getNombreEnPantalla() << " lleva " << _vCarsCpuPlayer[i]->getTotalCheckPoints() << " checkpoints pasados" << endl;
+        //cout << _vCarsCpuPlayer[i]->getNombreEnPantalla() << " lleva " << _vCarsCpuPlayer[i]->getTotalCheckPoints() << " checkpoints pasados" << endl;
         _vranking.push_back(_vCarsCpuPlayer[i]->getTotalCheckPoints());
     }
-    std::sort(_vranking.begin(),_vranking.end());
-    
-    for (size_t i=0; i < _vranking.size(); i++)
-        cout << _vranking[i] << endl;
-        
-    cout << "human player lleva " << _humanPlayer->getTotalCheckPoints() << " checkpoints pasados" << endl;
-
 }
 
 bool PlayState::frameEnded(const Ogre::FrameEvent &evt) 
@@ -373,6 +366,12 @@ void PlayState::initBulletWorld(bool showDebug)
 void PlayState::createScene()
 {
     _playSimulation = false;
+    _freeCamera = false;
+    _travellingCamara = true;
+    _finalCarrera = false;
+    _timeCarreraAcabada = 0;
+    _tiempoCarreraJugador = 0;
+
   
     _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
     _sceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_MODULATIVE);
@@ -387,6 +386,7 @@ void PlayState::createScene()
     
     _track = unique_ptr<track>(new track("track1NoRoadBig",_world.get(),Vector3(0,0,0),_sceneMgr));
     createPlaneRoad();
+    createAtrezzo();
     
     // Carga de la malla que bordea el circuito para que no se salga el coche, SOLO PARA PRUEBAS
     //createVallaVirtual();
@@ -632,6 +632,19 @@ void PlayState::createPlaneRoad()
     _planeRoadBody->getBulletObject()->setUserPointer(new rigidBody_data(tipoRigidBody::CARRETERA,_planeRoadBody));
     
      
+}
+
+void PlayState::createAtrezzo()
+{
+    nodoOgre_t infoNodo = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("Atrezzo");
+    StaticGeometry* stage = _sceneMgr->createStaticGeometry("Atrezzo");
+    Entity* ent1 = _sceneMgr->createEntity(infoNodo.nombreMalla);
+    ent1->setCastShadows(true);
+    stage->addEntity(ent1, infoNodo.posInicial);
+    stage->setCastShadows(true);
+    stage->build();  // Operacion para construir la geometria
+
+
 }
 
 void PlayState::flagKeys(bool flag)

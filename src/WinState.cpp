@@ -52,6 +52,8 @@ bool WinState::frameEnded(const Ogre::FrameEvent& evt)
 void WinState::save_record()
 {
         //records::getInstance()->add_record(user_name_txt->getCaption(),get_score());
+        if (!user_name_txt->getCaption().size()) user_name_txt->setCaption("AAAAA");
+        points = PlayState::getSingletonPtr()->_tiempoCarreraJugador;
         records::getInstance()->add_record(user_name_txt->getCaption(),points);
         records::getInstance()->saveFile(NULL);
         //sounds::getInstance()->play_effect("eat_ghost");
@@ -62,9 +64,9 @@ bool WinState::keyPressed(const OIS::KeyEvent &e)
 {
      MyGUI::UString txt = user_name_txt->getCaption();
     if ((int)e.key==14 && txt.size()>0) 
-{
-txt.resize(txt.size()-1);
-}
+    {
+        txt.resize(txt.size()-1);
+    }
     else
     {
       if (((int)e.text >=65 && (int)e.text<=90) || ((int)e.text>=97 && (int)e.text<=122))

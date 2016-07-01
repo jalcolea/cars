@@ -50,7 +50,7 @@ using namespace OgreBulletDynamics;
 using namespace OgreBulletCollisions;
 
 #define CPU_PLAYERS 3
-#define LAPS 2
+#define LAPS 3
 #define Z_CAMARA_SEMICENITAL 30
 #define MAX_TIME_CARRERA_ACABADA 2
 
@@ -98,6 +98,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         void  win ();
         
         PlayWidget* _play;
+        Ogre::Real _tiempoCarreraJugador = 0;
 
     protected:
         Ogre::Root *_root;
@@ -134,6 +135,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         void destroyMyGui();
         void createScene();
         void createFloor();
+        void createAtrezzo();
         void cargarParametros(string archivo, bool consoleOut);
         void configurarCamaraPrincipal();
         void colocaCamara(); // Para cambiar los tipos de vista de la cámara.

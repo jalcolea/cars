@@ -169,8 +169,8 @@ void cpuPlayer::update(Real deltaT)
         {
             if (abs(angulo) > Ogre::Math::Math::HALF_PI && abs(angulo) < Ogre::Math::PI && _car->getVelocidadKmH() < 5)// || _maniobra == estadoManiobra::BORDILLO_CERCA)
             {    
-                dibujaLinea(origen,Vector3(origen.x,origen.y+5,origen.z));
-                dibujaLinea(destino,Vector3(destino.x,destino.y+10,destino.z));
+//                dibujaLinea(origen,Vector3(origen.x,origen.y+5,origen.z));
+//                dibujaLinea(destino,Vector3(destino.x,destino.y+10,destino.z));
 //                cout << "angulo mu gordo " << angulo << endl;
 //                cout << "SceneNode checkpoint destino actual: " << (_nodoCheckPointSiguiente?_nodoCheckPointSiguiente->getName():"UNKNOWN") << endl;
 //                cout << "Posicion Origen Actual: " << origen << endl;
@@ -427,39 +427,41 @@ void cpuPlayer::rayoAlFrente()
     if (rayCallback.hasHit())
     {
         
-        
-        tipoRigidBody t = static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_tipo;
-        //cout << _nombreEnPantalla << " (" << _nombreMaterial << ") lanza rayo e impacta con "; coutTipoCollisionObject(t);
-        switch(t)
+        if (rayCallback.m_collisionObject->getUserPointer())
         {
-            case tipoRigidBody::COCHE:          //cout << "_closestHitFraction "<< rayCallback.m_closestHitFraction << endl;
-                                                if (rayCallback.m_closestHitFraction <= 0.5 && rayCallback.m_closestHitFraction > 0)
-                                                {
-                                                    //if (_car->getRigidBody()->getBulletObject() == rayCallback.m_collisionObject)
-                                                    if (this == static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_data)
-                                                        //cout << "el coche soy yo mismo, shit!" << 
-                                                        //        static_cast<cpuPlayer*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_data)->getNombreEnPantalla() << endl;
-                                                        ;
-                                                    else
+            tipoRigidBody t = static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_tipo;
+            //cout << _nombreEnPantalla << " (" << _nombreMaterial << ") lanza rayo e impacta con "; coutTipoCollisionObject(t);
+            switch(t)
+            {
+                case tipoRigidBody::COCHE:          //cout << "_closestHitFraction "<< rayCallback.m_closestHitFraction << endl;
+                                                    if (rayCallback.m_closestHitFraction <= 0.5 && rayCallback.m_closestHitFraction > 0)
                                                     {
-                                                        //cout << "coche delante muy cerca" << endl; 
-                                                        _maniobra = estadoManiobra::COCHE_DELANTE_CERCA;
+                                                        //if (_car->getRigidBody()->getBulletObject() == rayCallback.m_collisionObject)
+                                                        if (this == static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_data)
+                                                            //cout << "el coche soy yo mismo, shit!" << 
+                                                            //        static_cast<cpuPlayer*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObject->getUserPointer())->_data)->getNombreEnPantalla() << endl;
+                                                            ;
+                                                        else
+                                                        {
+                                                            //cout << "coche delante muy cerca" << endl; 
+                                                            _maniobra = estadoManiobra::COCHE_DELANTE_CERCA;
+                                                        }
                                                     }
-                                                }
-                                                break;
-            
-            case tipoRigidBody::CIRCUITO:       //cout << "Rayo impacta en bordillo" << endl;
-                                                if (rayCallback.m_closestHitFraction <= 0.001)
-                                                { 
-                                                    cout << "bordillo delante muy cerca" << endl;
-                                                    //_maniobra = estadoManiobra::BORDILLO_CERCA;
-                                                }
-                                                break;
-                                                
-            case tipoRigidBody::OBSTACULO:      // Con rayos al frente nada más por hacer 
-            case tipoRigidBody::CARRETERA:
-            case tipoRigidBody::CHECK_POINT: 
-            default:  _maniobra = estadoManiobra::ENRUTA; break;
+                                                    break;
+                
+                case tipoRigidBody::CIRCUITO:       //cout << "Rayo impacta en bordillo" << endl;
+                                                    if (rayCallback.m_closestHitFraction <= 0.001)
+                                                    { 
+                                                        cout << "bordillo delante muy cerca" << endl;
+                                                        //_maniobra = estadoManiobra::BORDILLO_CERCA;
+                                                    }
+                                                    break;
+                                                    
+                case tipoRigidBody::OBSTACULO:      // Con rayos al frente nada más por hacer 
+                case tipoRigidBody::CARRETERA:
+                case tipoRigidBody::CHECK_POINT: 
+                default:  _maniobra = estadoManiobra::ENRUTA; break;
+            }
         }
     }
 }

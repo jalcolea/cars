@@ -42,7 +42,11 @@ int records::saveFile(string * save_path)
 {
   unsigned int cont = 0;
   FILE * fd = fopen ((save_path!=NULL)?save_path->c_str():this->path.c_str(),"w");
-  for (cont = 0; cont < records_vector.size(); cont ++) 
+  size_t tope;
+  if (records_vector.size() <= 6) tope = records_vector.size();
+  else  tope = 6;
+  //for (cont = 0; cont < records_vector.size(); cont ++) 
+  for (cont = 0; cont < tope; cont ++) 
     fprintf(fd,"%s|%d\n",records_vector[cont].name.c_str() ,records_vector[cont].points);
   
   fclose (fd);
@@ -59,6 +63,7 @@ int records::add_record (string name, int points)
 {
   char tmp [64];
   sprintf(tmp,"%d:%d",points/60,points%60);
+  if (!name.size()) name = "AAAAA";
   records_entry entry (name,points,string(tmp));
   records_vector.push_back (entry);
   std::sort(records_vector.begin(),records_vector.end(),records::sort_records);

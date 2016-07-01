@@ -22,7 +22,8 @@ void LooseState::enter ()
 
 void LooseState::exit()
 {
- _root->getAutoCreatedWindow()->removeAllViewports();
+ //_root->getAutoCreatedWindow()->removeAllViewports();
+ cout << "exit LooseState" << endl;
   destroyMyGui();
 }
 
@@ -56,11 +57,11 @@ void LooseState::save_record()
 
 bool LooseState::keyPressed(const OIS::KeyEvent &e) 
 {
-     MyGUI::UString txt = user_name_txt->getCaption();
+    MyGUI::UString txt = user_name_txt->getCaption();
     if ((int)e.key==14 && txt.size()>0)
-{
-txt.resize(txt.size()-1);
-}
+    {
+        txt.resize(txt.size()-1);
+    }
     else
     {
       if (((int)e.text >=65 && (int)e.text<=90) || ((int)e.text>=97 && (int)e.text<=122))

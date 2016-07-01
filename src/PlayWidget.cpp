@@ -27,6 +27,7 @@ PlayWidget::PlayWidget()
   race_time = MyGUI::Gui::getInstance().findWidget<MyGUI::TextBox>("race_time");
   race_circuit= MyGUI::Gui::getInstance().findWidget<MyGUI::TextBox>("race_circuit");
   start_thread=false;
+  _pause = false;
 }
 
 PlayWidget::~PlayWidget()
@@ -79,6 +80,7 @@ void PlayWidget::startTime ()
 {
 //  pthread_t thread;
   start_thread=true;
+  _pause = false;
 //  int ret=pthread_create(&thread,NULL,PlayWidget::timer,this); 
   int ret=pthread_create(&PlayWidget::thread,NULL,PlayWidget::timer,this); 
 //  PlayWidget::thread = thread;
@@ -87,6 +89,7 @@ void PlayWidget::startTime ()
 void PlayWidget::stopTime ()
 {
   start_thread=false;
+  pthread_cancel(PlayWidget::thread);
 }
 
 void PlayWidget::timer (int time)
@@ -95,9 +98,13 @@ void PlayWidget::timer (int time)
   int seconds;
   int minutes;
 
-  seconds = time%60;
-  minutes = time/60;
+  if (!_pause)
+  {
+      _time = time;
+      seconds = time%60;
+      minutes = time/60;
 
-  sprintf(buff,"%02d:%02d",minutes,seconds);
-  race_time->setCaption(buff);
+      sprintf(buff,"%02d:%02d",minutes,seconds);
+      race_time->setCaption(buff);
+  }
 }

@@ -181,6 +181,7 @@ public:
     inline ruedasContactInfo_t& getContactInfoRuedas(){ return _ruedasContactInfo; };
     void cambiarMaterialVehiculo(string& nombreMaterial);
     void enderezar();
+    inline Ogre::Real getPotenciadorPrimera(){ return _potenciadorPrimera; };
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };
@@ -211,6 +212,8 @@ public:
     Real _valorGiro = 0;
     ruedasContactInfo_t _ruedasContactInfo;
     size_t _id; // si se necesitan crear más de un CarRayCast será necesario concatenar el nombre del SceneNode y su Entity con el id pertinente.
+    Ogre::Real _auxFuerzaMotor;
+    Ogre::Real _potenciadorPrimera;
         
     // Parámetros de tuneo del coche
     Ogre::Real _suspensionStiffness;   // dureza de la suspensión
