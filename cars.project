@@ -60,7 +60,6 @@
     <File Name="include/constants.h"/>
     <File Name="include/ControlsState.h"/>
     <File Name="include/Crosshair.h"/>
-    <File Name="include/FactoryRobot.h"/>
     <File Name="include/GameManager.h"/>
     <File Name="include/GameState.h"/>
     <File Name="include/InputManager_.h"/>
