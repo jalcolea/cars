@@ -93,6 +93,20 @@
         <escala x="1" y="1" z="1"></escala>
     </scenenode>
     <scenenode>
+        <nombreNodo>Atrezzo</nombreNodo>
+        <nombreEntidad>AtrezzoEnt</nombreEntidad>
+        <nombreMalla>Atrezzo.002.mesh</nombreMalla>
+        <nombreMaterial>unknown</nombreMaterial>
+        <!--<posInicial x="0" y="1.007" z="0"></posInicial>-->
+        <posInicial x="0" y="0.03" z="0"></posInicial>
+        <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
+        <posShapeBullet x="0" y="0" z="0"></posShapeBullet>
+        <masaBullet>0.0</masaBullet>
+        <frictionBullet>0.85</frictionBullet>
+        <bodyRestitutionBullet>0.95</bodyRestitutionBullet>
+        <escala x="1" y="1" z="1"></escala>
+    </scenenode>
+    <scenenode>
         <nombreNodo>carGroupC1</nombreNodo>
         <nombreEntidad>carGroupC1</nombreEntidad>
         <nombreMalla>groupc-1.mesh</nombreMalla>
@@ -160,6 +174,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>formulaOneBlock</nombreNodo>
@@ -174,6 +189,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>groupC1OneBlock</nombreNodo>
@@ -188,6 +204,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>groupC2OneBlock</nombreNodo>
@@ -202,6 +219,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>kartOneBlock</nombreNodo>
@@ -216,6 +234,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>lamba-sportOneBlock</nombreNodo>
@@ -230,6 +249,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>parsche-sportOneBlock</nombreNodo>
@@ -244,6 +264,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
+        <dificultad>1</dificultad>
     </scenenode>
 </dataSceneNode>
 
@@ -294,12 +315,13 @@
                                                           de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
                                                           150 parece un valor adecuado :D -->
         <frictionSlip>100</frictionSlip> <!-- empezamos con 10000 (valor bueno en principio), 10 parece igual, 100000 inestable, 5000 parece buen valor también -->
-        <posRueda0 x="0.18" y="-0.12" z="0.205" ></posRueda0>
-        <posRueda1 x="-0.18" y="-0.12" z="0.205"></posRueda1>
-        <posRueda2 x="-0.18" y="-0.12" z="-0.215"></posRueda2>
-        <posRueda3 x="0.18" y="-0.12" z="-0.215"></posRueda3>
+        <posRueda0 x="0.18" y="-0.115" z="0.205" ></posRueda0> <!-- y="-0.12" -->
+        <posRueda1 x="-0.18" y="-0.115" z="0.205"></posRueda1>
+        <posRueda2 x="-0.18" y="-0.115" z="-0.215"></posRueda2>
+        <posRueda3 x="0.18" y="-0.115" z="-0.215"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>6</potenciadorPrimera>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>farara-sport</nombreNodo>
@@ -337,6 +359,7 @@
         <posRueda3 x="0.41" y="-0.10" z="-0.58"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>1.5</potenciadorPrimera>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>formula</nombreNodo>
@@ -375,6 +398,7 @@
         <posRueda3 x="0.41" y="0.05" z="-0.75"></posRueda3>
         <escalaRuedaTrasera x="1.30" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>1.5</potenciadorPrimera>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>groupC1</nombreNodo>
@@ -412,6 +436,7 @@
         <posRueda3 x="0.41" y="-0.2" z="-0.63"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>1.5</potenciadorPrimera>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>groupC2</nombreNodo>
@@ -449,6 +474,7 @@
         <posRueda3 x="0.42" y="-0.05" z="-0.69"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>1.5</potenciadorPrimera>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>lamba-sport</nombreNodo>
@@ -486,6 +512,7 @@
         <posRueda3 x="0.41" y="-0.01" z="-0.58"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>1.5</potenciadorPrimera>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>parsche-sport</nombreNodo>
@@ -522,6 +549,7 @@
         <posRueda3 x="0.41" y="-0.10" z="-0.555"></posRueda3>
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
+        <potenciadorPrimera>1.5</potenciadorPrimera>
     </dataRayCast>  
     
 </dataVehiculoRayCast>

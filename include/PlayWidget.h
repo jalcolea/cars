@@ -30,6 +30,9 @@ class PlayWidget
   void stopTime ();
   static void * timer ( void * data);
   bool start_thread;
+  inline int getTime(){ return _time; };
+  inline void pauseTimer(){ _pause = true; };
+  inline void resumeTimer(){ _pause = false; };
   
   static pthread_t thread;
   
@@ -42,7 +45,8 @@ class PlayWidget
   MyGUI::TextBox * race_lap;
   MyGUI::TextBox * race_time;
   MyGUI::TextBox * race_circuit;
-
+  int _time;
+  bool _pause;
   
   
 };

@@ -14,7 +14,7 @@ using namespace OgreBulletDynamics;
 
 #define MAX_TIME_STOPPED 1.5 // segundos
 #define MAX_MARCHA 5
-#define MAX_TIME_MARCHA_HUMAN 1.2
+#define MAX_TIME_MARCHA_HUMAN 1
 #define MAX_TIME_HANDICAP 3 // segundos
 #define MAX_TIME_WRONGWAY 2
 
@@ -34,7 +34,7 @@ class humanPlayer
         inline string& getNombreMaterial(){ return _nombreMaterial; };
         inline void setNombreMaterial(const string& nombreMaterial){ _nombreMaterial = nombreMaterial; };
         inline string& getNombreEnPantalla(){ return _nombreEnPantalla; };
-        inline size_t getLap(){ return  _totalCheckPoints / (_checksPerLap-1); };
+        inline size_t getLap(){ return  _lapActual; }; //_totalCheckPoints / (_checksPerLap-1); };
         inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
         inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
         inline bool finished(){ return _finish; };
@@ -74,6 +74,7 @@ class humanPlayer
         size_t _idCheck_meta;
         size_t _totalCheckPoints;
         size_t _laps;
+        size_t _lapActual;
         size_t _checksPerLap;
         void * _groundObject;
         size_t _id;

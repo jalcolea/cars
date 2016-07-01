@@ -33,7 +33,8 @@ void GameManager::start(GameState* state)
   //Creamos ya el _sceneManager, de lo contrario el OverlaySystem no se puede crear en este punto
   //Y es necesario crearlo antes de llamar a loadResources(), de lo contrario los scripts de overlays
   //los ignora por completo y no los carga. ADEMÁS: MIRAR COMENTARIO EN configure()
-  _sceneManager = _root->createSceneManager(Ogre::ST_GENERIC, "SceneManager");
+  _sceneManager = _root->createSceneManager(Ogre::ST_EXTERIOR_FAR, "SceneManager"); //ST_GENERIC
+  
   //Creamos el OverlaySystem (DISCUTIR SI SERÍA MEJOR CONDICIONAR ESTO AL COMPILAR)
   _sceneManager->addRenderQueueListener(new Ogre::OverlaySystem());
 

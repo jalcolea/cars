@@ -49,9 +49,12 @@ void humanPlayer::build()
     _fueraPista = false;
     _timeFueraPista = 0;
     _posicionY = _car->getPosicionActual().y;
+    _lapActual = 0;
     
     // Para cuando lancemos rayos hacia delante si el resultado es igual a this no nos vale.
     static_cast<rigidBody_data*>(_car->getRigidBody()->getBulletObject()->getUserPointer())->_data = this;
+    
+    _ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
 
 }
 
@@ -79,7 +82,7 @@ void humanPlayer::update(Real deltaT, size_t keys)
         else
         {
             _car->acelerar(0); // Si no aceleramos que actúe la inercia. También sirve para cuando soltamos el freno :D
-            if (_marchaActual) _marchaActual = 0;
+            if (_marchaActual && _car->getVelocidadKmH() < 1) _marchaActual = 0;
         }
         
         if (keys & static_cast<size_t>(keyPressed_flags::DOWN)) //_car->frenar();
@@ -133,19 +136,10 @@ bool humanPlayer::compruebaCheckPoint()
         {
             if (rayCallback.m_collisionObjects[i]->getUserPointer())
             {
-//                cout << "objeto colision 0:" << endl;
-//                coutTipoCollisionObject(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[0]->getUserPointer())->_tipo);
                 tipoRigidBody t = static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_tipo;
-                //if (static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_tipo == tipoRigidBody::CHECK_POINT)
                 if (t == tipoRigidBody::CHECK_POINT)
                 {   
-//                    cout << "******************************************************************************************************************************" << endl;
                     size_t id = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_id;
-//                    cout << "Checkpoint devuelto por el rayo: " << id << endl;
-//                    cout << "Checkpoint destino actual: " << _idCheck_destino << endl;
-//                    cout << "Checkpoint origen actual: " << _idCheck_origen << endl;
-//                    if (_nodoCheckPointSiguiente) 
-//                        cout << "Nombre del sceneNode del siguiente Checkpoint" << _nodoCheckPointSiguiente->getName() << endl;
                         
                     if (_idCheck_destino == id && (_idCheck_origen < id || _starting))      // Si el idcheck_destino es igual al checkpoint por el que estoy pasando, lo hemos alcanzado.
                     {                                                         // Y para no entrar aquí más veces de las necesarias comprobamos que el origen sea distinto del 
@@ -163,19 +157,28 @@ bool humanPlayer::compruebaCheckPoint()
                             cout << "*********************************   ************    *****   *****      *******************************************************" << endl;
                             cout << "*********************************   ************    *****   ******     *******************************************************" << endl;
                             cout << "******************************************************************************************************************************" << endl;
+                            break;
                         }
 
                         _idCheck_destino++;
                         _idCheck_destino = _idCheck_destino % _checksPerLap;
-
-                        _nodoCheckPointAnterior = _nodoCheckPointSiguiente;
-                        _nodoCheckPointSiguiente = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_ogreNode;
-                        _totalCheckPoints++;
                         
                         if (_starting ) _starting = false;
-//                        cout << "Destino alcanzado. Nuevo destino: " << _idCheck_destino << endl;
-//                        cout << "Origen actualizado a: " << _idCheck_origen << endl;
-//                        cout << "Total checkpoints: " << _totalCheckPoints << endl;
+                        if (id == _checksPerLap - 1) _starting = true;
+                        
+                        if (id == 0)
+                            _lapActual++;
+                            
+                        _totalCheckPoints = (id+1) + (_lapActual-1) * (_checksPerLap-1);
+                            
+                        //_totalCheckPoints++;
+                        
+                        _nodoCheckPointAnterior = _nodoCheckPointSiguiente;
+                        _nodoCheckPointSiguiente = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_ogreNode;
+                        
+                        cout << "Destino alcanzado. Nuevo destino: " << _idCheck_destino << endl;
+                        cout << "Origen actualizado a: " << _idCheck_origen << endl;
+                        cout << "Total checkpoints: " << _totalCheckPoints << endl;
                         _timeWrongWay = 0;
                         _sentidoContrario = false;
                         _atajando = false;
@@ -183,22 +186,33 @@ bool humanPlayer::compruebaCheckPoint()
                         _timeAtajando = 0;
                         _ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
                     }
-                    else if (id < _idCheck_origen && !_starting)    // Si el id del checkpoint por el que estoy pasando es mayor que el de destino, es que hemos avanzado hacia atrás: AVISAR Y PENALIZAR.
-                    {                                  
-//                            cout << "Yendo hacia atrás. Checkpoint de destino era: " << _idCheck_destino << " Y el checkpoint por el que paso es " << id << endl;
-                            _idCheck_origen = id;          // Ahora el origen será el id actual (aunque realmente ya lo hubiéramos pasado)
-                            _totalCheckPoints -= _idCheck_destino - id;// Tras pasar un checkpoint, el destino se incrementa por lo que si el id devuelto es mayor hacemos la resta
-                                                                       // y sabemos cuantos checks hacia atrás lleva. Y se los quitamos al total de CheckPoints que llevábamos pasados.
-                            _sentidoContrario = true;      // por ver si finalmente hace falta. 
-                            _idCheck_destino = id + 1;
+                    else if (id < _idCheck_origen && (!_starting || id != _checksPerLap -1))    // Si el id del checkpoint por el que estoy pasando es mayor que el de destino, es que hemos avanzado hacia atrás: AVISAR Y PENALIZAR.
+                    {       
+                            cout << "Yendo hacia atrás. Checkpoint de destino era: " << _idCheck_destino << " Y el checkpoint por el que paso es " << id << endl;
+
+
+//                            _descuentoCheckpoints += 1;
+//                            cout << "Checkpoints de descuento: " << _descuentoCheckpoints << endl;
+//                        
+//                            _idCheck_origen =  id;          // Ahora el origen será el id actual (aunque realmente ya lo hubiéramos pasado)
+//                            _nodoCheckPointAnterior = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_ogreNode;                                                                       
+//                            _nodoCheckPointSiguiente = _nodoCheckPointAnterior;
+//                            _sentidoContrario = true;
+//                            _idCheck_destino = id + 1;
+                            
                             
 //                            cout << "Ahora el check destino es: " << _idCheck_destino << endl;
 //                            cout << "Y checkpoins totales: " << _totalCheckPoints << endl;
                     }
-                    else if ((static_cast<int>(id) - static_cast<int>(_idCheck_origen)) > 2 && _nodoCheckPointSiguiente)
+                    else if ((static_cast<int>(id) - static_cast<int>(_idCheck_origen)) > 1 && _nodoCheckPointSiguiente)
                     {
                         cout << "atajando" << endl;
                         cout << "Se ha saltado " <<((int)id - (int)_idCheck_origen) << " checkpoins " << endl;
+                        cout << "Checkpoint sobre el que estoy: " << id << endl;
+                        cout << "Checkpoint origen: " << _idCheck_origen << endl;
+                        cout << "Checkpoint destino: " << _idCheck_destino << endl;
+                        cout << "Nodo anterior: " << _nodoCheckPointAnterior << endl;
+                        cout << "Nodo siguiente: " << _nodoCheckPointSiguiente << endl;
                         _atajando = true;
                     }
                 }
@@ -252,7 +266,8 @@ void humanPlayer::cambiaMarcha()
         _timeMarcha = 0;                    // Reseteamos tiempo para empezar a contar tiempo hasta el siguiente cambio de marcha.
         _aceleracion = 0;                   // Reseteamos aceleracion. Estamos arrancando.
         _marchaActual ++;                   // Ponemos primera.
-        _aceleracion = (_car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA)) * 2;  // Incrementamos aceleración.
+        _aceleracion = (_car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA)) * _car->getPotenciadorPrimera();  // Incrementamos aceleración.
+        cout << "primera, aceleracion: " << _aceleracion << endl;
 
     }
     else if (_timeMarcha > MAX_TIME_MARCHA_HUMAN)     // Si entramos aquí es que por lo menos íbamos en primera y el tiempo ha alcanzado el máximo 
@@ -286,7 +301,6 @@ void humanPlayer::recoloca()
     else // Posicion de salida
         aux = _posicionSalida;
         
-
     _car->recolocar(aux,convert(_ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA    
     _timeWrongWay = 0;
     _timeAtajando = 0;
