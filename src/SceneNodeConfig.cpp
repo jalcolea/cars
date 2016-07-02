@@ -246,7 +246,7 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     nodo.posRuedas.push_back(extraeVector3(posRueda3));
     nodo.escalaRueda = extraeVector3(escalaRueda);
     nodo.escala = extraeVector3(escala);
-    nodo.potenciadorPrimera = (potenciadorPrimera)?Ogre::Real(std::stof(mxmlGetText(suspensionDamping,NULL))):1;
+    nodo.potenciadorPrimera = (potenciadorPrimera)?Ogre::Real(std::stof(mxmlGetText(potenciadorPrimera,NULL))):1;
     
     map_vehiculos_raycast[nodo.nombre] = nodo;
     

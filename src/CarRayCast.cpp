@@ -150,7 +150,7 @@ void CarRayCast::buildVehiculo()
     CompoundCollisionShape* formaCompuesta = new CompoundCollisionShape();
 //    formaCompuesta->addChildShape(formaChasis,param.posShapeBullet); //Vector3(0,1,0)); // En la demo de OgreBullet (que ni compila :( ) desplaza la forma 1 unidad, a saber por qué???
     formaCompuesta->addChildShape(formaChasis,Vector3(0,0.01,0)); // En la demo de OgreBullet (que ni compila :( ) desplaza la forma 1 unidad, a saber por qué???
-    
+                                                    //  0.01
     _bodyWheeled = new OgreBulletDynamics::WheeledRigidBody(param.nombre + "_body_" + to_string(_id),_world);
     _bodyWheeled->setShape(_nodoChasis,formaCompuesta,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,_posicion,Quaternion::IDENTITY);
 //    _bodyWheeled->setShape(_nodoChasis,formaChasis,param.bodyRestitutionBullet,param.frictionBullet,param.masaBullet,_posicion,Quaternion::IDENTITY);
@@ -211,18 +211,63 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
     if (endereza && _valorGiro != 0.0) // Si queremos enderezar y además _valorGiro es distinto de cero
     {
         cout << "enderezando" << endl;
-//        if (_valorGiro > 0) girar(-1,factorEnderezamiento); // factorEnderezamiento = 1.5 por defecto
-//        else  girar(1,factorEnderezamiento);
         _valorGiro = 0;
         enderezar();
     }    
-    else
-    {
-        fuerza *= 0.85; // Al girar perdemos potencia, en cuanto enderecemos la recuperamos.
-    }
+//    else
+//    {
+//        fuerza *= 0.85; // Al girar perdemos potencia, en cuanto enderecemos la recuperamos.
+//    }
 
+//    _vehiculo->applyEngineForce(fuerza,0);
+//    _vehiculo->applyEngineForce(fuerza,1);
     _vehiculo->applyEngineForce(fuerza,0);
     _vehiculo->applyEngineForce(fuerza,1);
+
+    btWheelInfo& wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(3);
+    cout << "Engine force Rueda 0 " << wheelInfo.m_skidInfo << endl;
+//    wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(1);
+//    cout << "Engine force Rueda 1 " << wheelInfo.m_engineForce << endl;
+//    wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(2);
+//    cout << "Engine force Rueda 2 " << wheelInfo.m_engineForce << endl;
+//    wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(3);
+//    cout << "Engine force Rueda 3 " << wheelInfo.m_engineForce << endl;
+    
+    
+}
+
+
+void CarRayCast::frenar(bool endereza)
+{
+//    _vehiculo->applyEngineForce(-_frenada,0);
+//    _vehiculo->applyEngineForce(-_frenada,1);
+//    _vehiculo->applyEngineForce(-_frenada,2);
+//    _vehiculo->applyEngineForce(-_frenada,3);
+
+//    btWheelInfo& wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(0);
+//    cout << "Engine force Rueda 0 " << wheelInfo.m_engineForce << endl;
+//    wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(1);
+//    cout << "Engine force Rueda 1 " << wheelInfo.m_engineForce << endl;
+//    wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(2);
+//    cout << "Engine force Rueda 2 " << wheelInfo.m_engineForce << endl;
+//    wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(3);
+//    cout << "Engine force Rueda 3 " << wheelInfo.m_engineForce << endl;
+    
+    acelerar(-_frenada,endereza);
+    
+
+
+}
+
+
+void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquierda, n negativo = derecha
+{
+    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
+        _valorGiro += (_giro * n * factorVelocidadGiro);
+    
+    _vehiculo->setSteeringValue(_valorGiro,0);
+    _vehiculo->setSteeringValue(_valorGiro,1);
+    
 }
 
 // La cpu si endereza lo hace del tirón (por conveniencia);
@@ -242,28 +287,6 @@ void CarRayCast::acelerarCPU(Real fuerza, bool endereza)
     _vehiculo->applyEngineForce(fuerza,1);
 }
 
-
-
-void CarRayCast::frenar(bool endereza)
-{
-//    _vehiculo->applyEngineForce(-_frenada,0);
-//    _vehiculo->applyEngineForce(-_frenada,1);
-    
-    acelerarCPU(-_frenada,endereza);
-}
-
-
-void CarRayCast::girar(short n, Real factorVelocidadGiro) // n positivo = izquierda, n negativo = derecha
-{
-    if (abs(_valorGiro + (_giro * n * factorVelocidadGiro)) < MAX_VALOR_GIRO_RUEDAS) // PARAMETRIZAR EL MÁXIMO QUE PUEDE GIRAR LA RUEDA?
-        _valorGiro += (_giro * n * factorVelocidadGiro);
-    
-    _vehiculo->setSteeringValue(_valorGiro,0);
-    _vehiculo->setSteeringValue(_valorGiro,1);
-    
-    
-//    cout << _valorGiro << endl;
-}
 
 // Para coches controlados por la CPU, el valor del giro se deja que se calcule por la entidad pertinente.
 void CarRayCast::girarCPU(Real valor) // valorGiro positivo = izquierda, valorGiro negativo = derecha, valorGiro cuanto han de girar. 
@@ -307,10 +330,6 @@ void CarRayCast::recolocar(Ogre::Vector3 donde, Ogre::Quaternion direccion)
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setOrigin(convert(donde));
     _bodyWheeled->getBulletRigidBody()->getWorldTransform().setRotation(convert(direccion));
 
-    // Colocar ruedas
-//    _valorGiro = 0.0;
-//    _vehiculo->setSteeringValue(_valorGiro, 0 );
-//    _vehiculo->setSteeringValue(_valorGiro, 1 );
 }
 
 

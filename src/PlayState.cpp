@@ -619,7 +619,7 @@ void PlayState::createPlaneRoad()
     planeRoad.d = 2;
     MeshManager::getSingleton().createPlane("PlaneRoad", 
                                           ResourceGroupManager::DEFAULT_RESOURCE_GROUP_NAME,
-                                          planeRoad, 200, 300, 20, 20, true, 1, 500, 500, Vector3::UNIT_X);
+                                          planeRoad, 200, 300, 20, 20, true, 1, 200, 200, Vector3::UNIT_X);
     Entity* planeRoadEnt = _sceneMgr->createEntity(nodoXML.nombreEntidad,"PlaneRoad");
     planeRoadEnt->setCastShadows(true);
     planeRoadEnt->setMaterialName("Asfalto");

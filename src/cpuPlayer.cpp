@@ -486,7 +486,7 @@ void cpuPlayer::cambiaMarcha()
         _timeMarcha = 0;                    // Reseteamos tiempo para empezar a contar tiempo hasta el siguiente cambio de marcha.
         _aceleracion = 0;                   // Reseteamos aceleracion. Estamos arrancando.
         _marchaActual ++;                   // Ponemos primera.
-        _aceleracion = (_car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA)) * 2;  // Incrementamos aceleración.
+        _aceleracion = (_car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA)) * _car->getPotenciadorPrimera(); // * 2;  // Incrementamos aceleración.
 
     }
     else if (_timeMarcha > MAX_TIME_MARCHA)     // Si entramos aquí es que por lo menos íbamos en primera y el tiempo ha alcanzado el máximo 

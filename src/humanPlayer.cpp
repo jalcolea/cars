@@ -93,9 +93,12 @@ void humanPlayer::update(Real deltaT, size_t keys)
                 _car->frenar(true);
             
         }
+        else if (!(keys & static_cast<size_t>(keyPressed_flags::DOWN)) && !(keys & static_cast<size_t>(keyPressed_flags::UP)))
+            _car->acelerar(0);
+        
+        
         if (keys & static_cast<size_t>(keyPressed_flags::LEFT)) _car->girar(1);
         else if (!(keys & static_cast<size_t>(keyPressed_flags::RIGHT))) _car->enderezar();
-        
         if (keys & static_cast<size_t>(keyPressed_flags::RIGHT)) _car->girar(-1);
         else if (!(keys & static_cast<size_t>(keyPressed_flags::LEFT))) _car->enderezar();
     
@@ -176,9 +179,9 @@ bool humanPlayer::compruebaCheckPoint()
                         _nodoCheckPointAnterior = _nodoCheckPointSiguiente;
                         _nodoCheckPointSiguiente = static_cast<CheckPoint_data*>(static_cast<rigidBody_data*>(rayCallback.m_collisionObjects[i]->getUserPointer())->_data)->_ogreNode;
                         
-                        cout << "Destino alcanzado. Nuevo destino: " << _idCheck_destino << endl;
-                        cout << "Origen actualizado a: " << _idCheck_origen << endl;
-                        cout << "Total checkpoints: " << _totalCheckPoints << endl;
+//                        cout << "Destino alcanzado. Nuevo destino: " << _idCheck_destino << endl;
+//                        cout << "Origen actualizado a: " << _idCheck_origen << endl;
+//                        cout << "Total checkpoints: " << _totalCheckPoints << endl;
                         _timeWrongWay = 0;
                         _sentidoContrario = false;
                         _atajando = false;
@@ -188,7 +191,7 @@ bool humanPlayer::compruebaCheckPoint()
                     }
                     else if (id < _idCheck_origen && (!_starting || id != _checksPerLap -1))    // Si el id del checkpoint por el que estoy pasando es mayor que el de destino, es que hemos avanzado hacia atrás: AVISAR Y PENALIZAR.
                     {       
-                            cout << "Yendo hacia atrás. Checkpoint de destino era: " << _idCheck_destino << " Y el checkpoint por el que paso es " << id << endl;
+//                            cout << "Yendo hacia atrás. Checkpoint de destino era: " << _idCheck_destino << " Y el checkpoint por el que paso es " << id << endl;
 
 
 //                            _descuentoCheckpoints += 1;
@@ -267,7 +270,7 @@ void humanPlayer::cambiaMarcha()
         _aceleracion = 0;                   // Reseteamos aceleracion. Estamos arrancando.
         _marchaActual ++;                   // Ponemos primera.
         _aceleracion = (_car->getFuerzaMotor() * ((Ogre::Real)_marchaActual/MAX_MARCHA)) * _car->getPotenciadorPrimera();  // Incrementamos aceleración.
-        cout << "primera, aceleracion: " << _aceleracion << endl;
+        cout << "primera, potenciador: " << _car->getPotenciadorPrimera() << "\taceleracion: " << _aceleracion << endl;
 
     }
     else if (_timeMarcha > MAX_TIME_MARCHA_HUMAN)     // Si entramos aquí es que por lo menos íbamos en primera y el tiempo ha alcanzado el máximo 
