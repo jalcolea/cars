@@ -63,7 +63,7 @@ void IntroState::enter()
     createScene();
     _exitGame = false;
     _deltaT = 0;
-    sounds::getInstance()->play_music("begin");
+    sounds::getInstance()->play_effect("intro");
 
 }
 

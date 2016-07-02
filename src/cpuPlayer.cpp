@@ -361,7 +361,7 @@ void cpuPlayer::compruebaRecolocar()
         if (_timeStopped > MAX_TIME_STOPPED)
         {
             //Vector3 aux = _iaMgr->getPunto(_idCheck_destino-1).p; aux.y += 0.1;// AUMENTAR LA Y PARA QUE EL COCHE NO PUEDA QUEDARSE ESTANCADO.
-            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.2;
+            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.25;
             //Vector3 aux = _iaMgr->getPunto(_totalCheckPoints % _iaMgr->getPuntos().size()).p;
 //            cout << "RUEDAS NO EN CONTACTO: \n " << aux << "\n" << _totalCheckPoints % _iaMgr->getPuntos().size() << endl;
             _car->recolocar(aux,convert(_ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA
@@ -384,7 +384,7 @@ void cpuPlayer::compruebaRecolocar()
         if (_timeStopped > MAX_TIME_STOPPED)
         {
             //Vector3 aux = (_iaMgr->getPunto(_idCheck_destino-1)).p; aux.y += 0.1;
-            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.2;
+            Vector3 aux = _iaMgr->getPunto((_idCheck_destino)?(_idCheck_destino-1):_iaMgr->getPuntos().size()-1).p; aux.y += 0.25;
             //Vector3 aux = _iaMgr->getPunto(_totalCheckPoints % _iaMgr->getPuntos().size()).p;
             cout << "PARADO MUCHO TIEMPO: \n " << aux << "\n" << _totalCheckPoints % _iaMgr->getPuntos().size() << endl;
             _car->recolocar(aux,convert(_ultimaOrientacionBuena));  // CAMBIAR A ÚLTIMA DIRECCION BUENA CONOCIDA

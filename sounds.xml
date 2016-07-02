@@ -4,8 +4,8 @@
     <base_path>./audio</base_path>
     <effects>
       <sound>
-        <id>begin</id>
-        <file>everything_is_awesome_cut.mp3</file>
+        <id>intro</id>
+        <file>introCars.wav</file>
       </sound>
       <sound>
         <id>push</id>
