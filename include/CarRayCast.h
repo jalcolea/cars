@@ -183,6 +183,8 @@ public:
     void enderezar();
     inline Ogre::Real getPotenciadorPrimera(){ return _potenciadorPrimera; };
     inline bool getTraccionTrasera(){ return _traccionTrasera; };
+    //bool getRuedasChirriando(Ogre::Real valorMaximo);
+    void getRuedasChirriando(std::vector<Ogre::Real>& valoresResult);
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };

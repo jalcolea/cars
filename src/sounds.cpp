@@ -158,7 +158,7 @@ void sounds::new_sound(mxml_node_t * node, int type)
       Mix_Chunk * effect;
       string path;
       string id_str;
-
+      
       id = mxmlFindElement(node,node, "id", NULL,NULL,MXML_DESCEND);
       filename =  mxmlFindElement(node, node ,"file", NULL,NULL,MXML_DESCEND);
       path=this->base_path+"/"+string(mxmlGetText(filename,NULL));
@@ -175,6 +175,7 @@ void sounds::new_sound(mxml_node_t * node, int type)
         cout << "EFFECT " << path << " " <<id_str<< endl;
         effect= Mix_LoadWAV( path.c_str() );
         map_effect[id_str]=effect;
+        
       }
 }
 

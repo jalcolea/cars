@@ -46,6 +46,10 @@ class sounds {
     void print();
     void set_channel (int ch);
     void unset_channel ();
+    inline int isMixPlaying(int canal){ return Mix_Playing(canal); };
+    inline Mix_Chunk* getMixChunk(string nombreEfecto){ return map_effect[nombreEfecto]; };
+    inline void setVolume(string nombreEfecto, int volumen){map_effect[nombreEfecto]->volume = volumen;};
+
 
 };
 

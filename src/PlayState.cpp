@@ -197,6 +197,7 @@ void PlayState::controlDeCarrera()
         if (_humanPlayer->finished() /*&& !_finalCarrera*/)
         {
             _play->stopTime();
+            sounds::getInstance()->halt_effects();
             _tiempoCarreraJugador = _play->getTime();
             _posicionAlFinalCarrera = 4-posicionEnCarrera;
             _finalCarrera = true;

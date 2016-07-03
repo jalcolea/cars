@@ -423,3 +423,16 @@ void CarRayCast::stop()
     _vehiculo->getBulletVehicle()->resetSuspension();
 
 }
+
+void CarRayCast::getRuedasChirriando(std::vector<Ogre::Real>& valoresResult)
+{
+    valoresResult.clear();
+    for (size_t i=0; i<_ruedas.size(); i++)
+    {
+        btWheelInfo& wheelInfo = _vehiculo->getBulletVehicle()->getWheelInfo(i);
+        valoresResult.push_back(wheelInfo.m_skidInfo);
+    }
+    
+    std::sort(valoresResult.begin(),valoresResult.end());
+    
+}

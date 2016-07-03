@@ -63,6 +63,8 @@ void IntroState::enter()
     createScene();
     _exitGame = false;
     _deltaT = 0;
+    _timeIntroSound = 0;
+    _introSoundDone = false;
     sounds::getInstance()->play_effect("intro");
 
 }
@@ -73,6 +75,8 @@ void IntroState::exit()
     destroyMyGui();
     _sceneMgr->clearScene();
     _root->getAutoCreatedWindow()->removeAllViewports();
+    if (!sounds::getInstance()->playing_music())
+        sounds::getInstance()->play_music("mainTheme",0); // cANAL 0 PARA EL MAIN THEME 
 }
 
 void IntroState::pause()
@@ -86,7 +90,21 @@ void IntroState::resume()
 
 bool IntroState::frameStarted(const Ogre::FrameEvent &evt)
 {
-  _deltaT = evt.timeSinceLastFrame;
+  _timeIntroSound += evt.timeSinceLastFrame;
+  
+  if (_timeIntroSound >= TIME_INTRO_SOUND && !_introSoundDone)
+  {
+      _introSoundDone = true;
+      if (!sounds::getInstance()->playing_music())
+        sounds::getInstance()->play_music("mainTheme",0); // cANAL 0 PARA EL MAIN THEME 
+  }
+  
+  if (_timeIntroSound >= TIME_INTRO_DONE)
+    changeState(MenuState::getSingletonPtr());
+
+  
+  
+  
   return true;
 }
 
