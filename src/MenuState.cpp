@@ -56,6 +56,7 @@ void MenuState::enter ()
     _viewport->setBackgroundColour(Ogre::ColourValue(0.0, 0.0, 1.0));
     createScene();
     _exitGame = false;
+    //sounds::getInstance()->play_music("mainTheme");
 }
 
 void MenuState::exit ()

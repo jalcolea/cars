@@ -1,4 +1,5 @@
 #include "humanPlayer.h"
+#include "sounds.h"
 
 humanPlayer::humanPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, Vector3 posicionSalida, 
                          SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, size_t checksPerLap, void* groundObject, size_t id, bool buildForMe)
@@ -72,6 +73,13 @@ void humanPlayer::update(Real deltaT, size_t keys)
         }
         if (keys & static_cast<size_t>(keyPressed_flags::UP))
         {
+            if (sounds::getInstance()->isMixPlaying(2)) sounds::getInstance()->halt_effect(2);
+            if (!sounds::getInstance()->isMixPlaying(1)) 
+            { 
+                sounds::getInstance()->play_effect_loop("motor2up",1); 
+                sounds::getInstance()->setVolume("motor2up",24);
+            }
+                
             cambiaMarcha();
             if ((keys & static_cast<size_t>(keyPressed_flags::LEFT)) || (keys & static_cast<size_t>(keyPressed_flags::RIGHT)))
                _car->acelerar(_aceleracion,false);
@@ -81,6 +89,12 @@ void humanPlayer::update(Real deltaT, size_t keys)
         }
         else
         {
+            if (sounds::getInstance()->isMixPlaying(1)) sounds::getInstance()->halt_effect(1);   // CAMBIAR LA GESTION DE CANALES POR DIOS!!!!
+            if (!sounds::getInstance()->isMixPlaying(2))
+            {
+                sounds::getInstance()->play_effect("motor1down",2);
+                sounds::getInstance()->setVolume("motor1down",24);
+            }
             _car->acelerar(0); // Si no aceleramos que actúe la inercia. También sirve para cuando soltamos el freno :D
             if (_marchaActual && _car->getVelocidadKmH() < 1) _marchaActual = 0;
         }
@@ -105,9 +119,10 @@ void humanPlayer::update(Real deltaT, size_t keys)
         compruebaCheckPoint();
         compruebaSuelo();
         compruebaRecolocar();
+        compruebaChirriar();
         
         if (_finish) _car->acelerar(0);
-
+            
     }
 }
 
@@ -345,7 +360,12 @@ void humanPlayer::compruebaRecolocar()
 void humanPlayer::compruebaSuelo()
 {
    if (!_car->ruedasEnContacto())
+   {
+      cout << "*******************************************************************************************************************************" << endl;
+      cout << "O HA VOLCADO O VA VOLANDO BAJITO, CUIDADO CON LA CONFIGURACIÓN DE LOS PARÁMETROS DEL COCHE ************************************" << endl;
+      cout << "*******************************************************************************************************************************" << endl;
       _timeVolandoVolcado += _deltaT;
+   }
    else
       _timeVolandoVolcado = 0;
 
@@ -370,9 +390,13 @@ void humanPlayer::coutTipoCollisionObject(tipoRigidBody t)
                                             break;
         case tipoRigidBody::OBSTACULO: aux = "OBSTACULO"; 
                                         break;
-        default: aux = "NI PUTA IDEA!";
+        default: aux = "NI IDEA!";
     }
     
     cout << "tipo collisionobject: " << aux << endl;
+}
 
+void humanPlayer::compruebaChirriar()
+{
+    _car->getRuedasChirriando(_valoresSkidRuedas);
 }

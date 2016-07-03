@@ -104,7 +104,7 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
             _girandoRuleta = true;
         }
         
-        sincronizarIdMaterialConVehiculoSeleccionado();
+        //sincronizarIdMaterialConVehiculoSeleccionado();
     }
 
     if (e.key == OIS::KC_C)
@@ -120,9 +120,9 @@ bool carSelectorState::keyPressed(const OIS::KeyEvent& e)
     }
     else if (e.key == OIS::KC_E || e.key == OIS::KC_ESCAPE)
          popState();
-    else if (e.key==OIS::KC_0) setDifficult (0);
-    else if (e.key==OIS::KC_1) setDifficult (1);
-    else if (e.key==OIS::KC_2) setDifficult (2);
+//    else if (e.key==OIS::KC_0) setDifficult (0);
+//    else if (e.key==OIS::KC_1) setDifficult (1);
+//    else if (e.key==OIS::KC_2) setDifficult (2);
 
 
 //        _exitGame = true;
@@ -214,6 +214,8 @@ bool carSelectorState::frameStarted(const Ogre::FrameEvent& evt)
     {
         rotSeleccionado-=180;
         _vCars[_cursorVehiculo]->yaw(Ogre::Radian(rotSeleccionado * _deltaT * speed));
+        sincronizarIdMaterialConVehiculoSeleccionado();
+        setDifficult(_vDificultad[_cursorVehiculo]);
     }
     else
         girarRuleta();
@@ -407,16 +409,22 @@ void carSelectorState::createScene()
     
     info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("kartOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vDificultad.push_back(info.dificultad);
     info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("farara-sportOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vDificultad.push_back(info.dificultad);
     info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("formulaOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vDificultad.push_back(info.dificultad);
     info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("groupC1OneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vDificultad.push_back(info.dificultad);
     info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("lamba-sportOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vDificultad.push_back(info.dificultad);
     info = SceneNodeConfig::getSingletonPtr()->getInfoNodoOgre("parsche-sportOneBlock");
     _vEntCars.push_back(_sceneMgr->createEntity(info.nombreEntidad,info.nombreMalla));
+    _vDificultad.push_back(info.dificultad);
 
     SceneNode* aux;
     for (size_t i = 0; i != _vEntCars.size(); ++i)
@@ -536,18 +544,21 @@ string carSelectorState::getNombreTipoCocheSeleccionado()
 void carSelectorState::sincronizarIdMaterialConVehiculoSeleccionado()
 {
     string aux = static_cast<Entity *>(_vCars[_cursorVehiculo]->getAttachedObject(0))->getSubEntity(0)->getMaterialName();
-    for (size_t i=0; i<_vMateriales.size(); i++)
+    size_t i;
+    for (i=0; i<_vMateriales.size(); i++)
         if (_vMateriales[i] == aux)
         {
             _idMaterialActual = i;
             break;
         }
+        
+    cout << "El vehículo " << _cursorVehiculo << " tiene el material " << _vMateriales[i] << " con id " << i << endl;
     
 }
 
 void carSelectorState::setDifficult (int level)
 {
-cout << "SET DIFF " << level <<endl;
-cout << "SET DIFF " << level << " " << msg_diff[level]<<endl;
-  edt_diff->setCaption(msg_diff[level]);
+    cout << "SET DIFF " << level <<endl;
+    cout << "SET DIFF " << level << " " << msg_diff[level]<<endl;
+    edt_diff->setCaption(msg_diff[level]);
 }

@@ -140,8 +140,6 @@ bool testStateVehicRayCast::frameStarted(const Ogre::FrameEvent &evt)
     if (_keys & static_cast<size_t>(keyPressed_flags::NUMPAD3)) 
         _vCarsRayCast[_cursorVehiculo]->girar(-1);
     
-
-    
     
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_HOME)) speed =0.5;
     if (InputManager_::getSingletonPtr()->getKeyboard()->isKeyDown(OIS::KC_END)) speed =10;
@@ -437,17 +435,53 @@ testStateVehicRayCast::~testStateVehicRayCast(){}
 
 void testStateVehicRayCast::createLight()
 {
+//    //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
+//    _sceneMgr->setShadowTextureCount(2);
+//    _sceneMgr->setShadowTextureSize(512);
+//    Light *light = _sceneMgr->createLight("Light1");
+//    light->setPosition(30, 30, 0);
+//    light->setType(Light::LT_SPOTLIGHT);
+//    light->setDirection(Vector3(-1, -1, 0));
+//    light->setSpotlightInnerAngle(Degree(60.0f));
+//    light->setSpotlightOuterAngle(Degree(80.0f));
+//    light->setSpotlightFalloff(0.0f);
+//    light->setCastShadows(true);
+
     //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
     _sceneMgr->setShadowTextureCount(2);
     _sceneMgr->setShadowTextureSize(512);
-    Light *light = _sceneMgr->createLight("Light1");
-    light->setPosition(30, 30, 0);
-    light->setType(Light::LT_SPOTLIGHT);
-    light->setDirection(Vector3(-1, -1, 0));
-    light->setSpotlightInnerAngle(Degree(60.0f));
-    light->setSpotlightOuterAngle(Degree(80.0f));
-    light->setSpotlightFalloff(0.0f);
-    light->setCastShadows(true);
+    
+    std::vector< pair<Vector3,Vector3> > luces { pair<Vector3,Vector3>(Vector3(0,30,-30),Vector3(0,-1,0.5)),
+                                                 pair<Vector3,Vector3>(Vector3(-50,30,0),Vector3(1,-1,0.5))
+                                                 ,pair<Vector3,Vector3>(Vector3(50,30,0),Vector3(-1,-1,0.5)),
+                                                 pair<Vector3,Vector3>(Vector3(0,30,30),Vector3(0,-1,-0.5)),
+    };
+    
+//    Light *light = _sceneMgr->createLight("LightPlayState1");
+//    //light->setPosition(30, 30, 0);
+//    light->setPosition(0, 30, -30);
+//    light->setType(Light::LT_SPOTLIGHT);
+//    light->setDirection(Vector3(0, -1, 0.5));
+//    light->setSpotlightInnerAngle(Degree(60.0f));
+//    light->setSpotlightOuterAngle(Degree(80.0f));
+//    light->setSpotlightFalloff(0.0f);
+//    light->setCastShadows(true);
+    
+    for (size_t j=0; j<luces.size(); j++)
+    {
+        Light *light = _sceneMgr->createLight("Light" + std::to_string(j));
+        //light->setPosition(30, 30, 0);
+        light->setPosition(luces.at(j).first);
+        light->setType(Light::LT_SPOTLIGHT);
+        light->setDirection(luces.at(j).second);
+        light->setSpotlightInnerAngle(Degree(60.0f));
+        light->setSpotlightOuterAngle(Degree(80.0f));
+        light->setSpotlightFalloff(0.0f);
+        light->setCastShadows(true);
+    }
+
+
+
 }
 
 void testStateVehicRayCast::createFloor() 

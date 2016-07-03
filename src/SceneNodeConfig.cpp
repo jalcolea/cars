@@ -102,7 +102,7 @@ void SceneNodeConfig::nuevoSceneNode(mxml_node_t* node)
     nodo.bodyRestitutionBullet = Ogre::Real(std::stof(mxmlGetText(restitution,NULL)));
     nodo.escala = extraeVector3(escala);
     if (orientacion) nodo.orientacion = extraeQuaternio(orientacion); else nodo.orientacion = Ogre::Quaternion(1,0,0,0);
-    nodo.dificultad = (dificultad)?atoi(mxmlGetText(dificultad,NULL)):0;
+    nodo.dificultad = (dificultad)?std::stoi(mxmlGetText(dificultad,NULL)):0;
     
     map_nodos[nodo.nombreNodo] = nodo;
 
@@ -174,6 +174,7 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     mxml_node_t* escalaRueda; 
     mxml_node_t* escala;
     mxml_node_t* potenciadorPrimera;
+    mxml_node_t* traccionTrasera;
     
     nombre = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreMallaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
@@ -208,6 +209,7 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     escalaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALARUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
     escala = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALA)]).c_str(),NULL,NULL,MXML_DESCEND);
     potenciadorPrimera = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POTENCIADORPRIMERA)]).c_str(),NULL,NULL,MXML_DESCEND);
+    traccionTrasera = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::TRACCIONTRASERA)]).c_str(),NULL,NULL,MXML_DESCEND);
     
     
     nodoVehiculoRayCast_t nodo;
@@ -247,6 +249,8 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     nodo.escalaRueda = extraeVector3(escalaRueda);
     nodo.escala = extraeVector3(escala);
     nodo.potenciadorPrimera = (potenciadorPrimera)?Ogre::Real(std::stof(mxmlGetText(potenciadorPrimera,NULL))):1;
+    if (traccionTrasera) nodo.traccionTrasera = (atoi(mxmlGetText(traccionTrasera,NULL))>0?true:false);
+    else nodo.traccionTrasera = false;
     
     map_vehiculos_raycast[nodo.nombre] = nodo;
     

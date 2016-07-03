@@ -28,6 +28,9 @@
 #include "MyGUI.h"
 #include "MyGUI_OgrePlatform.h"
 
+#define TIME_INTRO_SOUND 2
+#define TIME_INTRO_DONE 5
+
 using namespace std;
 using namespace Ogre;
 
@@ -91,6 +94,10 @@ private:
     void gestionaAnimaciones(Ogre::AnimationState *&anim, Ogre::Real deltaT, const String &nombreEnt, const String &nombreAnim);
 
     TextureUnitState *CreateTextureFromImgWithoutStretch(const String &texName, Real texSize, const String &imgName);
+    
+    bool _introSoundDone;
+    Ogre::Real _timeIntroSound;
+
 
 };
 

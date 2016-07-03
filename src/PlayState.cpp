@@ -197,6 +197,7 @@ void PlayState::controlDeCarrera()
         if (_humanPlayer->finished() /*&& !_finalCarrera*/)
         {
             _play->stopTime();
+            sounds::getInstance()->halt_effects();
             _tiempoCarreraJugador = _play->getTime();
             _posicionAlFinalCarrera = 4-posicionEnCarrera;
             _finalCarrera = true;
@@ -280,14 +281,39 @@ void PlayState::createLight()
     //_sceneMgr->setAmbientLight(Ogre::ColourValue(1, 1, 1));
     _sceneMgr->setShadowTextureCount(2);
     _sceneMgr->setShadowTextureSize(512);
-    Light *light = _sceneMgr->createLight("LightPlayState1");
-    light->setPosition(30, 30, 0);
-    light->setType(Light::LT_SPOTLIGHT);
-    light->setDirection(Vector3(-1, -1, 0));
-    light->setSpotlightInnerAngle(Degree(60.0f));
-    light->setSpotlightOuterAngle(Degree(80.0f));
-    light->setSpotlightFalloff(0.0f);
-    light->setCastShadows(true);
+    
+    std::vector< pair<Vector3,Vector3> > luces { 
+//                                                pair<Vector3,Vector3>(Vector3(0,30,-30),Vector3(0,-1,0)),
+//                                                 pair<Vector3,Vector3>(Vector3(-50,30,-15),Vector3(1,-1,0)),
+                                                 pair<Vector3,Vector3>(Vector3(50,30,0),Vector3(-1,-1,0.5)),
+                                                 pair<Vector3,Vector3>(Vector3(0,30,30),Vector3(0,-1,-0.5)),
+    };
+    
+//    Light *light = _sceneMgr->createLight("LightPlayState1");
+//    //light->setPosition(30, 30, 0);
+//    light->setPosition(0, 30, -30);
+//    light->setType(Light::LT_SPOTLIGHT);
+//    light->setDirection(Vector3(0, -1, 0.5));
+//    light->setSpotlightInnerAngle(Degree(60.0f));
+//    light->setSpotlightOuterAngle(Degree(80.0f));
+//    light->setSpotlightFalloff(0.0f);
+//    light->setCastShadows(true);
+    
+    for (size_t j=0; j<luces.size(); j++)
+    {
+        Light *light = _sceneMgr->createLight("LightPlayState" + std::to_string(j));
+        //light->setPosition(30, 30, 0);
+        light->setPosition(luces.at(j).first);
+        light->setType(Light::LT_SPOTLIGHT);
+        light->setDirection(luces.at(j).second);
+        light->setSpotlightInnerAngle(Degree(60.0f));
+        light->setSpotlightOuterAngle(Degree(80.0f));
+        light->setSpotlightFalloff(0.0f);
+        light->setCastShadows(true);
+    }
+
+
+    
 }
 
 void PlayState::win() {}
@@ -373,7 +399,8 @@ void PlayState::createScene()
     _tiempoCarreraJugador = 0;
 
   
-    _sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+    //_sceneMgr->setAmbientLight(Ogre::ColourValue(0.5, 0.5, 0.5));
+    _sceneMgr->setAmbientLight(Ogre::ColourValue(0.7, 0.7, 0.7));
     _sceneMgr->setShadowTechnique(SHADOWTYPE_STENCIL_MODULATIVE);
     _sceneMgr->setShadowColour(ColourValue(0.5, 0.5, 0.5));
     _sceneMgr->setShadowFarDistance(100);
@@ -469,6 +496,7 @@ void PlayState::createScene()
     }
     
     _humanPlayer = unique_ptr<humanPlayer>(new humanPlayer("Player",_nombreTipoCoche,_nombreMaterial,posSalida.at(posSalida.size()-1),_sceneMgr,_world.get(),LAPS,vpoints.size(),nullptr,99,true));
+    _humanPlayer->activarMaterial();
     _humanPlayer->start();
     
     _playSimulation = true;

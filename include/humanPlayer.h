@@ -49,7 +49,9 @@ class humanPlayer
         void dibujaLinea(Vector3 inicio, Vector3 fin, bool consoleOut = false);
         void cambiaMarcha();
         void coutTipoCollisionObject(tipoRigidBody t);
+        void compruebaChirriar();
 
+        std::vector<Ogre::Real> _valoresSkidRuedas;
         unique_ptr<CarRayCast> _car;
         string _nombreEnPantalla;
         string _nombreVehiculo;
