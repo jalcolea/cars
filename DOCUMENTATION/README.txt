@@ -28,6 +28,7 @@ Las dependencias previas que debe contener el sistema son:
 	-sdl versión 1.2
 	-boost_system versión 1.58
 	-OpenGL versión 1.2
+	-wiimote-ng version 0.5
 
 *****************************************
 *	Sistemas Operativos testeados	*
