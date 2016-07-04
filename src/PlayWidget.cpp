@@ -48,7 +48,9 @@ void PlayWidget::lap(int lap, int max_lap)
 void PlayWidget::speed(int speed)
 {
   char buff [128];
-  sprintf(buff,"%d",speed);
+  int local_speed = 0;
+  if (speed > 0) local_speed = speed; 
+  sprintf(buff,"%d",local_speed);
   race_speed->setCaption(buff);
 }
 
