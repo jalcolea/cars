@@ -37,7 +37,7 @@ class sounds {
     int play_effect_loop(string id, int ch=-1);
 
     int playing_music();
-    int play_music(string id, int times=-1);
+    int play_music(string id, int times=-1, int initVolume = MIX_MAX_VOLUME);
     void pause_music();
     int paused_music();
     void resume_music();
@@ -49,7 +49,9 @@ class sounds {
     inline int isMixPlaying(int canal){ return Mix_Playing(canal); };
     inline Mix_Chunk* getMixChunk(string nombreEfecto){ return map_effect[nombreEfecto]; };
     inline void setVolume(string nombreEfecto, int volumen){map_effect[nombreEfecto]->volume = volumen;};
-
+    inline void setMusicVolume(int volumen){ Mix_VolumeMusic(volumen); };
+    inline int getMusicVolume(){ return Mix_VolumeMusic(-1); }; // Al pasarle -1 a Mix_VolumeMusic indicamos que no queremos cambiar el volumen, solo recuperar valor actual.
+    inline int maxVolume(){ return MIX_MAX_VOLUME; };
 
 };
 

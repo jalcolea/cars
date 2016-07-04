@@ -175,6 +175,10 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     mxml_node_t* escala;
     mxml_node_t* potenciadorPrimera;
     mxml_node_t* traccionTrasera;
+    mxml_node_t* maxSkidValue;
+    mxml_node_t* skidCorto;
+    mxml_node_t* skidMedio;
+    mxml_node_t* skidLargo;
     
     nombre = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_NODO)]).c_str(),NULL,NULL,MXML_DESCEND);
     nombreMallaRueda = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::NOMBRE_MALLA_RUEDA)]).c_str(),NULL,NULL,MXML_DESCEND);
@@ -210,7 +214,10 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     escala = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::ESCALA)]).c_str(),NULL,NULL,MXML_DESCEND);
     potenciadorPrimera = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::POTENCIADORPRIMERA)]).c_str(),NULL,NULL,MXML_DESCEND);
     traccionTrasera = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::TRACCIONTRASERA)]).c_str(),NULL,NULL,MXML_DESCEND);
-    
+    maxSkidValue = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::MAXSKIDVALUE)]).c_str(),NULL,NULL,MXML_DESCEND);
+    skidCorto = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::SKIDCORTO)]).c_str(),NULL,NULL,MXML_DESCEND);
+    skidMedio = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::SKIDMEDIO)]).c_str(),NULL,NULL,MXML_DESCEND);
+    skidLargo = mxmlFindElement(node,node,(_xmlElements[static_cast<size_t>(xmlElementsIndex::SKIDLARGO)]).c_str(),NULL,NULL,MXML_DESCEND);
     
     nodoVehiculoRayCast_t nodo;
     
@@ -251,6 +258,10 @@ void SceneNodeConfig::nuevoVehiculoRayCast(mxml_node_t* node)
     nodo.potenciadorPrimera = (potenciadorPrimera)?Ogre::Real(std::stof(mxmlGetText(potenciadorPrimera,NULL))):1;
     if (traccionTrasera) nodo.traccionTrasera = (atoi(mxmlGetText(traccionTrasera,NULL))>0?true:false);
     else nodo.traccionTrasera = false;
+    if (maxSkidValue) nodo.skid.maxSkidValue = Ogre::Real(std::stof(mxmlGetText(maxSkidValue,NULL)));
+    if (skidCorto) nodo.skid.SkidCorto = Ogre::Real(std::stof(mxmlGetText(skidCorto,NULL)));
+    if (skidMedio) nodo.skid.SkidMedio = Ogre::Real(std::stof(mxmlGetText(skidMedio,NULL)));
+    if (skidLargo) nodo.skid.SkidLargo = Ogre::Real(std::stof(mxmlGetText(skidLargo,NULL)));
     
     map_vehiculos_raycast[nodo.nombre] = nodo;
     

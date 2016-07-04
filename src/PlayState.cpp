@@ -19,10 +19,12 @@
 #include "actualOptions.h"
 #include "WinState.h"
 #include "LooseState.h"
+#include "Carrusel.h"
 
-
+#define MIN_FORCE_SOUND 100
 #define CAMSPEED 20
 #define CAMROTATESPEED 0.1
+
 template <> PlayState *Ogre::Singleton<PlayState>::msSingleton = 0;
 
 using namespace std;
@@ -66,6 +68,11 @@ void PlayState::enter()
     _exitGame = false;
     paused = false;
     _deltaT = 0;
+    
+    if (!sounds::getInstance()->playing_music())
+        sounds::getInstance()->play_music("mainTheme",-1);
+        
+    sounds::getInstance()->setMusicVolume(sounds::getInstance()->getMusicVolume() / 2);
 
     // Cargar los parámetros para construir elementos del juego (coches, circuitos, camaras, etc)
     cargarParametros("SceneNodes.xml",true);
@@ -86,9 +93,15 @@ void PlayState::exit()
     delete _play;
     destroyMyGui(); 
     // Ojo: Si no limpiamos el vector al salir, al volver a entrar a este estado siguen existiendo los objetos que contenía.
-    _vCarsCpuPlayer.clear();  
+    _vCarsCpuPlayer.clear(); 
+    vMarcas.clear();
+    _vranking.clear();
+    _vCanalesSonido.clear();
+    _bodies.clear();
+ 
     _sceneMgr->clearScene();
     cout << "exit playstate" << endl;
+    sounds::getInstance()->setMusicVolume(sounds::getInstance()->maxVolume());
 }
 
 void PlayState::pause()
@@ -157,6 +170,8 @@ bool PlayState::frameStarted(const Ogre::FrameEvent &evt) {
         {
             updateCPU();
             _humanPlayer->update(_deltaT,_keys);
+            actualizaDistanciasParaSonido();
+            reproduceSonidosColisiones();
         }
         
         if (!_freeCamera)
@@ -419,7 +434,7 @@ void PlayState::createScene()
     //createVallaVirtual();
 
 
-//******************************************************************************************************************
+//** CREACION DE CHECKPOINTS ****************************************************************************************
  
     IAPointsDeserializer iapd;
     iapd.cargarFicheroCheckPoint("rutasIA.xml");
@@ -486,6 +501,8 @@ void PlayState::createScene()
 
     _nombreTipoCoche = actualOptions::getSingletonPtr()->getNombreVehiculoXML();
     _nombreMaterial = actualOptions::getSingletonPtr()->getNombreMaterial(actualOptions::getSingletonPtr()->getIdMaterial());
+    
+    reparteCanalesSonido();
 
     createPlayersCPU();
 
@@ -495,7 +512,9 @@ void PlayState::createScene()
         _vCarsCpuPlayer.at(j)->start();
     }
     
-    _humanPlayer = unique_ptr<humanPlayer>(new humanPlayer("Player",_nombreTipoCoche,_nombreMaterial,posSalida.at(posSalida.size()-1),_sceneMgr,_world.get(),LAPS,vpoints.size(),nullptr,99,true));
+    _humanPlayer = unique_ptr<humanPlayer>(new humanPlayer("Player",_nombreTipoCoche,_nombreMaterial,posSalida.at(posSalida.size()-1),
+                                                           _sceneMgr,_world.get(),LAPS,vpoints.size(),_vCanalesSonido.at(_vCanalesSonido.size()-1),
+                                                           nullptr,99,true));
     _humanPlayer->activarMaterial();
     _humanPlayer->start();
     
@@ -505,7 +524,8 @@ void PlayState::createScene()
     _camera->setPosition(_humanPlayer->getPosicionActual().x,
                          _humanPlayer->getPosicionActual().y +10 ,
                          _humanPlayer->getPosicionActual().z + 100);
-    //_camera->lookAt(_humanPlayer->getPosicionActual());
+    
+    //activarCarrusel();
   
 }
 
@@ -567,8 +587,10 @@ void PlayState::createPlayersCPU()
         //auxNombreMaterial = nombreMaterial;
         vMateriales.push_back(nombreMaterial);
         
-        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],_sceneMgr,_world.get(),LAPS,nullptr,i)));
+        _vCarsCpuPlayer.push_back(unique_ptr<cpuPlayer>(new cpuPlayer(nombreCPU,_nombreTipoCoche,nombreMaterial,"rutasIA.xml",posSalida[i],
+                                                                      _sceneMgr,_world.get(),LAPS,nullptr,i)));
         _vCarsCpuPlayer.back()->build();
+        _bodies.push_back(_vCarsCpuPlayer.at(_vCarsCpuPlayer.size()-1)->getBody());
 
     }
     
@@ -807,4 +829,114 @@ void PlayState::createMyGui()
 void PlayState::destroyMyGui() 
 {
     MyGUI::LayoutManager::getInstance().unloadLayout(layout);
+}
+
+void PlayState::reparteCanalesSonido()
+{
+    size_t _canalActualReparto = 1;
+    
+    // FINALMENTE TODO ESTO NO SIRVE PUES LA LIBRERÍA SDL1.2 NO COGE MÁS DE 8 CANALES ASÍ QUE :(
+    // i <= que el total de players CPU, así genero un paquete 
+    // de canales de sonido de más y lo dejo preparado para el humanPlayer
+    for(size_t i = 0; i<=_vCarsCpuPlayer.size(); i++) 
+    {
+        canalesSonidoCoche c;
+        c.MOTORUP.id = _canalActualReparto;
+        c.MOTORUP.volumen = MIX_MAX_VOLUME;
+        c.MOTORUP.distancia = 0;
+        c.MOTORDOWN.id = _canalActualReparto + 1;
+        c.MOTORDOWN.volumen = MIX_MAX_VOLUME;
+        c.MOTORDOWN.distancia = 0;
+        c.SKIDING.id = _canalActualReparto + 2;
+        c.SKIDING.volumen = MIX_MAX_VOLUME;
+        c.SKIDING.distancia = 0;
+        _canalActualReparto += MAX_CANALES_POR_COCHE;
+        _vCanalesSonido.push_back(c);
+    }
+    
+}
+
+void PlayState::actualizaDistanciasParaSonido()
+{
+    Vector3 posJugador = _humanPlayer->getPosicionActual();
+    posJugador.normalise();
+    
+    for(size_t j=0; j<_vCarsCpuPlayer.size(); j++)
+    {
+        Vector3 aux = _vCarsCpuPlayer.at(j)->getPosicionActual();
+        aux.normalise();
+        _vCarsCpuPlayer.at(j)->setDistanciaSonora(posJugador.squaredDistance(aux));
+//        cout << "cpuplayer " << j << " distancia con jugador " << _vCarsCpuPlayer.at(j)->getDistanciaSonora() << endl;
+    }
+}
+
+
+void PlayState::reproduceSonidosColisiones()
+{
+    btCollisionWorld *collisionWorld = _world.get()->getBulletCollisionWorld();
+    btDynamicsWorld *dynamicWorld = _world.get()->getBulletDynamicsWorld();
+
+    int numManifolds = collisionWorld->getDispatcher()->getNumManifolds();
+    bool collide = false;
+    for (int i = 0; i < numManifolds; i++) 
+    {
+        btPersistentManifold *contactManifold = collisionWorld->getDispatcher()->getManifoldByIndexInternal(i);
+        btCollisionObject *obA = (btCollisionObject *)contactManifold->getBody0();
+        btCollisionObject *obB = (btCollisionObject *)contactManifold->getBody1();
+        
+        if (obA->getUserPointer() && obB->getUserPointer())
+        {
+            tipoRigidBody tA = static_cast<rigidBody_data*>(obA->getUserPointer())->_tipo;
+            tipoRigidBody tB = static_cast<rigidBody_data*>(obB->getUserPointer())->_tipo;
+            double fuerza = getCollisionForce(contactManifold);
+            if ( ((tA == tipoRigidBody::COCHE && tB == tipoRigidBody::COCHE) || (tA == tipoRigidBody::CIRCUITO && tB == tipoRigidBody::COCHE)  
+                 || (tA == tipoRigidBody::COCHE && tB == tipoRigidBody::CIRCUITO))
+                && fuerza > MIN_FORCE_SOUND)
+            {
+                // TOMA ÑAPA DE ÚLTIMA HORA, AINS!!!
+                if (!sounds::getInstance()->isMixPlaying(4)) sounds::getInstance()->play_effect("golpe",4); 
+                else if (!sounds::getInstance()->isMixPlaying(5)) sounds::getInstance()->play_effect("golpe",5);
+                else if (!sounds::getInstance()->isMixPlaying(6)) sounds::getInstance()->play_effect("golpe",6);
+                else if (!sounds::getInstance()->isMixPlaying(7)) sounds::getInstance()->play_effect("golpe",7);
+                
+                sounds::getInstance()->setVolume("golpe",sounds::getInstance()->maxVolume()*0.25);
+            }
+        }
+
+//        std::vector<btCollisionObject*>::iterator it = std::find_if(_bodies.begin(), _bodies.end(),
+//                                                [contactManifold](btCollisionObject* vehiculoBody) -> bool 
+//                                                {
+//                                                    return contactManifold->getBody0() == vehiculoBody ||
+//                                                           contactManifold->getBody1() == vehiculoBody;
+//                                                });
+//
+
+//        if (it != _bodies.end() && getCollisionForce(contactManifold)> MIN_FORCE_SOUND) 
+//        {
+//            cout << "COLISION!!!!!!!!!!!!!!!!" << endl;
+//            sounds::getInstance()->play_effect("golpe",7);
+//            sounds::getInstance()->setVolume("golpe",sounds::getInstance()->maxVolume());
+//        }
+//        else
+//            cout << "no hay colisiones????" << endl;
+    }
+
+
+
+}
+
+double PlayState::getCollisionForce(btPersistentManifold* maniFold)
+{
+    double force =0;
+    for(int i=0; i<  maniFold->getNumContacts(); i++)
+        force+= maniFold->getContactPoint(i).getAppliedImpulse();
+
+    return force;
+}
+
+void PlayState::activarCarrusel()
+{
+    _inicioCarrera = true;
+    Carrusel c;
+    c.go();
 }

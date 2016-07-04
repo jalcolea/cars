@@ -93,6 +93,7 @@
     <File Name="include/puntoIA.h"/>
     <File Name="include/puntoManager.h"/>
     <File Name="include/humanPlayer.h"/>
+    <File Name="include/soundUtil.h"/>
   </VirtualDirectory>
   <Settings Type="Executable">
     <GlobalSettings>

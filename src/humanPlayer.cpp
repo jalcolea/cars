@@ -2,12 +2,16 @@
 #include "sounds.h"
 
 humanPlayer::humanPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, Vector3 posicionSalida, 
-                         SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, size_t checksPerLap, void* groundObject, size_t id, bool buildForMe)
+                         SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, size_t checksPerLap,canalesSonidoCoche canalesSonido,
+                         void* groundObject, size_t id, bool buildForMe)
                          : _nombreEnPantalla(nombreEnPantalla), _nombreVehiculo(nombreVehiculo), _nombreMaterial(nombreMaterial),
-                           _posicionSalida(posicionSalida), _sceneMgr(sceneMgr), _world(world), _laps(laps),_checksPerLap(checksPerLap), _groundObject(groundObject), _id(id)
+                           _posicionSalida(posicionSalida), _sceneMgr(sceneMgr), _world(world), _laps(laps),_checksPerLap(checksPerLap), 
+                           _canalesSonido(canalesSonido), _groundObject(groundObject), _id(id)
 {
         // Creamos una instancia de CarRayCast
         _car = unique_ptr<CarRayCast>(new CarRayCast(_nombreVehiculo,_posicionSalida,_sceneMgr,_world,nullptr,_id));
+        
+        
     
         if (buildForMe)
             build();
@@ -53,7 +57,7 @@ void humanPlayer::build()
     _lapActual = 0;
     
     // Para cuando lancemos rayos hacia delante si el resultado es igual a this no nos vale.
-    static_cast<rigidBody_data*>(_car->getRigidBody()->getBulletObject()->getUserPointer())->_data = this;
+//    static_cast<rigidBody_data*>(_car->getRigidBody()->getBulletObject()->getUserPointer())->_data = this;
     
     _ultimaOrientacionBuena.setEuler(_car->getRigidBody()->getWorldOrientation().getYaw().valueRadians(),0,0);
 
@@ -73,11 +77,19 @@ void humanPlayer::update(Real deltaT, size_t keys)
         }
         if (keys & static_cast<size_t>(keyPressed_flags::UP))
         {
-            if (sounds::getInstance()->isMixPlaying(2)) sounds::getInstance()->halt_effect(2);
-            if (!sounds::getInstance()->isMixPlaying(1)) 
+            if (sounds::getInstance()->isMixPlaying(_canalesSonido.MOTORDOWN.id)) sounds::getInstance()->halt_effect(_canalesSonido.MOTORDOWN.id);
+            if (!sounds::getInstance()->isMixPlaying(_canalesSonido.MOTORUP.id)) 
             { 
-                sounds::getInstance()->play_effect_loop("motor2up",1); 
-                sounds::getInstance()->setVolume("motor2up",24);
+                if (_car->getVelocidadKmH() > 10)
+                {
+                   sounds::getInstance()->play_effect_loop("motorRunning",_canalesSonido.MOTORUP.id); 
+                   sounds::getInstance()->setVolume("motorRunning",_canalesSonido.MOTORUP.volumen);
+                }
+                else
+                {
+                    sounds::getInstance()->play_effect("motor1up",_canalesSonido.MOTORUP.id);
+                    sounds::getInstance()->setVolume("motor1up",_canalesSonido.MOTORUP.volumen);
+                }
             }
                 
             cambiaMarcha();
@@ -89,11 +101,12 @@ void humanPlayer::update(Real deltaT, size_t keys)
         }
         else
         {
-            if (sounds::getInstance()->isMixPlaying(1)) sounds::getInstance()->halt_effect(1);   // CAMBIAR LA GESTION DE CANALES POR DIOS!!!!
-            if (!sounds::getInstance()->isMixPlaying(2))
+            if (sounds::getInstance()->isMixPlaying(_canalesSonido.MOTORUP.id)) sounds::getInstance()->halt_effect(_canalesSonido.MOTORUP.id);
+            if (!sounds::getInstance()->isMixPlaying(_canalesSonido.MOTORDOWN.id) && _car->getVelocidadKmH() > 0)
             {
-                sounds::getInstance()->play_effect("motor1down",2);
-                sounds::getInstance()->setVolume("motor1down",24);
+                //MOTOR1DOWN
+                sounds::getInstance()->play_effect("motor1down",_canalesSonido.MOTORDOWN.id);
+                sounds::getInstance()->setVolume("motor1down",_canalesSonido.MOTORDOWN.volumen);
             }
             _car->acelerar(0); // Si no aceleramos que actúe la inercia. También sirve para cuando soltamos el freno :D
             if (_marchaActual && _car->getVelocidadKmH() < 1) _marchaActual = 0;
@@ -398,5 +411,36 @@ void humanPlayer::coutTipoCollisionObject(tipoRigidBody t)
 
 void humanPlayer::compruebaChirriar()
 {
+    skidValues skiding = _car->getSkidding();
     _car->getRuedasChirriando(_valoresSkidRuedas);
+    
+    if (_valoresSkidRuedas.size())
+    {
+        if (!sounds::getInstance()->isMixPlaying(_canalesSonido.SKIDING.id))
+        {    
+            for(size_t j=0; j<_valoresSkidRuedas.size();j++) cout << "skid rueda " << j << ":" << _valoresSkidRuedas.at(j) << endl;
+            Ogre::Real skid = _valoresSkidRuedas.at(0);
+            //if (skid <= 0.1 && skid > 0.075)           // chirrío corto
+            if (skid <= skiding.maxSkidValue && skid > skiding.SkidCorto)           // chirrío corto
+            {
+                cout << "chirrío corto " << endl;
+                sounds::getInstance()->play_effect("skiddingCorto",_canalesSonido.SKIDING.id);
+                sounds::getInstance()->setVolume("skiddingCorto",sounds::getInstance()->maxVolume()*0.25);
+            }
+            //else if (skid <= 0.075 && skid > 0.025)     // chirrío medio
+            else if (skid <= skiding.SkidCorto && skid > skiding.SkidMedio)     // chirrío medio
+            {
+                cout << "chirrío medio " << endl;
+                sounds::getInstance()->play_effect("skiddingMedio",_canalesSonido.SKIDING.id);
+                sounds::getInstance()->setVolume("skiddingMedio",sounds::getInstance()->maxVolume()*0.25);
+            }
+            //else if (skid <= 0.01 && skid > minimo)                   // chirrío largo
+            else if (skid <= skiding.SkidMedio && skid > skiding.SkidLargo)                   // chirrío largo
+            {
+                cout << "chirrío largo: " << skid << endl;
+                sounds::getInstance()->play_effect("skiddingLargo",_canalesSonido.SKIDING.id);
+                sounds::getInstance()->setVolume("skiddingLargo",sounds::getInstance()->maxVolume()*0.25);
+            }   
+        }
+    }
 }

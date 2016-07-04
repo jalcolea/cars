@@ -60,7 +60,7 @@ int sounds::playing_music()
   return Mix_PlayingMusic();
 }
 
-int sounds::play_music(string id,int times)
+int sounds::play_music(string id,int times, int initVolume)
 {
    Mix_Music * e = NULL;
    e= map_music[id];
@@ -68,7 +68,8 @@ int sounds::play_music(string id,int times)
 
    if (e!=NULL)
    {
-      Mix_VolumeMusic(MIX_MAX_VOLUME/8); 
+      //Mix_VolumeMusic(MIX_MAX_VOLUME/8); 
+      Mix_VolumeMusic(initVolume); 
       return Mix_PlayMusic(e, times );
    }
    else return -1; 

@@ -6,6 +6,7 @@
 #include "CarRayCast.h"
 #include "bulletUtil.h"
 #include "OgreUtil.h"
+#include "soundUtil.h"
 
 using namespace Ogre;
 using namespace std;
@@ -22,7 +23,8 @@ class humanPlayer
 {
     public:
         humanPlayer(string nombreEnPantalla, string nombreVehiculo, string nombreMaterial, Vector3 posicionSalida, 
-                    SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, size_t checksPerLap, void* groundObject = nullptr, size_t id = 0, bool buildForMe = false);
+                    SceneManager* sceneMgr, DynamicsWorld* world, size_t laps, size_t checksPerLap, canalesSonidoCoche canalesSonido,
+                    void* groundObject = nullptr, size_t id = 0, bool buildForMe = false);
         
         virtual ~humanPlayer();
 
@@ -78,6 +80,9 @@ class humanPlayer
         size_t _laps;
         size_t _lapActual;
         size_t _checksPerLap;
+        // Para el sonido, como máximo vamos a tener 3 canales de sonido: 
+        // motorUp, motorDown, derrapando. Los choques se gestionan externamente
+        canalesSonidoCoche _canalesSonido;
         void * _groundObject;
         size_t _id;
         size_t _marchaActual;
@@ -88,6 +93,7 @@ class humanPlayer
         bool _starting;
         bool _atajando;
         bool _fueraPista;
+        
 };
 
 #endif // HUMANPLAYER_H

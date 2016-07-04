@@ -7,34 +7,66 @@
         <id>intro</id>
         <file>introCars.wav</file>
     </sound>
+    
     <sound>
         <id>push</id>
         <file>pop_drip.wav</file>
     </sound>
+    
     <sound>
         <id>motor1</id>
         <file>motor1.ogg</file>
     </sound>
+    
     <sound>
         <id>mainTheme</id>
         <file>carsbrosong.ogg</file>
     </sound>
+    
+    <sound>
+        <id>motorRunning</id>
+        <file>motor4.wav</file>
+    </sound>
+    
     <sound>
         <id>motor1up</id>
-        <file>Meccano1.wav</file>
-      </sound>
-    <sound>
-        <id>motor2up</id>
-        <file>Meccano2.wav</file>
+        <file>motorIn1.wav</file>
     </sound>
+      
     <sound>
         <id>motor1down</id>
-        <file>Meccano3.wav</file>
+        <file>motorOut1.wav</file>
     </sound>
+    
     <sound>
-        <id>skidding</id>
+        <id>skiddingLargo</id>
         <file>skid.wav</file>
     </sound>
+    
+    <sound>
+        <id>skiddingMedio</id>
+        <file>skid2.wav</file>
+    </sound>
+    
+    <sound>
+        <id>skiddingCorto</id>
+        <file>skid3.wav</file>
+    </sound>    
+
+    <sound>
+        <id>golpe</id>
+        <file>golpe2.wav</file>
+    </sound>    
+    <sound>
+        <id>123</id>
+        <file>123.ogg</file>
+    </sound>    
+    <sound>
+        <id>go</id>
+        <file>go.ogg</file>
+    </sound>    
+    
+    
     </effects>
 
 </sounds_library>

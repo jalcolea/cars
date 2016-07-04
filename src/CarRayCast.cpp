@@ -144,6 +144,7 @@ void CarRayCast::buildVehiculo()
     _frenada = param.frenada;
     _potenciadorPrimera = param.potenciadorPrimera;
     _traccionTrasera = param.traccionTrasera;
+    _skidding = param.skid;
     
     OgreBulletCollisions::BoxCollisionShape* formaChasis = new BoxCollisionShape(_entChasis->getBoundingBox().getHalfSize());
 // PRUEBA SIN COMPOUND SHAPE
@@ -220,7 +221,7 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
 //        fuerza *= 0.85; // Al girar perdemos potencia, en cuanto enderecemos la recuperamos.
 //    }
 
-    cout << "traccion trasera: " << _traccionTrasera << endl;
+//    cout << "traccion trasera: " << _traccionTrasera << endl;
 
     if (_traccionTrasera)
     {
@@ -233,18 +234,18 @@ void CarRayCast::acelerar(Real fuerza, bool endereza, Real factorEnderezamiento)
         _vehiculo->applyEngineForce(fuerza,1);
     }
     
-    btWheelInfo& wheelInfo0 = _vehiculo->getBulletVehicle()->getWheelInfo(0);
-    cout << "derrapando Rueda 0 " << wheelInfo0.m_skidInfo << endl;
-    cout << "Engine force Rueda 0 " << wheelInfo0.m_engineForce << endl;
-    btWheelInfo& wheelInfo1 = _vehiculo->getBulletVehicle()->getWheelInfo(1);
-    cout << "derrapando force Rueda 1 " << wheelInfo1.m_skidInfo << endl;
-    cout << "Engine force Rueda 1 " << wheelInfo1.m_engineForce << endl;
-    btWheelInfo& wheelInfo2 = _vehiculo->getBulletVehicle()->getWheelInfo(2);
-    cout << "derrapando force Rueda 2 " << wheelInfo2.m_skidInfo << endl;
-    cout << "Engine force Rueda 2 " << wheelInfo2.m_engineForce << endl;
-    btWheelInfo& wheelInfo3 = _vehiculo->getBulletVehicle()->getWheelInfo(3);
-    cout << "derrapando force Rueda 3 " << wheelInfo3.m_skidInfo << endl;
-    cout << "Engine force Rueda 3 " << wheelInfo3.m_engineForce << endl;
+//    btWheelInfo& wheelInfo0 = _vehiculo->getBulletVehicle()->getWheelInfo(0);
+//    cout << "derrapando Rueda 0 " << wheelInfo0.m_skidInfo << endl;
+//    cout << "Engine force Rueda 0 " << wheelInfo0.m_engineForce << endl;
+//    btWheelInfo& wheelInfo1 = _vehiculo->getBulletVehicle()->getWheelInfo(1);
+//    cout << "derrapando force Rueda 1 " << wheelInfo1.m_skidInfo << endl;
+//    cout << "Engine force Rueda 1 " << wheelInfo1.m_engineForce << endl;
+//    btWheelInfo& wheelInfo2 = _vehiculo->getBulletVehicle()->getWheelInfo(2);
+//    cout << "derrapando force Rueda 2 " << wheelInfo2.m_skidInfo << endl;
+//    cout << "Engine force Rueda 2 " << wheelInfo2.m_engineForce << endl;
+//    btWheelInfo& wheelInfo3 = _vehiculo->getBulletVehicle()->getWheelInfo(3);
+//    cout << "derrapando force Rueda 3 " << wheelInfo3.m_skidInfo << endl;
+//    cout << "Engine force Rueda 3 " << wheelInfo3.m_engineForce << endl;
     
     
 }

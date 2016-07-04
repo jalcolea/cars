@@ -51,6 +51,9 @@ public:
     
     inline Vector3 getPosicionActual(){ return _car->getPosicionActual(); };
     inline Real getVelocidadActual(){ return _car->getVelocidadKmH(); };
+    inline void setDistanciaSonora(Ogre::Real distancia){ _distanciaSonora = distancia; }; // valores normalizados please
+    inline Ogre::Real getDistanciaSonora(){ return _distanciaSonora; };
+    inline btCollisionObject* getBody(){ return _car->getRigidBody()->getBulletObject(); };
     
 protected:
     bool compruebaCheckPoint();
@@ -69,6 +72,7 @@ private:
     SceneNode* _nodoCheckPointSiguiente;
     OgreBulletDynamics::DynamicsWorld* _world;
     size_t _laps;
+    canalesSonidoCoche _canalesSonido;
     void * _groundObject;
     size_t _idCheck_destino;
     size_t _idCheck_origen;
@@ -103,9 +107,12 @@ private:
     size_t _puntosAleatoriosPasados; // Cuando alternemos la ruta para pasar por puntos aleatorios de los checkPoints, cada N puntos alcanzados
                                      // retomaremos la ruta principal.
     bool _rutaPuntosAleatorios;
+    Ogre::Real _distanciaSonora; // para que el sonido se atenue o aumente si nos acercamos a un humanPlayer;
     
     void coutTipoCollisionObject(tipoRigidBody t);
-    
+    // Para el sonido, como máximo vamos a tener 3 canales de sonido: 
+    // motorUp, motorDown, derrapando. Los choques se gestionan externamente
+
     
 
 

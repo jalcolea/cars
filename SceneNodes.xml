@@ -160,7 +160,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
-        <dificultad>2</dificultad>
+        <dificultad>1</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>formulaOneBlock</nombreNodo>
@@ -250,7 +250,7 @@
         <frictionBullet>0.4</frictionBullet>
         <bodyRestitutionBullet>0.6</bodyRestitutionBullet>
         <escala x="1" y="1" z="1"></escala>
-        <dificultad>1</dificultad>
+        <dificultad>2</dificultad>
     </scenenode>
     <scenenode>
         <nombreNodo>PlaneRoadBig</nombreNodo>
@@ -293,7 +293,7 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>35</masaBullet><!-- 700-->
+        <masaBullet>45</masaBullet><!-- 35-->
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
@@ -311,9 +311,7 @@
         <suspensionCompresion>0.3</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
         <suspensionDamping>0.5</suspensionDamping>  <!-- 0.5 al inicio, 0.1 0.2 0.3  hace que corra mucho mas pero menos estable, 0.4 parece adecuado -->
         <maxSuspensionTravelCM>0.8</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
-        <maxSuspensionForce>200</maxSuspensionForce> <!-- 150 al inicio, 1500 hace que levante el morro al acelerar, 200 hace que el muelle 
-                                                          de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
-                                                          150 parece un valor adecuado :D -->
+        <maxSuspensionForce>150</maxSuspensionForce> <!--150 -->
         <frictionSlip>0.8</frictionSlip> <!--0.8 coches realistas-->
         <posRueda0 x="0.4" y="-0.10" z="0.69" ></posRueda0>
         <posRueda1 x="-0.4" y="-0.10" z="0.69"></posRueda1>
@@ -323,6 +321,10 @@
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>1.6</potenciadorPrimera>
         <traccionTrasera>1</traccionTrasera>
+        <maxSkidValue>0.4</maxSkidValue>
+        <skidCorto>0.3</skidCorto>
+        <skidMedio>0.1</skidMedio>
+        <skidLargo>0.001</skidLargo>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>kart</nombreNodo>
@@ -361,6 +363,10 @@
         <escalaRuedaTrasera x="1" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>4</potenciadorPrimera>
+        <maxSkidValue>0.1</maxSkidValue>
+        <skidCorto>0.075</skidCorto>
+        <skidMedio>0.025</skidMedio>
+        <skidLargo>0.001</skidLargo>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>formula</nombreNodo>
@@ -370,29 +376,25 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>350</masaBullet> <!-- 700 -->
+        <masaBullet>250</masaBullet> <!-- 350 -->
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
         <anchoRuedas>0.5</anchoRuedas>
         <friccionRueda>1e3f</friccionRueda><!-- 1e30f -->
         <influenciaRodado>0.0001</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
-        <indiceRestitucionSuspension>0.132</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.1 (flotando) y 0.2 (hundidas en el suelo)
-                                                                             0.13 parece un valor adecuado para el formula-->
-        <!--<posicion x="4" y="1.2" z="-12"></posicion>-->
+        <indiceRestitucionSuspension>0.132</indiceRestitucionSuspension> <!-- 0.13 parece un valor adecuado para el formula-->
         <posicion x="-2.02" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.0014</velocidadGiro> <!-- 0.002 -->
-        <aceleracion>4000</aceleracion><!-- 8000 -->
-        <frenada>3000</frenada>
+        <aceleracion>2000</aceleracion><!-- 4000 -->
+        <frenada>2000</frenada>
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
         <suspensionStiffness>50</suspensionStiffness> <!-- 2000 -->
-        <suspensionCompresion>0.2</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
+        <suspensionCompresion>0.1</suspensionCompresion> <!-- 0.2 -->
         <suspensionDamping>0.2</suspensionDamping>  <!-- 0.5 al inicio, 0.1 0.2 0.3  hace que corra mucho mas pero menos estable, 0.4 parece adecuado -->
-        <maxSuspensionTravelCM>0.1</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
-        <maxSuspensionForce>100</maxSuspensionForce> <!-- 150 al inicio, 1500 hace que levante el morro al acelerar, 200 hace que el muelle 
-                                                          de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
-                                                          150 parece un valor adecuado :D -->
-        <frictionSlip>5000</frictionSlip> <!-- empezamos con 10000 (valor bueno en principio), 10 parece igual, 100000 inestable, 5000 parece buen valor también -->
+        <maxSuspensionTravelCM>0.2</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
+        <maxSuspensionForce>150</maxSuspensionForce> <!--100 -->
+        <frictionSlip>10000</frictionSlip> <!-- 5000 -->
         <posRueda0 x="0.4" y="0.05" z="0.65" ></posRueda0>
         <posRueda1 x="-0.4" y="0.05" z="0.65"></posRueda1>
         <posRueda2 x="-0.41" y="0.05" z="-0.75"></posRueda2>
@@ -400,6 +402,10 @@
         <escalaRuedaTrasera x="1.30" y="1" z="1" ></escalaRuedaTrasera>
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>3.5</potenciadorPrimera>
+        <maxSkidValue>0.1</maxSkidValue>
+        <skidCorto>0.075</skidCorto>
+        <skidMedio>0.025</skidMedio>
+        <skidLargo>0.0001</skidLargo>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>groupC1</nombreNodo>
@@ -427,9 +433,7 @@
         <suspensionCompresion>0.3</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
         <suspensionDamping>0.5</suspensionDamping>  <!-- 0.5 al inicio, 0.1 0.2 0.3  hace que corra mucho mas pero menos estable, 0.4 parece adecuado -->
         <maxSuspensionTravelCM>0.8</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
-        <maxSuspensionForce>150</maxSuspensionForce> <!-- 150 al inicio, 1500 hace que levante el morro al acelerar, 200 hace que el muelle 
-                                                          de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
-                                                          150 parece un valor adecuado :D -->
+        <maxSuspensionForce>150</maxSuspensionForce> <!-- 150 -->
         <frictionSlip>0.8</frictionSlip> <!-- 5000 -->
         <posRueda0 x="0.41" y="0" z="0.735" ></posRueda0>  <!-- y -0.2 -->
         <posRueda1 x="-0.41" y="0" z="0.735"></posRueda1>
@@ -439,6 +443,10 @@
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>2.5</potenciadorPrimera>
         <traccionTrasera>0</traccionTrasera>
+        <maxSkidValue>0.1</maxSkidValue>
+        <skidCorto>0.075</skidCorto>
+        <skidMedio>0.025</skidMedio>
+        <skidLargo>0.001</skidLargo>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>groupC2</nombreNodo>
@@ -478,6 +486,10 @@
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>3.5</potenciadorPrimera>
         <traccionTrasera>0</traccionTrasera>
+        <maxSkidValue>0.1</maxSkidValue>
+        <skidCorto>0.075</skidCorto>
+        <skidMedio>0.025</skidMedio>
+        <skidLargo>0.001</skidLargo>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>lamba-sport</nombreNodo>
@@ -487,28 +499,26 @@
         <orientacion w="0.707" x="0" y="-0.707" z="0"></orientacion>
         <orientacionShapeBullet w="0" x="0" y="0" z="0"></orientacionShapeBullet>
         <posShapeBullet x="0" y="1" z="0"></posShapeBullet>
-        <masaBullet>50</masaBullet> <!-- 450 -->
+        <masaBullet>50</masaBullet> <!-- 50 -->
         <frictionBullet>0.6</frictionBullet>
         <bodyRestitutionBullet>0.1</bodyRestitutionBullet>
         <radioRuedas>1.0</radioRuedas>
         <anchoRuedas>0.5</anchoRuedas>
-        <friccionRueda>100</friccionRueda><!-- 1e30f, 1e10f, 1e4f-->
+        <friccionRueda>70</friccionRueda><!--100-->
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.1</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <!--<posicion x="-2.32" y="1.2" z="-22"></posicion>-->
         <posicion x="10" y="2.1" z="-22"></posicion>
         <velocidadGiro>0.001</velocidadGiro> <!-- 0.001 -->
-        <aceleracion>700</aceleracion> <!-- 4700 -->
-        <frenada>600</frenada><!-- 2000 -->
+        <aceleracion>500</aceleracion> <!-- 700 -->
+        <frenada>400</frenada><!-- 2000 -->
         <aceleracionMarchaAtras>4000</aceleracionMarchaAtras>
-        <suspensionStiffness>80</suspensionStiffness> <!-- 2000 -->
+        <suspensionStiffness>75</suspensionStiffness> <!-- 80 -->
         <suspensionCompresion>0.3</suspensionCompresion> <!-- inicio valor 0.3, 0.1 parece estable, 1.0 estable pero lento al arrancar -->
         <suspensionDamping>0.4</suspensionDamping>  <!-- 0.5 al inicio, 0.1 0.2 0.3  hace que corra mucho mas pero menos estable, 0.4 parece adecuado -->
-        <maxSuspensionTravelCM>0.2</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
-        <maxSuspensionForce>100</maxSuspensionForce> <!-- 150 al inicio, 1500 hace que levante el morro al acelerar, 200 hace que el muelle 
-                                                          de la suspensión tenga demasiada fuerza haciendo que salte demasiado con los baches
-                                                          150 parece un valor adecuado :D -->
-        <frictionSlip>0.8</frictionSlip> <!-- 5000, 0.8 -->
+        <maxSuspensionTravelCM>0.7</maxSuspensionTravelCM> <!-- 0.8 al inicio, 0.1 parece un buen valor -->
+        <maxSuspensionForce>150</maxSuspensionForce> <!-- 100 -->
+        <frictionSlip>100</frictionSlip> <!-- 0.8 -->
         <posRueda0 x="0.4" y="-0.01" z="0.71" ></posRueda0>
         <posRueda1 x="-0.4" y="-0.01" z="0.71"></posRueda1>
         <posRueda2 x="-0.41" y="-0.01" z="-0.58"></posRueda2>
@@ -517,6 +527,10 @@
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>3.5</potenciadorPrimera>
         <traccionTrasera>0</traccionTrasera>
+        <maxSkidValue>0.8</maxSkidValue>
+        <skidCorto>0.5</skidCorto>
+        <skidMedio>0.2</skidMedio>
+        <skidLargo>0.001</skidLargo>
     </dataRayCast>  
     <dataRayCast>  
         <nombreNodo>parsche-sport</nombreNodo>
@@ -535,7 +549,7 @@
         <influenciaRodado>0.01</influenciaRodado> <!-- para el kart 0.01 evita que vuelque al girar bruscamente -->
         <indiceRestitucionSuspension>0.03</indiceRestitucionSuspension> <!-- seguir probando valores entre 0.03 y 0.09 -->
         <posicion x="14.10" y="2.1" z="-22"></posicion>
-        <velocidadGiro>0.002</velocidadGiro> <!-- parece un valor adecuado para el kart -->
+        <velocidadGiro>0.0026</velocidadGiro> <!-- parece un valor adecuado para el kart -->
         <aceleracion>600</aceleracion>
         <frenada>500</frenada>
         <aceleracionMarchaAtras>200</aceleracionMarchaAtras>
@@ -555,6 +569,10 @@
         <escala x="1" y="1" z="1"></escala>
         <potenciadorPrimera>2</potenciadorPrimera>
         <traccionTrasera>0</traccionTrasera>
+        <maxSkidValue>0.1</maxSkidValue>
+        <skidCorto>0.075</skidCorto>
+        <skidMedio>0.025</skidMedio>
+        <skidLargo>0.001</skidLargo>
     </dataRayCast>  
     
 </dataVehiculoRayCast>

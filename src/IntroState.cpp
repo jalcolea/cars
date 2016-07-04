@@ -76,7 +76,7 @@ void IntroState::exit()
     _sceneMgr->clearScene();
     _root->getAutoCreatedWindow()->removeAllViewports();
     if (!sounds::getInstance()->playing_music())
-        sounds::getInstance()->play_music("mainTheme",0); // cANAL 0 PARA EL MAIN THEME 
+        sounds::getInstance()->play_music("mainTheme",-1);  // -1 loop forever :D
 }
 
 void IntroState::pause()
@@ -96,7 +96,7 @@ bool IntroState::frameStarted(const Ogre::FrameEvent &evt)
   {
       _introSoundDone = true;
       if (!sounds::getInstance()->playing_music())
-        sounds::getInstance()->play_music("mainTheme",0); // cANAL 0 PARA EL MAIN THEME 
+        sounds::getInstance()->play_music("mainTheme",-1); // -1 loop forever :D
   }
   
   if (_timeIntroSound >= TIME_INTRO_DONE)

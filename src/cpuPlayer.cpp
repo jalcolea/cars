@@ -3,6 +3,7 @@
 #include "CarRayCast.h"
 //#include "bulletUtil.h"
 #include "puntoManager.h"
+#include "sounds.h"
 
 using namespace Ogre;
 
@@ -82,7 +83,7 @@ void cpuPlayer::build()
     _car->getRigidBody()->getBulletRigidBody()->setWorldTransform(trans);
     
 
-    // Todos estos estados tiene sentido que inicialicen una se ha llamado a CarRayCast::buildVehiculo();
+    // Todos estos estados tiene sentido que inicialicen una vez se ha llamado a CarRayCast::buildVehiculo();
     _idCheck_destino = 0;
     //_idCheck_origen = 0;
     _idCheck_origen = _iaMgr->getPuntos().size() - 1;
@@ -106,14 +107,14 @@ void cpuPlayer::build()
     _nodoCheckPointSiguiente = nullptr;
     
     // Para cuando lancemos rayos hacia delante si el resultado es igual a this no nos vale.
-    static_cast<rigidBody_data*>(_car->getRigidBody()->getBulletObject()->getUserPointer())->_data = this;
+//    static_cast<rigidBody_data*>(_car->getRigidBody()->getBulletObject()->getUserPointer())->_data = this;
     
     setListaPuntosAleatorios();
 }
 
 void cpuPlayer::update(Real deltaT)
 {
-    if (!_finish)
+    if (!_finish && _onHisWay)
     {
         Vector3 origen;
         Vector3 destino;
@@ -553,3 +554,4 @@ void cpuPlayer::aplicarHandicap()
     
     _timeHandicap += _deltaT;
 }
+

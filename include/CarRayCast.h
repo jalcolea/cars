@@ -185,6 +185,7 @@ public:
     inline bool getTraccionTrasera(){ return _traccionTrasera; };
     //bool getRuedasChirriando(Ogre::Real valorMaximo);
     void getRuedasChirriando(std::vector<Ogre::Real>& valoresResult);
+    inline skidValues getSkidding(){ return _skidding; }; //rango de valores de skid para manejar el sonido
     
     // Parametros de tuneo del coche.
     inline void setSuspensionStiffness(Ogre::Real suspensionStiffness){ if(_tuneo) _tuneo->getBulletTuning()->m_suspensionStiffness = suspensionStiffness; };
@@ -217,6 +218,7 @@ public:
     size_t _id; // si se necesitan crear más de un CarRayCast será necesario concatenar el nombre del SceneNode y su Entity con el id pertinente.
     Ogre::Real _auxFuerzaMotor;
     Ogre::Real _potenciadorPrimera;
+    skidValues _skidding;
     bool _traccionTrasera;
         
     // Parámetros de tuneo del coche

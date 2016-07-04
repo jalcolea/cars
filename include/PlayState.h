@@ -42,6 +42,7 @@
 #include "cpuPlayer.h"
 #include "humanPlayer.h"
 #include "PlayWidget.h"
+#include "soundUtil.h"
 
 
 using namespace std;
@@ -53,6 +54,8 @@ using namespace OgreBulletCollisions;
 #define LAPS 3
 #define Z_CAMARA_SEMICENITAL 30
 #define MAX_TIME_CARRERA_ACABADA 2
+#define MAX_CANALES_POR_COCHE 3
+
 
 class PlayState : public Ogre::Singleton<PlayState>, public GameState
 {
@@ -86,7 +89,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         static PlayState& getSingleton ();
         static PlayState* getSingletonPtr ();
         
-        std::vector<Vector3> posSalida { Vector3(-4,2.1,-22), Vector3(-4,2.1,-24), Vector3(-2,2.1,-22), Vector3(-2,2.1,-24) };
+        std::vector<Vector3> posSalida { Vector3(-4,2.1,-22), Vector3(-4,2.1,-24), Vector3(-1,2.1,-22), Vector3(-1,2.1,-24) };
         
         void set_lives (int lives);
         int  get_lives ();
@@ -114,6 +117,7 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         bool _freeCamera = false;
         bool _playSimulation = true;
         bool _travellingCamara = true;
+        bool _inicioCarrera = true;
         SceneNode* _nodoVista;
         SceneNode* _planeRoadNode;
         OgreBulletDynamics::RigidBody* _planeRoadBody;
@@ -152,6 +156,11 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         void updateCPU();
         void travellingCamara();
         void controlDeCarrera();
+        void reparteCanalesSonido();
+        void actualizaDistanciasParaSonido();
+        void reproduceSonidosColisiones();
+        double getCollisionForce(btPersistentManifold* maniFold);
+        void activarCarrusel();
         Ogre::OverlayManager* _overlayManager;
         Ogre::Vector3 _vt;
         Ogre::Real _r;
@@ -165,11 +174,13 @@ class PlayState : public Ogre::Singleton<PlayState>, public GameState
         bool _finalCarrera = false;
         size_t _posicionAlFinalCarrera = 0;
         Ogre::Real _timeCarreraAcabada = 0;
+        int _canalActualReparto;
         
         void dibujaLinea(size_t idFrom, size_t idTo); // SOLO PARA COMPROBAR FUNCIONAMIENTO IA, QUITAR LUEGO
         std::vector<marquita> vMarcas;
         std::vector<size_t> _vranking;
-
+        std::vector<canalesSonidoCoche> _vCanalesSonido;
+        std::vector<btCollisionObject*> _bodies;
 
 };
 
